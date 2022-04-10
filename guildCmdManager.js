@@ -23,8 +23,11 @@ const rest = new REST({ version: '9' }).setToken(botAuth);
 
 console.clear();
 
+rl.question('\x1b[1;33m[Guild Based Bot Commands Manager]\n\n\x1b[1;37mEnter a Guild ID:\n\x1b[0m\x1b[1;32m==>\x1b[1;37m ', (guildID) => {
+  console.clear();
+
 function cmdMan() {
-  rl.question('\x1b[1;33m[Bot Commands Manager]\n\n\x1b[1;37mWhat would you like to do?\n\x1b[1;33mEnter an option:\n\x1b[2m(Destroy, Refresh, Exit)\n\x1b[0m\x1b[1;32m==>\x1b[1;37m ', (option) => {
+  rl.question('\x1b[1;33m[Guild Based Bot Commands Manager]\n\n\x1b[1;37mWhat would you like to do?\n\x1b[1;33mEnter an option:\n\x1b[2m(Destroy, Refresh, Exit)\n\x1b[0m\x1b[1;32m==>\x1b[1;37m ', (option) => {
 
   option = option.toLowerCase();
 
@@ -35,7 +38,7 @@ function cmdMan() {
       console.log('\x1b[1;32m==> \x1b[1;37mRefreshing (/) commands');
 
       await rest.put(
-        Routes.applicationCommands(clientID),
+        Routes.applicationGuildCommands(clientID, guildID),
         { body: commands },
       );
 
@@ -52,7 +55,7 @@ function cmdMan() {
       console.log('\x1b[1;32m==> \x1b[1;37mDestroying (/) commands');
 
       await rest.put(
-        Routes.applicationCommands(clientID),
+        Routes.applicationGuildCommands(clientID, guildID),
         { body: [] },
       );
 
@@ -73,3 +76,4 @@ function cmdMan() {
   })
 }
 cmdMan();
+});
