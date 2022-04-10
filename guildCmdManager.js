@@ -8,16 +8,13 @@ const rl = readline.createInterface({ input, output });
 const clientID = "413250765629423636";
 const { botAuth } = require('./auth.json');
 
-const commands = [{
-  name: 'experiment',
-  description: 'infinite possibilties only limited by the mind',
-  options: [{ required: true, type: 6, name: 'target', description: 'Select a target user' }]
-},
-{
-  name: 'stdout',
-  description: 'Send a message to the hoster\'s Terminal stdout!',
-  options: [{ required: true, type: 3, name: 'message', description: 'Message to send to Terminal' }]
-}];
+const commands = [];
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  commands.push(command.data.toJSON());
+}
 
 const rest = new REST({ version: '9' }).setToken(botAuth);
 
