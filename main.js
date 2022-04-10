@@ -13,9 +13,8 @@ console.clear();
 
 // notify ready
 client.on('ready', () => {
-  let serverCount = await client.guilds.cache.reduce((a, b) => a + b.memberCount, 0);
   console.log(`\x1b[1;32m==> SUCCESS: \x1b[1;37mLogged in (${client.user.tag})`);
-  client.user.setActivity(`stdout | In ${serverCount} server(s)`, { type: 'WATCHING' });
+  client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
   console.log(`\x1b[1;32m==> SUCCESS: \x1b[1;37mSet custom status for bot successfully.`);
 });
 
