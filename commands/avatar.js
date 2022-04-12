@@ -26,8 +26,7 @@ module.exports = {
         	});
     	} else {
       	await interaction.reply({ 
-        	embeds: [avatarEmbed],
-        	ephemeral: true 
+        	embeds: [avatarEmbed]
       	});
       	console.log(`\x1b[1;32m==>\x1b[1;37m ${executor} executed avatar command: \n\x1b[0m\x1b[35m -> \x1b[37mTarget is ${target.tag}`);
       	// add user to cooldown

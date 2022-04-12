@@ -37,32 +37,28 @@ module.exports = {
             bannedMember = target.user.tag;
             if (target.user.id == "413250765629423636") {
               await interaction.reply({
-                content: `I cannot ban myself!`,
-                ephemeral: true
+                content: `I cannot ban myself!`
               })
               console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban the bot.`)
               return;
             };
             if (target.user.id == executor.user.id) {
               await interaction.reply({
-                content: `You cannot ban yourself!`,
-                ephemeral: true
+                content: `You cannot ban yourself!`
               })
               console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban themselves.`)
               return;
             };
             if (executor.guild.me.roles.highest.comparePositionTo(target.roles.highest) < 0 || executor.guild.me.roles.highest.comparePositionTo(target.roles.highest) == 0) {
               await interaction.reply({
-                content: `The bot's role isn't higher than the target\'s!`,
-                ephemeral: true
+                content: `The bot's role isn't higher than the target\'s!`
               })
               console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mThe bot\'s role is not higher than the target\'s.`)
               return;
             };
             if (executor.roles.highest.comparePositionTo(target.roles.highest) < 0 || executor.roles.highest.comparePositionTo(target.roles.highest) == 0) {
               await interaction.reply({
-                content: `Your highest role is not higher than the target\'s!`,
-                ephemeral: true
+                content: `Your highest role is not higher than the target\'s!`
               })
               console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mExecutor\'s role was not higher than the target\'s.`)
               return;
@@ -71,8 +67,7 @@ module.exports = {
 
         if (!interaction.memberPermissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
             await interaction.reply({
-              content: `You do not have the permission to ban members!`,
-              ephemeral: true
+              content: `You do not have the permission to ban members!`
             })
             console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mExecutor did not have the Ban Members permission.`)
             return;
@@ -80,8 +75,7 @@ module.exports = {
 
         if (!executor.guild.me.permissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
             await interaction.reply({
-              content: `The bot does not have permission to ban members!`,
-              ephemeral: true
+              content: `The bot does not have permission to ban members!`
             })
             console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mBot did not have the Ban Members permission.`)
             return;
@@ -91,8 +85,7 @@ module.exports = {
         executor.guild.bans.create(target, {reason});
         console.log(`${executor.user.tag} banned ${bannedMember}.`)
         await interaction.reply({
-            content: `Banned ${bannedMember}.`,
-            ephemeral: true
+            content: `Banned ${bannedMember}.`
         })
 
         cooldown.add(interaction.user.id);

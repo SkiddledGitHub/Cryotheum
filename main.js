@@ -25,8 +25,8 @@ client.on('ready', () => {
   console.log(`\x1b[1;32m==> \x1b[1;37mLogged in (${client.user.tag})`);
   client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
   console.log(`\x1b[1;32m==> \x1b[1;37mSet custom status for bot successfully.`);
-  console.log('\x1b[1;33m-------------------------------------------------------------------------------');
-  console.log('\n\x1b[1;33m------------------------------------[ Log ]------------------------------------');
+  console.log('\x1b[1;33m--------------------------------------------------------------------------------');
+  console.log('\n\x1b[1;33m------------------------------------[ Log ]-------------------------------------');
 });
 
 // slash command handling
