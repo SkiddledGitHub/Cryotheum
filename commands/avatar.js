@@ -7,7 +7,7 @@ module.exports = {
   data: new SlashCommandBuilder()
   	.setName('avatar')
   	.setDescription('Get avatar from a Discord user.')	
-	.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from').setRequired(true)),
+		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from').setRequired(true)),
 	async execute(interaction) {
 		const executor = interaction.member.user.tag;
     	const target = interaction.options.getUser('target');

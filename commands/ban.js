@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageActionRow, MessageButton, ButtonInteraction } = require('discord.js');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager } = require('discord.js')
 
 const cooldown = new Set();
@@ -19,10 +18,9 @@ module.exports = {
           ephemeral: true 
         });
       } else {
-        var target = "";
-        var bannedMember = "";
-        var reason = "";
-        var history = 0;
+        var target;
+        var bannedMember;
+        var reason;
         const executor = interaction.member;
         if (interaction.options.getString('reason') == null) {
           reason = `Executor: ${executor.user.tag}`
@@ -83,7 +81,7 @@ module.exports = {
 
 
         executor.guild.bans.create(target, {reason});
-        console.log(`\x1b[1;32m==> \x1b[1;37m${executor.user.tag} banned ${bannedMember}:\n\x1b[0m\x1b[35m -> \x1b[37mWith reason: ${reason}`)
+        console.log(`\x1b[1;32m==> \x1b[1;37m${executor.user.tag} banned ${bannedMember}:\n\x1b[0m\x1b[35m -> \x1b[37mWith reason: ${reason}`);
         await interaction.reply({
             content: `Banned ${bannedMember}.`
         })
