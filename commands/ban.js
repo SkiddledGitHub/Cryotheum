@@ -83,7 +83,7 @@ module.exports = {
 
 
         executor.guild.bans.create(target, {reason});
-        console.log(`${executor.user.tag} banned ${bannedMember}.`)
+        console.log(`\x1b[1;32m==> \x1b[1;37m${executor.user.tag} banned ${bannedMember}:\n\x1b[0m\x1b[35m -> \x1b[37mWith reason: ${reason}`)
         await interaction.reply({
             content: `Banned ${bannedMember}.`
         })
