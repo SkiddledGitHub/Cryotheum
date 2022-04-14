@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager } = require('discord.js')
+const { embedCreator } = require('../tools/embeds.js');
+
+const cooldownEmbed = embedCreator("ctd", { color: '#F04A47', title: 'You are under cooldown!', description: 'Default cooldown time for this command is 6 seconds.' });
 
 const cooldown = new Set();
 const cooldownTime = 6000;
@@ -14,8 +17,7 @@ module.exports = {
       try {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
-          content: `You are under cooldown! (Default cooldown is 6s)`, 
-          ephemeral: true 
+          embeds: [cooldownEmbed]
         });
       } else {
         var target;
@@ -37,28 +39,28 @@ module.exports = {
               await interaction.reply({
                 content: `I cannot ban myself!`
               })
-              console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban the bot.`)
+              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban the bot.`)
               return;
             };
             if (target.user.id == executor.user.id) {
               await interaction.reply({
                 content: `You cannot ban yourself!`
               })
-              console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban themselves.`)
+              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban themselves.`)
               return;
             };
             if (executor.guild.me.roles.highest.comparePositionTo(target.roles.highest) < 0 || executor.guild.me.roles.highest.comparePositionTo(target.roles.highest) == 0) {
               await interaction.reply({
                 content: `The bot's role isn't higher than the target\'s!`
               })
-              console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mThe bot\'s role is not higher than the target\'s.`)
+              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot\'s role is not higher than the target\'s.`)
               return;
             };
             if (executor.roles.highest.comparePositionTo(target.roles.highest) < 0 || executor.roles.highest.comparePositionTo(target.roles.highest) == 0) {
               await interaction.reply({
                 content: `Your highest role is not higher than the target\'s!`
               })
-              console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mExecutor\'s role was not higher than the target\'s.`)
+              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor\'s role was not higher than the target\'s.`)
               return;
             }
           }
@@ -67,7 +69,7 @@ module.exports = {
             await interaction.reply({
               content: `You do not have the permission to ban members!`
             })
-            console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mExecutor did not have the Ban Members permission.`)
+            console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`)
             return;
         }
 
@@ -75,13 +77,13 @@ module.exports = {
             await interaction.reply({
               content: `The bot does not have permission to ban members!`
             })
-            console.log(`\x1b[1;33m==> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m -> \x1b[37mBot did not have the Ban Members permission.`)
+            console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor.user.tag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mBot did not have the Ban Members permission.`)
             return;
         }
 
 
         executor.guild.bans.create(target, {reason});
-        console.log(`\x1b[1;32m==> \x1b[1;37m${executor.user.tag} banned ${bannedMember}:\n\x1b[0m\x1b[35m -> \x1b[37mWith reason: ${reason}`);
+        console.log(`\x1b[1;32m=> \x1b[1;37m${executor.user.tag} banned ${bannedMember}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
         await interaction.reply({
             content: `Banned ${bannedMember}.`
         })
@@ -93,11 +95,12 @@ module.exports = {
           }, cooldownTime);
         }
       } catch (error) {
+        var errorEmbed = embedCreator("error", { error: `${error}` });
         await interaction.reply({
-          content: `An error occurred: ${error}`,
-          ephemeral: true
+            embeds: [errorEmbed],
+            ephemeral: true
         })
-        console.error(`\x1b[1;31m==> ERROR: \x1b[1;37m${error}`);
+        console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
       }
     },
 }

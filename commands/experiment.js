@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-
-const cooldown = new Set();
-const cooldownTime = 6000;
+const { embedCreator } = require('../tools/embeds.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,11 +13,12 @@ module.exports = {
             ephemeral: true
          })
       } catch (error) {
+        var errorEmbed = embedCreator("error", { error: `${error}` });
       	await interaction.reply({
-        	content: `An error occurred: ${error}`,
-        	ephemeral: true
+            embeds: [errorEmbed],
+            ephemeral: true
       	})
-      	console.error(`\x1b[1;31m==> ERROR: \x1b[1;37m${error}`);
+      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
     	}
   	},
 }
