@@ -1,13 +1,16 @@
+// modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
+const { ytCookies, ytIdentity } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
 const ytdl = require('ytdl-core');
 
-const cooldownEmbed = embedCreator("ctd", { color: '#F04A47', title: 'You are under cooldown!', description: 'Default cooldown time for this command is 6 seconds.' });
 
+// set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
+const cooldownEmbed = embedCreator("cooldown", { cooldown: '6 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,30 +26,51 @@ module.exports = {
         });
       } else {
 
+      // constants
       const executor = interaction.member;
+      const executorTag = executor.user.tag;
+      const executorID = executor.user.id;
       const url = interaction.options.getString('link');
+      const channel = executor.voice.channel;
+
+      // check if url provided is a youtube url, if not then reply & return
       var isYoutubeUrl = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/.test(url);
-      if (!isYoutubeUrl) { return; };
-      const stream = ytdl(url, { filter: 'audioonly' });
-      const channel = interaction.member.voice.channel;
+      if (!isYoutubeUrl) { const embed = embedCreator('playFailed', { url: `${url}`, reason: 'Link provided is not a YouTube video link.' }); async function failed() { await interaction.reply({ embeds: [embed] }); }; failed(); return; };
+
+      // if executor is not in channel, pull error
+      if (channel == null) { const embed = embedCreator("playFailed", { url: `${url}`, reason: 'You are not in a voice channel!' }); async function failed() { await interaction.reply({ embeds: [embed] }); }; failed(); return; };
+
+      // important constants
+      const stream = ytdl(url, { filter: 'audioonly', dlChunkSize: 0, requestOptions: {
+        headers: {
+          Cookie: ytCookies,
+          'x-youtube-identity-token': ytIdentity,
+          'x-youtube-client-version': '2.20220413.05.00',
+          'x-youtube-client-name': '1',
+        }
+      }});
       const player = voice.createAudioPlayer();
       const resource = voice.createAudioResource(stream);
       const connection = joinVoiceChannel({ channelId: interaction.member.voice.channelId, guildId: interaction.member.guild.id, adapterCreator: interaction.member.guild.voiceAdapterCreator }); 
-      const successEmbed = embedCreator("ctdt", { color: '#42B983', title: 'Joined VC & playing audio', description: `<:success:962658626999291904> Bot has successfully connected to VC and is now playing audio.\n\n**Given URL**:\n>>>${url}`, thumbnail: 'https://images-ext-1.discordapp.net/external/Y9ec_ju_jMFXEYbE-Ie5kPp5R5im0556dCBV7EPvn8M/https/www.youtube.com/img/desktop/yt_1200.png?width=458&height=458',  })
 
-      await interaction.reply({ embeds: [successEmbed] });
-
-      player.play(resource);
+      // use player to play resource then subscribe connection handler to it
+      player.play(resource); 
       connection.subscribe(player);
 
+      // on success
+      const successEmbed = embedCreator('playSuccess', { url: `${url}` });
+      await interaction.reply({ embeds: [successEmbed] });
+      console.log(` \x1b[1;32m=> \x1b[1;37m${executorTag} is playing audio of a video: \n\x1b[0m\x1b[35m  -> URL: \x1b[37m${url}`);
+
+      // if player inactive, destroy connection
       player.on(voice.AudioPlayerStatus.Idle, () => {
         connection.destroy();
       });
 
-    	cooldown.add(interaction.user.id);
+    	cooldown.add(executorID);
         	setTimeout(() => {
           	// rm cooldown after it has passed
-          	cooldown.delete(interaction.user.id);
+          	cooldown.delete(executorID);
         	}, cooldownTime);
       	}
       } catch (error) {

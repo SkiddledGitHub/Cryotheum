@@ -6,7 +6,7 @@ const process = require('process');
 const fs = require('fs');
 const rl = readline.createInterface({ input, output });
 const clientID = "413250765629423636";
-const { botAuth } = require('./auth.json');
+const { botAuth } = require('./config.json');
 
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));

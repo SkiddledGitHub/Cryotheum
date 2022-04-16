@@ -8,8 +8,9 @@ module.exports = {
   async execute(interaction) {
       try {
       	// insert commands
+        const embed = embedCreator('experiment', { desc: 'There is no experiments being conducted as of now.' });
         await interaction.reply({
-            content: `There is no experiments being conducted as of now.`,
+            embeds: [embed],
             ephemeral: true
          })
       } catch (error) {

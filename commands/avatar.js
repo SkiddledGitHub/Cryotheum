@@ -1,10 +1,11 @@
+// modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
 
+// set cooldown
 const cooldown = new Set();
-const cooldownTime = 3000;
-
-const cooldownEmbed = embedCreator("ctd", { color: '#F04A47', title: 'You are under cooldown!', description: 'Default cooldown time for this command is 3 seconds.' });
+const cooldownTime = 4000;
+const cooldownEmbed = embedCreator("cooldown", { cooldown: '4 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,15 +13,17 @@ module.exports = {
   	.setDescription('Get avatar from a Discord user.')	
 		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from').setRequired(true)),
 	async execute(interaction) {
+
 		const executor = interaction.member.user.tag;
-    	const target = interaction.options.getUser('target');
-    	const avatarEmbed = embedCreator("avatar", { title: `${target.tag}\'s avatar`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
-    	try {
+    const target = interaction.options.getUser('target');
+    const avatarEmbed = embedCreator("avatar", { who: `${target.tag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
+    try {
     	if (cooldown.has(interaction.user.id)) {
-      		await interaction.reply({ 
-          		embeds: [cooldownEmbed]
-        	});
+      	await interaction.reply({ 
+          	embeds: [cooldownEmbed]
+        });
     	} else {
+    		
       	await interaction.reply({ 
         	embeds: [avatarEmbed]
       	});

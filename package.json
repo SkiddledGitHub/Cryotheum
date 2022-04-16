@@ -29,6 +29,7 @@
     "discord.js": "^13.6.0",
     "erlpack": "github:discord/erlpack",
     "install": "^0.13.0",
+    "node-emoji": "^1.11.0",
     "npm": "^8.6.0",
     "sodium": "^3.0.2",
     "utf-8-validate": "^5.0.9",

@@ -1,4 +1,5 @@
-const { botAuth } = require('./auth.json');
+// modules
+const { botAuth, loggingMessages } = require('./config.json');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus } = require('@discordjs/voice');
 const { Client, Intents, Collection, MessageAttachment, MessageEmbed } = require('discord.js');
 const fs = require('node:fs');
@@ -6,10 +7,6 @@ const process = require('process');
 const ytdl = require('ytdl-core');
 const { embedCreator } = require('./tools/embeds.js');
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES ] });
-
-// toggle on / off for message logging
-// default: false
-const loggingMessages = false;
 
 // commands import
 client.commands = new Collection();
@@ -28,7 +25,7 @@ client.on('ready', () => {
   console.log(` \x1b[1;32m=> \x1b[1;37mLogged in (${client.user.tag})`);
   client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
   console.log(` \x1b[1;32m=> \x1b[1;37mSet custom status for bot successfully.`);
-  if (loggingMessages == true) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now logging messages. \n\x1b[0m\x1b[35m  -> \x1b[1;37mCause: loggingMessages is set to \"true\"`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is not logging messages. \n\x1b[0m\x1b[35m  -> \x1b[1;37mCause: loggingMessages is set to \"false\"`); }
+  if (loggingMessages == true) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"true\"`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is not logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"false\"`); }
   console.log(`\n\x1b[1;33m[Logging]:`);
 });
 
