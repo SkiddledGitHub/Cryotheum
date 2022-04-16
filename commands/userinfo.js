@@ -1,6 +1,7 @@
 // modules
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
+const { debug } = require('../config.json');
 const emojis = require('node-emoji');
 
 // set cooldown
@@ -56,8 +57,8 @@ module.exports = {
       		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
       		// get target's guild join and account creation date
-          	joinedAt = { full: `${time(target.joinedAt, 'F')}`, mini: `${time(target.joinedAt, 'R')}` };
-            createdAt = { full: `${time(target.user.createdAt, 'F')}`, mini: `${time(target.user.createdAt, 'R')}` };
+          	joinedAt = { full: `${time(target.joinedAt, 'f')}`, mini: `${time(target.joinedAt, 'R')}` };
+            createdAt = { full: `${time(target.user.createdAt, 'f')}`, mini: `${time(target.user.createdAt, 'R')}` };
       	
       	};
 
@@ -74,8 +75,8 @@ module.exports = {
       		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
       		// get target's guild join and account creation date
-          	joinedAt = { full: `${time(target.joinedAt, 'F')}`, mini: `${time(target.joinedAt, 'R')}` };
-            createdAt = { full: `${time(target.user.createdAt, 'F')}`, mini: `${time(target.user.createdAt, 'R')}` };
+          	joinedAt = { full: `${time(target.joinedAt, 'f')}`, mini: `${time(target.joinedAt, 'R')}` };
+            createdAt = { full: `${time(target.user.createdAt, 'f')}`, mini: `${time(target.user.createdAt, 'R')}` };
 
       	};
 
@@ -89,7 +90,7 @@ module.exports = {
       		isGuildMember = false;
 
       		// get target's account creation date
-            createdAt = { full: `${time(target.createdAt, 'F')}`, mini: `${time(target.createdAt, 'R')}` };
+            createdAt = { full: `${time(target.createdAt, 'f')}`, mini: `${time(target.createdAt, 'R')}` };
 
       	};
 
@@ -105,8 +106,14 @@ module.exports = {
               emojiModifiers += `${emojis.get('robot_face')}.`;
             };
           };
-          if (target.id == "285329659023851520") {
+          if (target.id == '285329659023851520') {
             emojiModifiers += `${emojis.get('white_heart')}.`;
+          };
+          if (target.id == '379317501072375811') {
+            emojiModifiers += `<:kekw:957209610840862730>.`;
+          };
+          if (target.id == '807884207589818439') {
+            emojiModifiers += '<:skull:964875094797197373>'
           };
           emojiModifiers = emojiModifiers.replace(/\./g, ' ');
           emojiModifiers = emojiModifiers.replace(/ $/g, '')

@@ -231,7 +231,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/avatar.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -241,8 +241,8 @@ module.exports = {
 					}, 
 					fields: [
 								{ name: 'Server Roles', value: `${options.roles}`, inline: false },
-								{ name: 'Server Join Date', value: `${options.joinedAt.full} (${options.joinedAt.mini})`, inline: true },
-								{ name: 'Account Creation Date', value: `${options.createdAt.full} (${options.createdAt.mini})`, inline: true },
+								{ name: 'Server Join Date', value: `${options.joinedAt.full} \n(${options.joinedAt.mini})`, inline: true },
+								{ name: 'Account Creation Date', value: `${options.createdAt.full} \n(${options.createdAt.mini})`, inline: true },
 							],
 				};
 
@@ -250,7 +250,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/avatar.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -258,7 +258,7 @@ module.exports = {
 					thumbnail: { 
 						url: `${options.avatar}`,
 					}, 
-					fields: [{ name: 'Account Creation Date', value: `${options.createdAt.full} (${options.createdAt.mini})`, inline: true }],
+					fields: [{ name: 'Account Creation Date', value: `${options.createdAt.full} \n(${options.createdAt.mini})`, inline: true }],
 				};
 			};
 

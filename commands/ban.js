@@ -2,6 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager } = require('discord.js')
 const { embedCreator } = require('../tools/embeds.js');
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();
@@ -72,8 +73,10 @@ module.exports = {
               // reply & log fail & return
               await interaction.reply({
                 embeds: [embed]
-              })
+              });
+              if (debug) {
               console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban the bot.`);
+              };
               return;
             };
 
@@ -86,8 +89,10 @@ module.exports = {
               // reply & log fail & return
               await interaction.reply({
                 embeds: [embed]
-              })
+              });
+              if (debug) {
               console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban themselves.`);
+              };
               return;
             };
 
@@ -100,8 +105,10 @@ module.exports = {
               // reply & log fail & return
               await interaction.reply({
                 embeds: [embed]
-              })
+              });
+              if (debug) {
               console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot\'s role is not higher than the target\'s.`);
+              };
               return;
             };
 
@@ -114,8 +121,10 @@ module.exports = {
               // reply & log fail & return
               await interaction.reply({
                 embeds: [embed]
-              })
+              });
+              if (debug) {
               console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor\'s role was not higher than the target\'s.`);
+              };
               return;
             };
           };
@@ -129,8 +138,10 @@ module.exports = {
           // reply & log fail & return
           await interaction.reply({
             embeds: [embed]
-          })
+          });
+          if (debug) {
           console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
+          };
           return;
         };
 
@@ -143,8 +154,10 @@ module.exports = {
           // reply & log fail & return
           await interaction.reply({
             embeds: [embed]
-          })
+          });
+          if (debug) {
           console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mBot did not have the Ban Members permission.`)
+          };
           return;
         };
 
@@ -157,8 +170,9 @@ module.exports = {
           await interaction.reply({
             embeds: [successEmbed]
           });
+          if (debug) {
           console.log(`\x1b[1;32m=> \x1b[1;37m${executorTag} banned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
-
+          };
         } catch (error) {
 
           // reply

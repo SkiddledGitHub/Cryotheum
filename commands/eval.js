@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
-const { botOwner } = require('../config.json')
+const { debug, botOwner } = require('../config.json');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,7 +23,9 @@ module.exports = {
           await interaction.reply({
             embeds: [embed]
           });
+          if (debug) {
           console.log(` \x1b[1;32m=>\x1b[1;37m ${executorTag} tried to execute eval but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mUser is not bot owner.`);
+          };
           return;
 
         } else {
@@ -49,14 +51,17 @@ module.exports = {
             await interaction.reply({ embeds: [embed], ephemeral: true }); 
 
             // log fail & return
+            if (debug) { 
             console.error(` \x1b[1;31m=> Failed evaluating code: \x1b[1;37m${error} \n\x1b[0m\x1b[35m  -> Code: \x1b[37m${code}`); 
+            };
             return;
 
           };
 
           // log success
+          if (debug) {
           console.log(` \x1b[1;32m=>\x1b[1;37m Evaluated code. \n\x1b[0m\x1b[35m  -> Code: \x1b[37m${code}`);
-        
+          };
         }
   	},
 }

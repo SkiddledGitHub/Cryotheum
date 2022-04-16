@@ -2,7 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
-const { ytCookies, ytIdentity } = require('../config.json');
+const { ytCookies, ytIdentity, debug } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
 const ytdl = require('ytdl-core');
 
@@ -60,8 +60,9 @@ module.exports = {
       // on success
       const successEmbed = embedCreator('playSuccess', { url: `${url}` });
       await interaction.reply({ embeds: [successEmbed] });
+      if (debug) {
       console.log(` \x1b[1;32m=> \x1b[1;37m${executorTag} is playing audio of a video: \n\x1b[0m\x1b[35m  -> URL: \x1b[37m${url}`);
-
+      };
       // if player inactive, destroy connection
       player.on(voice.AudioPlayerStatus.Idle, () => {
         connection.destroy();

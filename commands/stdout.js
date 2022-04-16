@@ -1,6 +1,7 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();
@@ -39,7 +40,9 @@ module.exports = {
             embeds: [embed],
             ephemeral: true 
           });
+          if (debug) {
           console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor} tried to send a message to stout but message was blocked.\n\x1b[0m\x1b[35m  -> \x1b[37mMessage contained non ASCII characters.`);
+          };
           return;
 
       // if message only contains ASCII characters
@@ -56,7 +59,9 @@ module.exports = {
           embeds: [embed],
           ephemeral: true 
         });
+        if (debug) {
         console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executor} tried to send a message to stdout but message was blocked.\n\x1b[0m\x1b[35m  -> \x1b[37mMessage was more than 1970 characters in length.`);
+        };
         return;
 
       // if message length is lower than 1970 characters
@@ -70,8 +75,9 @@ module.exports = {
           embeds: [embed],
           ephemeral: true 
         });
+        if (debug) {
         console.log(` \x1b[1;32m=> \x1b[1;37m${executor} sent a message to stdout: \n\x1b[0m\x1b[35m  -> \x1b[37m${message}`);
-      
+        };
       }
     };
     

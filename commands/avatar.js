@@ -1,6 +1,7 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();
@@ -27,7 +28,9 @@ module.exports = {
       	await interaction.reply({ 
         	embeds: [avatarEmbed]
       	});
+      	if (debug) {
       	console.log(` \x1b[1;32m=>\x1b[1;37m ${executor} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
+      	};
       	// add user to cooldown
       	cooldown.add(interaction.user.id);
         	setTimeout(() => {
