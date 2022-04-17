@@ -2,6 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
+const { debug } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
 
 // set cooldown
@@ -45,7 +46,7 @@ module.exports = {
         	}, cooldownTime);
       	}
       } catch (error) {
-        var errorEmbed = embedCreator("error", { error: `${error}` });
+        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
       	await interaction.reply({
             embeds: [errorEmbed],
             ephemeral: true

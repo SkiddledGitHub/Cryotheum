@@ -1,5 +1,6 @@
 // modules
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
+const { Permissions } = require('discord.js');
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');
 const emojis = require('node-emoji');
@@ -40,9 +41,11 @@ module.exports = {
       	// define guild member data variables
       	var roles;
 
-      	// define important variables
+      	// define other variables
       	var embed;
       	var isGuildMember;
+        var sBadges = "";
+        var iBadges = "";
 
       	// if option is blank, get executor's data instead
       	if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
@@ -50,8 +53,8 @@ module.exports = {
       		// assign target as executor
       		target = executor;
       		targetTag = target.user.tag;
-          	targetID = codeBlock('yaml', `ID: ${target.id}`);
-          	isGuildMember = true;
+          targetID = codeBlock('yaml', `ID: ${target.id}`);
+          isGuildMember = true;
 
       		// get target's roles
       		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
@@ -95,38 +98,62 @@ module.exports = {
       	};
 
       	// assign special emojis to certain users
-        function tagModifiers() {
-          var emojiModifiers = "";
-          if (!isGuildMember) {
+        function specialBadges() {
+          if (target.id == '285329659023851520') {
+            sBadges += `<:botDev:965168985723265044>.`;
+            sBadges += `<:heart:965168986016862208>.`;
+          };
+          if (target.id == '379317501072375811') {
+            sBadges += `<:kekw:957209610840862730>.`;
+          };
+          if (target.id == '807884207589818439') {
+            sBadges += '<:skull:964875094797197373>.'
+          };
+          if (target.id == '858693971709657108') {
+            sBadges += `<:yash:965169013762191430>.`
+          };
+          if (target.id == '942049062071443496') {
+            sBadges += `<:tree:965173753476681748>.`
+          }
+          sBadges = sBadges.replace(/\./g, ' ');
+          sBadges = sBadges.replace(/ $/g, '');
+          if (sBadges == '') { return; };
+        };
+        specialBadges();
+
+        function insightBadges() {
+          var isOwner = false;
+          var isAdmin = false;
+            if (!isGuildMember) {
             if (target.bot == true) {
-              emojiModifiers += `${emojis.get('robot_face')}.`;
+              iBadges += `<:bot:965168985740025876>.`;
             };
           } else {
             if (target.user.bot == true) {
-              emojiModifiers += `${emojis.get('robot_face')}.`;
+              iBadges += `<:bot:965168985740025876>.`;
+            };
+             if (target.id == interaction.guild.ownerId) {
+              iBadges += `<:guildOwner:965168985568071710>.`
+              isOwner = true;
+            };
+            if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !isOwner) {
+              iBadges += `<:guildAdmin:965168985442254868>.`
+              isAdmin = true;
+            };
+            if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.MANAGE_MESSAGES]) && !isOwner && !isAdmin) {
+              iBadges += `<:guildModerator:965168985589051412>.`
             };
           };
-          if (target.id == '285329659023851520') {
-            emojiModifiers += `${emojis.get('white_heart')}.`;
-          };
-          if (target.id == '379317501072375811') {
-            emojiModifiers += `<:kekw:957209610840862730>.`;
-          };
-          if (target.id == '807884207589818439') {
-            emojiModifiers += '<:skull:964875094797197373>'
-          };
-          emojiModifiers = emojiModifiers.replace(/\./g, ' ');
-          emojiModifiers = emojiModifiers.replace(/ $/g, '')
-          if (emojiModifiers == '') { return; };
-          targetTag += ` [${emojiModifiers}]`;
+          iBadges = iBadges.replace(/\./g, ' ');
+          iBadges = iBadges.replace(/ $/g, '');
+          if (iBadges == '') { return; };
         };
-
-        tagModifiers();
+        insightBadges();
 
       	if (!isGuildMember) {
-      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	} else {
-      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, roles: `${roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, roles: `${roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	};
 
       	await interaction.reply({ embeds: [embed] });
@@ -138,7 +165,7 @@ module.exports = {
         	}, cooldownTime);
       	}
       } catch (error) {
-        var errorEmbed = embedCreator("error", { error: `${error}` });
+        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
       	await interaction.reply({
             embeds: [errorEmbed],
             ephemeral: true

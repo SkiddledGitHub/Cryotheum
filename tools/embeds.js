@@ -1,3 +1,5 @@
+const { guildUserInfoHandler, userInfoHandler } = require('./userInfoEmbedHandling.js');
+
 module.exports = {
 	embedCreator: function (type, options) {
 		switch (type) {
@@ -15,6 +17,15 @@ module.exports = {
 				color:`#F04A47`,
   				description: `Something has went wrong while executing this command!`,
   				fields: [{ name: 'Error message', value: `>>> ${options.error}`, inline: false }],
+			};
+
+			case 'errorNoDebug': return {
+				author: {
+					name: `An error occurred!`,
+					icon_url: `https://skiddledgithub.github.io/resources/bot/error.png`,
+				},
+				color:`#F04A47`,
+  				description: `Something has went wrong while executing this command!`,
 			};
 
 			// cooldown
@@ -103,7 +114,7 @@ module.exports = {
 			case 'evalFailed': return {
 				author: {
 					name: 'Failed evaluating code',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/evalFailed.png',
 				},
 				color: '#F04A47',
 				description: `Bot failed to evaluate given code.`,
@@ -226,41 +237,12 @@ module.exports = {
 			};
 
 			// success
-			case 'userinfoSuccess': 
-			if (options.guildMember == 'true') {  
-				return { 
-					author: { 
-						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
-					}, 
-					title: `${options.whoTag}`, 
-					color: '#42B983', 
-					description: `Mention: ${options.who}\n${options.idBlock}`, 
-					thumbnail: { 
-						url: `${options.avatar}`,
-					}, 
-					fields: [
-								{ name: 'Server Roles', value: `${options.roles}`, inline: false },
-								{ name: 'Server Join Date', value: `${options.joinedAt.full} \n(${options.joinedAt.mini})`, inline: true },
-								{ name: 'Account Creation Date', value: `${options.createdAt.full} \n(${options.createdAt.mini})`, inline: true },
-							],
+			case 'userinfoSuccess':
+				if (options.guildMember == 'true') {
+					return (guildUserInfoHandler({ who: `${options.who}`, whoTag: `${options.whoTag}`, idBlock: `${options.idBlock}`, roles: `${options.roles}`, joinedAt: { full: `${options.joinedAt.full}`, mini: `${options.joinedAt.mini}` }, createdAt: { full: `${options.createdAt.full}`, mini: `${options.createdAt.mini}` }, iBadges: `${options.iBadges}`, sBadges: `${options.sBadges}`, avatar: `${options.avatar}` }));
+				} else {
+					return (userInfoHandler({ who: `${options.who}`, whoTag: `${options.whoTag}`, idBlock: `${options.idBlock}`, createdAt: { full: `${options.createdAt.full}`, mini: `${options.createdAt.mini}` }, iBadges: `${options.iBadges}`, sBadges: `${options.sBadges}`, avatar: `${options.avatar}` }));	
 				};
-
-			} else {
-				return { 
-					author: { 
-						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
-					}, 
-					title: `${options.whoTag}`, 
-					color: '#42B983', 
-					description: `Mention: ${options.who}\n${options.idBlock}`, 
-					thumbnail: { 
-						url: `${options.avatar}`,
-					}, 
-					fields: [{ name: 'Account Creation Date', value: `${options.createdAt.full} \n(${options.createdAt.mini})`, inline: true }],
-				};
-			};
 
 			// experiment
 			case 'experiment': return {

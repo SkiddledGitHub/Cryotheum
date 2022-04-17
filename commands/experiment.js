@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
+const { debug } = require('../config.json');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,7 +15,7 @@ module.exports = {
             ephemeral: true
          })
       } catch (error) {
-        var errorEmbed = embedCreator("error", { error: `${error}` });
+        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
       	await interaction.reply({
             embeds: [errorEmbed],
             ephemeral: true

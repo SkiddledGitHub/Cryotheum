@@ -89,7 +89,7 @@ module.exports = {
         }, cooldownTime);
       }
     } catch (error) {
-      var errorEmbed = embedCreator("error", { error: `${error}` });
+      if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
       await interaction.reply({
           embeds: [errorEmbed],
           ephemeral: true
