@@ -5,6 +5,7 @@ const voice = require('@discordjs/voice');
 const { ytCookies, ytIdentity, debug } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
 const ytdl = require('ytdl-core');
+const { log } = require('../tools/loggingUtil.js');
 
 
 // set cooldown
@@ -18,7 +19,6 @@ module.exports = {
   .setDescription('Play audio to VC from specified video link')
   .addStringOption((option) => option.setName('link').setDescription('Link of the video to play audio').setRequired(true)),
   async execute(interaction) {
-      try {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
           embeds: [cooldownEmbed], 
@@ -61,7 +61,7 @@ module.exports = {
       const successEmbed = embedCreator('playSuccess', { url: `${url}` });
       await interaction.reply({ embeds: [successEmbed] });
       if (debug) {
-      console.log(` \x1b[1;32m=> \x1b[1;37m${executorTag} is playing audio of a video: \n\x1b[0m\x1b[35m  -> URL: \x1b[37m${url}`);
+      log('genLog', `${executorTag} is playing audio of a video: \n\x1b[0m\x1b[35m  -> URL: \x1b[37m${url}`);
       };
       // if player inactive, destroy connection
       player.on(voice.AudioPlayerStatus.Idle, () => {
@@ -74,13 +74,5 @@ module.exports = {
           	cooldown.delete(executorID);
         	}, cooldownTime);
       	}
-      } catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-      	await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-      	})
-      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-    	}
-  	},
+  }
 }

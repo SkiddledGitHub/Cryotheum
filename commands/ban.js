@@ -1,8 +1,9 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager } = require('discord.js')
+const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager,MessageButton, MessageActionRow } = require('discord.js')
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -16,8 +17,6 @@ module.exports = {
   .addUserOption((option) => option.setName('target').setDescription('Target user to ban').setRequired(true))
   .addStringOption((option) => option.setName('reason').setDescription('Reason why you banned this user').setRequired(false)),
   async execute(interaction) {
-      try {
-
       // call cooldown if user in cooldown list
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
@@ -38,6 +37,10 @@ module.exports = {
         const executorID = executor.user.id;
         const executorGuild = executor.guild;
         const botUser = executorGuild.me;
+        const buttonRow = new MessageActionRow().addComponents( 
+                            new MessageButton().setLabel('Yes').setCustomId('yesBan').setStyle('SUCCESS'), 
+                            new MessageButton().setLabel('No').setCustomId('noBan').setStyle('DANGER'),
+                          );
 
         // get reason
         if (interaction.options.getString('reason') == null) {
@@ -53,6 +56,24 @@ module.exports = {
             target = interaction.options.getUser('target');
             targetTag = target.tag;
             targetID = target.id;
+
+          await executor.guild.bans.fetch({ cache: false }).then((value) => {
+            bannedUser = value.get(targetID);
+          });
+
+          // pull an error if cannot find user
+           if (bannedUser != null) {
+
+            // reply
+            const embed = embedCreator("banFailed", { who: `${targetTag}`, reason: `${targetTag} is already banned!` });
+              await interaction.reply({
+                embeds: [embed]
+              });
+              if (debug) {
+              log('genWarn', `${executorTag} tried to ban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is already banned`);
+              };
+              return;
+           };
 
         // user in server
         } else if (interaction.options.getMember('target') != null) {
@@ -75,7 +96,7 @@ module.exports = {
                 embeds: [embed]
               });
               if (debug) {
-              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban the bot.`);
+              log('genWarn', `${executorTag} tried to ban the bot.`);
               };
               return;
             };
@@ -91,7 +112,7 @@ module.exports = {
                 embeds: [embed]
               });
               if (debug) {
-              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban themselves.`);
+              log('genWarn', `${executorTag} tried to ban themselves.`);
               };
               return;
             };
@@ -107,7 +128,7 @@ module.exports = {
                 embeds: [embed]
               });
               if (debug) {
-              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot\'s role is not higher than the target\'s.`);
+              log('genWarn', `${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot\'s role is not higher than the target\'s.`);
               };
               return;
             };
@@ -123,7 +144,7 @@ module.exports = {
                 embeds: [embed]
               });
               if (debug) {
-              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor\'s role was not higher than the target\'s.`);
+              log('genWarn', `${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor\'s role was not higher than the target\'s.`);
               };
               return;
             };
@@ -140,7 +161,7 @@ module.exports = {
             embeds: [embed]
           });
           if (debug) {
-          console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
+          log('genWarn', `${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
           };
           return;
         };
@@ -156,33 +177,41 @@ module.exports = {
             embeds: [embed]
           });
           if (debug) {
-          console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mBot did not have the Ban Members permission.`)
+          log('genWarn', `${executorTag} tried to ban ${bannedMember} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mBot did not have the Ban Members permission.`);
           };
           return;
         };
 
         // attempt to ban member
-        try {
-          executor.guild.bans.create(target, {reason});
+        const confirmationEmbed = embedCreator('banConfirmation', { who: `${targetTag}` });
+        const successEmbed = embedCreator('banSuccess', { who: `${targetTag}`, reason: `${reason}` });
+        const cancelledEmbed = embedCreator('banCancel', { who: `${targetTag}` });
 
-          // on success
-          const successEmbed = embedCreator('banSuccess', { who: `${targetTag}`, reason: `${reason}` });
-          await interaction.reply({
-            embeds: [successEmbed]
-          });
-          if (debug) {
-          console.log(`\x1b[1;32m=> \x1b[1;37m${executorTag} banned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
+        await interaction.reply({
+          embeds: [confirmationEmbed],
+          components: [buttonRow]
+        });
+
+        const filter = i => i.customId === 'yesBan' || i.customId === 'noBan';
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+
+        collector.on('collect', async i => {
+          if (i.user.id === executorID) {
+            if (i.customId === 'yesBan') {
+              await executorGuild.bans.create(target, {reason});
+              await i.update({ embeds: [successEmbed], components: [] });
+            } else if (i.customId === 'noBan') {
+              await i.update({ embeds: [cancelledEmbed], components: [] });
+            }
+          } else {
+            const notForUserEmbed = embedCreator('banFailedNFU', {});
+            await i.reply({ embeds: [notForUserEmbed], ephemeral: true });
           };
-        } catch (error) {
+          collector.stop();
+        });
 
-          // reply
-          const errorEmbed = embedCreator('error', { error: `${error}` });
-          await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-          });
-          console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`); 
-
+        if (debug) {
+        log('genLog', `${executorTag} banned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
         };
 
           cooldown.add(executorID);
@@ -191,13 +220,5 @@ module.exports = {
             cooldown.delete(executorID);
           }, cooldownTime);
         }
-      } catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-        await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-        })
-        console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-      }
-    },
+  }
 }

@@ -12,7 +12,7 @@ module.exports = {
 			case 'error': return {
 				author: {
 					name: `An error occurred!`,
-					icon_url: `https://skiddledgithub.github.io/resources/bot/error.png`,
+					icon_url: `https://skiddledgithub.github.io/resources/bot/states/error.png`,
 				},
 				color:`#F04A47`,
   				description: `Something has went wrong while executing this command!`,
@@ -22,7 +22,7 @@ module.exports = {
 			case 'errorNoDebug': return {
 				author: {
 					name: `An error occurred!`,
-					icon_url: `https://skiddledgithub.github.io/resources/bot/error.png`,
+					icon_url: `https://skiddledgithub.github.io/resources/bot/states/error.png`,
 				},
 				color:`#F04A47`,
   				description: `Something has went wrong while executing this command!`,
@@ -32,7 +32,7 @@ module.exports = {
 			case 'cooldown': return {
 				author: {
 					name: 'You are under cooldown!',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/cooldown.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/cooldown.png',
 				},
 				color: '#FEE65C', 
 				description: `Default cooldown time for this command is **${options.cooldown}**.`,
@@ -46,7 +46,7 @@ module.exports = {
 			case 'avatar': return {
       			author: {
       				name: `${options.who}\'s avatar`,
-      				icon_url: `https://skiddledgithub.github.io/resources/bot/avatar.png`,
+      				icon_url: `https://skiddledgithub.github.io/resources/bot/commands/avatar.png`,
       			},
 				color: '#42B983',
       			image: {
@@ -58,22 +58,49 @@ module.exports = {
 			// ban cases
 			*/
 
+			// confirmation
+			case 'banConfirmation': return {
+				author: { 
+					name: `Confirmation`, 
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/ban.png',
+				}, 
+				color: '#F04A47', 
+				description: `Are you sure that you want to ban ${options.who}?`,
+			};
+
+			// cancel
+			case 'banCancel': return {
+				author: { 
+					name: `Ban for ${options.who} was cancelled.`, 
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/unban.png',
+				}, 
+				color: '#42B983', 
+				description: `Discord user ${options.who} has not been banned.`,
+			};
+
+
 			// failed
 			case 'banFailed': return {
 				author: { 
 					name: `Could not ban ${options.who}`, 
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
 				}, 
 				color: '#F04A47', 
 				description: `Discord user ${options.who} has not been banned.`,
 				fields: [{ name: 'Reason', value: `>>> ${options.reason}`, inline: false }],
 			};
 
+			// not for user
+			case 'banFailedNFU': return {
+				color: '#F04A47', 
+				description: `<:failed:962658626969940048> This button is not for you!`,
+			};
+
 			// success
 			case 'banSuccess': return {
 				author: { 
 					name: `Banned ${options.who}`, 
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/ban.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/ban.png',
 				}, 
 				color: '#F04A47', 
 				description: `Discord user ${options.who} has been banned.`,
@@ -88,7 +115,7 @@ module.exports = {
 			case 'unbanFailed': return {
 				author: { 
 					name: `Could not unban ${options.who}`, 
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png' 
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png' 
 				}, 
 				color: '#F04A47', 
 				description: `Discord user ${options.who} has not been unbanned.`,
@@ -99,7 +126,7 @@ module.exports = {
 			case 'unbanSuccess': return {
 				author: { 
 					name: `Unbanned ${options.who}`, 
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/unban.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/unban.png',
 				}, 
 				color: '#42B983', 
 				description: `Discord user ${options.who} has been unbanned.`,
@@ -114,7 +141,7 @@ module.exports = {
 			case 'evalFailed': return {
 				author: {
 					name: 'Failed evaluating code',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/evalFailed.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/evalFailed.png',
 				},
 				color: '#F04A47',
 				description: `Bot failed to evaluate given code.`,
@@ -128,7 +155,7 @@ module.exports = {
 			case 'evalSuccess': return {
 				author: {
 					name: 'Successfully evaluated code',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/eval.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/eval.png',
 				},
 				color: '#42B983',
 				description: `Bot has successfully evaluated given code.`,
@@ -143,7 +170,7 @@ module.exports = {
 			case 'playFailed': return {
 				author: {
 					name: 'Failed playing video',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
 				},
 				color: '#F04A47',
 				description: `Bot failed to play audio from given video.`,
@@ -157,7 +184,7 @@ module.exports = {
 			case 'playSuccess': return {
 				author: {
 					name: 'Joined VC & playing audio',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/play.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/play.png',
 				},
 				color: '#42B983',
 				description: `Bot has successfully joined VC and is now playing audio from given video.`,
@@ -172,7 +199,7 @@ module.exports = {
 			case 'stopFailed': return {
 				author: {
 					name: 'Failed to leave VC',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
 				},
 				color: '#F04A47',
 				description: `Bot failed to leave VC.`,
@@ -183,39 +210,10 @@ module.exports = {
 			case 'stopSuccess': return {
 				author: {
 					name: 'Left VC',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/stop.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/stop.png',
 				},
 				color: '#F04A47',
 				description: `Bot has successfully left VC.`,
-			};
-
-			/*
-			// stdout cases
-			*/
-
-			// failed
-			case 'stdoutFailed': return {
-				author: {
-					name: 'Failed to send message to stdout',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
-				},
-				color: '#F04A47',
-				description: `Could not send the message to stdout.`,
-				fields: [
-							{ name: 'Reason', value: `>>> ${options.reason}`, inline: false }, 
-							{ name: 'Message', value: `>>> ${options.message}`, inline: false },
-						],
-			};
-
-			// success
-			case 'stdoutSuccess': return {
-				author: {
-					name: 'Sent message to stdout',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/stdout.png',
-				},
-				color: '#42B983',
-				description: `Sent message to stdout.`,
-				fields: [{ name: 'Message', value: `>>> ${options.message}`, inline: false }],
 			};
 
 			/*
@@ -226,7 +224,7 @@ module.exports = {
 			case 'userinfoFailed': return {
 				author: {
 					name: 'Failed to get user profile',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/error.png',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
 				},
 				color: '#F04A47',
 				description: `Could not get user profile for specified user.`,
@@ -244,19 +242,45 @@ module.exports = {
 					return (userInfoHandler({ who: `${options.who}`, whoTag: `${options.whoTag}`, idBlock: `${options.idBlock}`, createdAt: { full: `${options.createdAt.full}`, mini: `${options.createdAt.mini}` }, iBadges: `${options.iBadges}`, sBadges: `${options.sBadges}`, avatar: `${options.avatar}` }));	
 				};
 
-			// experiment
-			case 'experiment': return {
+			/*
+			// encode
+			*/
+
+			case 'encodeSuccess': return {
 				author: {
-					name: 'Experiment',
-					icon_url: 'https://skiddledgithub.github.io/resources/bot/experiment.png',
+					name: 'Successfully encoded specified string',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/eval.png',
 				},
 				color: '#42B983',
-				description: `${options.desc}`,
+				description: 'Results:',
+				fields: options.results,
 			};
 
-			/*==================*/
-			//		legacy		//
-			/*==================*/
+			case 'encodeSuccessSingle': return {
+				author: {
+					name: 'Successfully encoded specified string',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/eval.png',
+				},
+				color: '#42B983',
+				description: `${options.results}`,
+			};
+
+			// failed
+			case 'encodeFailed': return {
+				author: {
+					name: 'Failed to encode string',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
+				},
+				color: '#F04A47',
+				description: 'Could not encode specified string',
+				fields: [
+					{ name: 'Reason', value: `>>> ${options.reason}`, inline: false },
+				],
+			};
+
+			/*======================*/
+			//  legacy / deprecated	//
+			/*=======================
 
 			// color + desc
 			case 'colDesc': return {
@@ -288,6 +312,34 @@ module.exports = {
 						icon_url: `${options.author.icon}`,
 					},
 				};
+
+			// stdout
+
+			// failed
+			case 'stdoutFailed': return {
+				author: {
+					name: 'Failed to send message to stdout',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/states/error.png',
+				},
+				color: '#F04A47',
+				description: `Could not send the message to stdout.`,
+				fields: [
+							{ name: 'Reason', value: `>>> ${options.reason}`, inline: false }, 
+							{ name: 'Message', value: `>>> ${options.message}`, inline: false },
+						],
+			};
+
+			// success
+			case 'stdoutSuccess': return {
+				author: {
+					name: 'Sent message to stdout',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/stdout.png',
+				},
+				color: '#42B983',
+				description: `Sent message to stdout.`,
+				fields: [{ name: 'Message', value: `>>> ${options.message}`, inline: false }],
+			};
+*/
 		};
 	}
 };

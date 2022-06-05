@@ -5,7 +5,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -23,7 +23,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -44,7 +44,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -63,7 +63,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -88,7 +88,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -104,7 +104,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -123,7 +123,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 
@@ -140,7 +140,7 @@ module.exports = {
 				return { 
 					author: { 
 						name: `User Profile`, 
-						icon_url: 'https://skiddledgithub.github.io/resources/bot/userinfo.png', 
+						icon_url: 'https://skiddledgithub.github.io/resources/bot/commands/userinfo.png', 
 					}, 
 					title: `${options.whoTag}`, 
 					color: '#42B983', 

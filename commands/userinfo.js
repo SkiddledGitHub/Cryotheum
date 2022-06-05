@@ -2,8 +2,10 @@
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
 const { embedCreator } = require('../tools/embeds.js');
+const decache = require('decache');
 const { debug } = require('../config.json');
 const emojis = require('node-emoji');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -16,7 +18,6 @@ module.exports = {
   .setDescription('Get user profile from a Discord user')
   .addUserOption((option) => option.setName('target').setDescription('User to get user information from')),
   async execute(interaction) {
-      try {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
           embeds: [cooldownEmbed], 
@@ -98,57 +99,42 @@ module.exports = {
       	};
 
       	// assign special emojis to certain users
-        function specialBadges() {
-          if (target.id == '285329659023851520') {
-            sBadges += `<:botDev:965168985723265044>.`;
-            sBadges += `<:heart:965168986016862208>.`;
-          };
-          if (target.id == '379317501072375811') {
-            sBadges += `<:kekw:957209610840862730>.`;
-          };
-          if (target.id == '807884207589818439') {
-            sBadges += '<:skull:964875094797197373>.'
-          };
-          if (target.id == '858693971709657108') {
-            sBadges += `<:yash:965169013762191430>.`
-          };
-          if (target.id == '942049062071443496') {
-            sBadges += `<:tree:965173753476681748>.`
-          }
-          sBadges = sBadges.replace(/\./g, ' ');
-          sBadges = sBadges.replace(/ $/g, '');
-          if (sBadges == '') { return; };
+        function specialBadgesParsing() {
+          let { specialBadges } = require('../config.json');
+          sBadges = specialBadges[target.id];
+          decache('../config.json');
+          if (sBadges == undefined) { sBadges = ''; return; };
         };
-        specialBadges();
+        specialBadgesParsing();
 
-        function insightBadges() {
+        function insightBadgesParsing() {
           var isOwner = false;
           var isAdmin = false;
             if (!isGuildMember) {
             if (target.bot == true) {
-              iBadges += `<:bot:965168985740025876>.`;
+              iBadges += `<:bot:965220811424288789>.`;
             };
           } else {
             if (target.user.bot == true) {
-              iBadges += `<:bot:965168985740025876>.`;
+              iBadges += `<:bot:965220811424288789>.`;
             };
              if (target.id == interaction.guild.ownerId) {
-              iBadges += `<:guildOwner:965168985568071710>.`
+              iBadges += `<:guildOwner:965220811638202378>.`
               isOwner = true;
             };
             if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !isOwner) {
-              iBadges += `<:guildAdmin:965168985442254868>.`
+              iBadges += `<:guildAdmin:965220811248107550>.`
               isAdmin = true;
             };
             if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.MANAGE_MESSAGES]) && !isOwner && !isAdmin) {
-              iBadges += `<:guildModerator:965168985589051412>.`
+              iBadges += `<:guildModerator:965220811571093545>.`
             };
           };
           iBadges = iBadges.replace(/\./g, ' ');
           iBadges = iBadges.replace(/ $/g, '');
           if (iBadges == '') { return; };
         };
-        insightBadges();
+        insightBadgesParsing();
 
       	if (!isGuildMember) {
       	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
@@ -164,13 +150,5 @@ module.exports = {
           	cooldown.delete(interaction.user.id);
         	}, cooldownTime);
       	}
-      } catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-      	await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-      	})
-      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-    	}
-  	},
+  }
 }

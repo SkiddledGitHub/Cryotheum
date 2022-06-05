@@ -4,6 +4,7 @@ const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer
 const voice = require('@discordjs/voice');
 const { debug } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -15,7 +16,6 @@ module.exports = {
   .setName('stop')
   .setDescription('Make the bot leave the VC'),
   async execute(interaction) {
-      try {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
           embeds: [cooldownEmbed], 
@@ -45,13 +45,5 @@ module.exports = {
           	cooldown.delete(interaction.user.id);
         	}, cooldownTime);
       	}
-      } catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-      	await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-      	})
-      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-    	}
-  	},
+  }
 }

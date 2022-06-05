@@ -2,6 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -36,7 +37,7 @@ module.exports = {
             embeds: [errorEmbed],
             ephemeral: true
       	})
-      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
+      	log('genErr', `${error}`);
     	}
   	},
 }

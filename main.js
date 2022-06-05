@@ -1,10 +1,8 @@
 // modules
 const { botAuth, loggingMessages, debug } = require('./config.json');
-const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus } = require('@discordjs/voice');
-const { Client, Intents, Collection, MessageAttachment, MessageEmbed } = require('discord.js');
+const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
 const fs = require('node:fs');
 const process = require('process');
-const ytdl = require('ytdl-core');
 const { embedCreator } = require('./tools/embeds.js');
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES ] });
 
@@ -23,7 +21,8 @@ console.clear();
 client.on('ready', () => {
   console.log(`\x1b[1;33m[Bot Initiation]:`);
   console.log(` \x1b[1;32m=> \x1b[1;37mLogged in (${client.user.tag})`);
-  client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
+  //client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
+  client.user.setPresence({ status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }]});
   console.log(` \x1b[1;32m=> \x1b[1;37mSet custom status for bot successfully.`);
   if (loggingMessages) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is not logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"false\" in config.json`); };
   if (debug) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now in Debug mode. Almost all events will be logged.\n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is in Production mode. Only errors will be logged. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"false\" in config.json`); };
@@ -41,12 +40,13 @@ const command = client.commands.get(interaction.commandName);
   try {
     await command.execute(interaction);
   } catch (error) {
-    if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
+    let embed
+    if (debug) { embed = embedCreator("error", { error: `${error}` }) } else { embed = embedCreator("errorNoDebug", {}) };
     console.error(error);
-    await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
-
 });
+
 
 if (loggingMessages) {
   client.on('messageCreate', async message => {
