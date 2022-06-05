@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, Collection } = require('discord.js')
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -16,7 +17,6 @@ module.exports = {
   .addUserOption((option) => option.setName('target').setDescription('Target user to unban').setRequired(true))
   .addStringOption((option) => option.setName('reason').setDescription('Reason why you unbanned this user').setRequired(false)),
   async execute(interaction) {
-      try {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
           embeds: [cooldownEmbed]
@@ -63,7 +63,7 @@ module.exports = {
                 embeds: [embed]
               });
               if (debug) {
-              console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
+              log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
               };
               return;
            };
@@ -81,7 +81,7 @@ module.exports = {
               embeds: [embed]
             });
             if (debug) {
-            console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
+            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
             };
             return;
           };
@@ -95,7 +95,7 @@ module.exports = {
               embeds: [embed]
             });
             if (debug) {
-            console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
+            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
             };
             return;
         };
@@ -109,7 +109,7 @@ module.exports = {
               embeds: [embed]
             });
             if (debug) {
-            console.log(` \x1b[1;33m=> WARNING: \x1b[1;37m${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot does not have the Ban Members permission.`);
+            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot does not have the Ban Members permission.`);
             };
             return;
         };
@@ -124,7 +124,7 @@ module.exports = {
             embeds: [successEmbed]
           });
           if (debug) {
-          console.log(` \x1b[1;32m=> \x1b[1;37m${executorTag} unbanned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
+          log('genWarn', `${executorTag} unbanned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
           };
 
         } catch (error) { 
@@ -132,8 +132,7 @@ module.exports = {
           // reply
           if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
           await interaction.reply({ embeds: [errorEmbed] }); 
-          console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`); 
-
+          log('genErr', `${error}`);
         };
 
         cooldown.add(interaction.user.id);
@@ -142,13 +141,5 @@ module.exports = {
             cooldown.delete(interaction.user.id);
           }, cooldownTime);
         }
-      } catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-        await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-        })
-        console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-      }
-    },
+  }
 }

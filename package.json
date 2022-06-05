@@ -24,10 +24,15 @@
     "@discordjs/opus": "^0.5.3",
     "@discordjs/rest": "^0.3.0",
     "@discordjs/voice": "^0.8.0",
+    "@root/encoding": "^1.0.1",
+    "@vyppn/chameleon-react": "^1.0.1",
+    "base32-encoding": "^1.0.0",
+    "bin-converter": "^1.1.2",
     "bufferutil": "^4.0.6",
     "discord-api-types": "^0.31.1",
     "discord.js": "^13.6.0",
     "erlpack": "github:discord/erlpack",
+    "fast-average-color-node": "^2.2.0",
     "install": "^0.13.0",
     "node-emoji": "^1.11.0",
     "npm": "^8.6.0",
@@ -35,5 +40,8 @@
     "utf-8-validate": "^5.0.9",
     "ytdl-core": "^4.11.0",
     "zlib-sync": "^0.1.7"
+  },
+  "devDependencies": {
+    "decache": "^4.6.1"
   }
 }

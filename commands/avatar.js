@@ -2,6 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');
+const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -12,13 +13,22 @@ module.exports = {
   data: new SlashCommandBuilder()
   	.setName('avatar')
   	.setDescription('Get avatar from a Discord user.')	
-		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from').setRequired(true)),
+		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from')),
 	async execute(interaction) {
 
 		const executor = interaction.member.user.tag;
-    const target = interaction.options.getUser('target');
+		// get target 
+		if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
+      target = executor;
+   	};
+    if (interaction.options.getMember('target') != null) {
+      target = interaction.options.getMember('target');
+    };
+    if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
+    	target = interaction.options.getUser('target')
+    };
+
     const avatarEmbed = embedCreator("avatar", { who: `${target.tag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
-    try {
     	if (cooldown.has(interaction.user.id)) {
       	await interaction.reply({ 
           	embeds: [cooldownEmbed]
@@ -29,7 +39,7 @@ module.exports = {
         	embeds: [avatarEmbed]
       	});
       	if (debug) {
-      	console.log(` \x1b[1;32m=>\x1b[1;37m ${executor} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
+      	log('genLog', `${executor} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
       	};
       	// add user to cooldown
       	cooldown.add(interaction.user.id);
@@ -38,13 +48,5 @@ module.exports = {
           	cooldown.delete(interaction.user.id);
         	}, cooldownTime);
       	}
-    	} catch (error) {
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-      	await interaction.reply({
-      			embeds: [errorEmbed],
-      			ephemeral: true
-      	})
-      	console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-    	}
-	},
+  }
 }
