@@ -8,7 +8,7 @@ git clone https://github.com/SkiddledGitHub/Cryotheum
 cd Cryotheum
 npm install
 ```
-Then create a new text file in the **Cryotheum** folder which is called `config.json` and add these lines:
+Then create a new text file in the **Cryotheum** folder named `config.json` and add these lines:
 ```json
 {
 	"botAuth": "insert bot token",
