@@ -1,28 +1,21 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedCreator } = require('../tools/embeds.js');
-const { debug } = require('../config.json');
-const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
-const cooldownTime = 6000;
-const cooldownEmbed = embedCreator("cooldown", { cooldown: '6 seconds' });
-
+const cooldownTime = 1000;
 
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('template')
   .setDescription('cmd template'),
   async execute(interaction) {
-      try {
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ 
-          embeds: [cooldownEmbed], 
-          ephemeral: true 
-        });
+      await interaction.reply('cooldown');
       } else {
       	// insert commands
+        console.log('test');
+        interaction.reply('test');
       	
       	cooldown.add(interaction.user.id);
         	setTimeout(() => {
@@ -30,14 +23,5 @@ module.exports = {
           	cooldown.delete(interaction.user.id);
         	}, cooldownTime);
       	}
-      } catch (error) {
-        var errorEmbed
-        if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
-      	await interaction.reply({
-            embeds: [errorEmbed],
-            ephemeral: true
-      	})
-      	log('genErr', `${error}`);
-    	}
-  	},
+  }
 }

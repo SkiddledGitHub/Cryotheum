@@ -16,7 +16,7 @@ module.exports = {
 		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from')),
 	async execute(interaction) {
 
-		const executor = interaction.member.user.tag;
+		const executor = interaction.member.user;
 		// get target 
 		if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
       target = executor;
@@ -27,7 +27,7 @@ module.exports = {
     if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
     	target = interaction.options.getUser('target')
     };
-
+    console.log(target);
     const avatarEmbed = embedCreator("avatar", { who: `${target.tag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
     	if (cooldown.has(interaction.user.id)) {
       	await interaction.reply({ 
