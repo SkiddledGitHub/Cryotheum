@@ -34,6 +34,7 @@ module.exports = {
       	var target;
       	var targetTag;
       	var targetID;
+        var targetBannerImage;
 
       	// define date variables
       	var joinedAt;
@@ -50,12 +51,15 @@ module.exports = {
 
       	// if option is blank, get executor's data instead
       	if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
-      		
+      	  
       		// assign target as executor
       		target = executor;
       		targetTag = target.user.tag;
           targetID = codeBlock('yaml', `ID: ${target.id}`);
           isGuildMember = true;
+
+          // force fetch
+          target.fetch();
 
       		// get target's roles
       		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
@@ -75,6 +79,9 @@ module.exports = {
       		targetID = codeBlock('yaml', `ID: ${target.id}`);
       		isGuildMember = true;
 
+          // force fetch
+          target.fetch();
+
       		// get target's roles
       		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
@@ -92,6 +99,13 @@ module.exports = {
       		targetTag = target.tag;
       		targetID = codeBlock('yaml', `ID: ${target.id}`);
       		isGuildMember = false;
+
+          // force fetch
+          target.fetch();
+
+          if (target.banner != undefined) {
+            targetBannerImage = target.bannerURL({ extension: 'png', size: 1024 });
+          }
 
       		// get target's account creation date
             createdAt = { full: `${time(target.createdAt, 'f')}`, mini: `${time(target.createdAt, 'R')}` };

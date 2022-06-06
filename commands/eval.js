@@ -35,7 +35,7 @@ module.exports = {
           try { 
 
             // set embed
-            const embed = embedCreator('evalSuccess', { code: `${codeHighlighted}` });
+            let embed = embedCreator('evalSuccess', { code: `${codeHighlighted}` });
 
             // execute
             let evaled = eval(code); 
@@ -46,7 +46,7 @@ module.exports = {
           } catch (error) { 
 
             // set embed
-            const embed = embedCreator('evalFailed', { reason: `${error}`, code: `${codeHighlighted}` }); 
+            let embed = embedCreator('evalFailed', { reason: `${error}`, code: `${codeHighlighted}` }); 
 
             // reply
             await interaction.reply({ embeds: [embed], ephemeral: true }); 

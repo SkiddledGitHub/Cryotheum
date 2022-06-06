@@ -2,7 +2,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
-const { ytCookies, ytIdentity, debug } = require('../config.json');
+const { debug } = require('../config.json');
 const { embedCreator } = require('../tools/embeds.js');
 const ytdl = require('ytdl-core');
 const { log } = require('../tools/loggingUtil.js');
@@ -41,14 +41,7 @@ module.exports = {
       if (channel == null) { const embed = embedCreator("playFailed", { url: `${url}`, reason: 'You are not in a voice channel!' }); async function failed() { await interaction.reply({ embeds: [embed] }); }; failed(); return; };
 
       // important constants
-      const stream = ytdl(url, { filter: 'audioonly', dlChunkSize: 0, requestOptions: {
-        headers: {
-          Cookie: ytCookies,
-          'x-youtube-identity-token': ytIdentity,
-          'x-youtube-client-version': '2.20220413.05.00',
-          'x-youtube-client-name': '1',
-        }
-      }});
+      const stream = ytdl(url, { filter: 'audioonly', dlChunkSize: 0 });
       const player = voice.createAudioPlayer();
       const resource = voice.createAudioResource(stream);
       const connection = joinVoiceChannel({ channelId: interaction.member.voice.channelId, guildId: interaction.member.guild.id, adapterCreator: interaction.member.guild.voiceAdapterCreator }); 
