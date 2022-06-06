@@ -81,6 +81,7 @@ module.exports = {
               interaction.reply({ embeds: [embed] });
             }
           } else if (interaction.options.getString('format') == 'base64') {
+            let buffer = Buffer.from(inputString);
             let base64 = buffer.toString('base64');
             if (base64.length > 2048) {
               let embed = embedCreator('encodeFailed', { reason: `Specified string is too long to encode in the Base64 format (${inputString.length} character(s)).` })
