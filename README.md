@@ -1,5 +1,6 @@
 # Cryotheum
-A private [Discord](https://discord.com) bot created out of boredom
+A private [Discord](https://discord.com) bot created out of boredom  
+###### it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow
 
 ## Setup
 First, execute these commands listed in order:
