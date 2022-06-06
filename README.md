@@ -51,4 +51,4 @@ Format is [^3]:
   
 [^2]: Actions that will be logged once the debug flag is enabled: avatar, ban, eval, play, unban, userinfo success and failures and generic NodeJS errors
   
-[^3]: Example: ```"285329659023851520": "<:botDev:965220811436855326>```
+[^3]: Example: ```"285329659023851520": "<:botDev:965220811436855326>"```
