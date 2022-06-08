@@ -1,5 +1,5 @@
 {
-  "name": "skiddledutilitybot",
+  "name": "cryotheum",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SkiddledGitHub/SkiddledUtilityBot.git"
+    "url": "git+https://github.com/SkiddledGitHub/Cryotheum.git"
   },
-  "author": "Skiddled#7449 (285329659023851520)",
+  "author": "Skiddled#5676 (285329659023851520)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SkiddledGitHub/SkiddledUtilityBot/issues"
+    "url": "https://github.com/SkiddledGitHub/Cryotheum/issues"
   },
-  "homepage": "https://github.com/SkiddledGitHub/SkiddledUtilityBot#readme",
+  "homepage": "https://github.com/SkiddledGitHub/Cryotheum#readme",
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
     "@discordjs/opus": "^0.5.3",
