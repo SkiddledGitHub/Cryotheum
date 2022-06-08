@@ -24,7 +24,7 @@ Then create a new text file in the **Cryotheum** folder named `config.json` and 
 then save the file.  
 Return to terminal and execute:
 ```bash
-node cmdHandler.js
+node cmdManager.js
 ```
 and select the option to refresh slash commands. Exit out then execute:
 ```bash
