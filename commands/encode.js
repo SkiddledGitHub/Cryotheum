@@ -1,3 +1,9 @@
+/**
+ * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
+ * This program is distributed under the terms of the GNU General Public License.
+ */
+
+// modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
 const { debug } = require('../config.json');

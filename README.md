@@ -1,6 +1,6 @@
 # Cryotheum
 A private [Discord](https://discord.com) bot created out of boredom  
-###### it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow
+<sub>it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow</sub>
 
 ## Setup
 First, execute these commands listed in order:
@@ -51,4 +51,7 @@ Format is [^3]:
   
 [^2]: Actions that will be logged once the debug flag is enabled: avatar, ban, eval, play, unban, userinfo success and failures and generic NodeJS errors
   
-[^3]: Example: ```"285329659023851520": "<:botDev:965220811436855326>"```
+[^3]: Example: ```"285329659023851520": "<:botDev:965220811436855326>"```  
+  
+<sub>Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)</sub>  
+<sub>This program is distributed under the terms of the GNU General Public License.</sub>

@@ -13,8 +13,8 @@
     "type": "git",
     "url": "git+https://github.com/SkiddledGitHub/Cryotheum.git"
   },
-  "author": "Skiddled#5676 (285329659023851520)",
-  "license": "ISC",
+  "author": "Skiddled#0802 (285329659023851520)",
+  "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/SkiddledGitHub/Cryotheum/issues"
   },
@@ -34,14 +34,12 @@
     "erlpack": "github:discord/erlpack",
     "fast-average-color-node": "^2.2.0",
     "install": "^0.13.0",
+    "libsodium": "^0.7.10",
     "node-emoji": "^1.11.0",
     "npm": "^8.6.0",
-    "sodium": "^3.0.2",
     "utf-8-validate": "^5.0.9",
     "ytdl-core": "^4.11.0",
-    "zlib-sync": "^0.1.7"
-  },
-  "devDependencies": {
+    "zlib-sync": "^0.1.7",
     "decache": "^4.6.1"
-  }
+  },
 }

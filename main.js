@@ -1,3 +1,8 @@
+/**
+ * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
+ * This program is distributed under the terms of the GNU General Public License.
+ */
+
 // modules
 const { botAuth, loggingMessages, debug } = require('./config.json');
 const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
@@ -21,12 +26,12 @@ console.clear();
 
 // notify ready
 client.on('ready', () => {
-  console.log(`\x1b[1;33m[Bot Initiation]:`);
-  console.log(` \x1b[1;32m=> \x1b[1;37mLogged in (${client.user.tag})`);
+  console.log(`\x1b[1;33m[Bot Initiation]:\x1b[0m`);
+  console.log(` \x1b[1;32m=> Logged in (${client.user.tag})\x1b[0m`);
   //client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
-  if (loggingMessages) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is not logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"false\" in config.json`); };
-  if (debug) { console.log(` \x1b[1;32m=> \x1b[1;37mBot is now in Debug mode. Almost all events will be logged.\n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> \x1b[1;37mBot is in Production mode. Only errors will be logged. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"false\" in config.json`); };
-  console.log(`\n\x1b[1;33m[Log]:`);
+  if (loggingMessages) { console.log(` \x1b[1;32m=> Bot is now logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> Bot is not logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"false\" in config.json`); };
+  if (debug) { console.log(` \x1b[1;32m=> Bot is now in Debug mode. Almost all events will be logged.\n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> Bot is in Production mode. Only errors will be logged. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"false\" in config.json`); };
+  console.log(`\n\x1b[1;33m[Log]:\x1b[0m`);
 });
 
 // slash command handling

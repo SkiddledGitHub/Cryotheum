@@ -1,3 +1,8 @@
+/**
+ * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
+ * This program is distributed under the terms of the GNU General Public License.
+ */
+
 const { guildUserInfoHandler, userInfoHandler } = require('./userInfoEmbedHandling.js');
 
 module.exports = {
