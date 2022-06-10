@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Foobar. 
+ * You should have received a copy of the GNU General Public License along with the Cryotheum source code. 
  * If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -54,7 +54,7 @@ module.exports = {
         	embeds: [avatarEmbed]
       	});
       	if (debug) {
-      	log('genLog', `${executor} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
+      	log('genLog', `${executor.tag} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
       	};
       	// add user to cooldown
       	cooldown.add(interaction.user.id);

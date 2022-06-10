@@ -1,4 +1,5 @@
 /**
+ *
  * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
  *
  * This file is part of Cryotheum.
@@ -9,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Foobar. 
+ * You should have received a copy of the GNU General Public License along with the Cryotheum source code. 
  * If not, see <https://www.gnu.org/licenses/>.
  *
  */
