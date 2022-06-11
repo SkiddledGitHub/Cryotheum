@@ -56,7 +56,8 @@ module.exports = {
             let embed = embedCreator('evalSuccess', { code: `${codeHighlighted}` });
 
             // execute
-            let evaled = eval(code); 
+            let generatedFunction = new Function('interaction', code);
+            generatedFunction(interaction);
 
             // reply
             await interaction.reply({ embeds: [embed] }); 

@@ -307,10 +307,10 @@ module.exports = {
 				color: '#3365E3',
 				description: 'Cryotheum is an open-source bot created with love <:heart:965220811487191040> by <@285329659023851520> solely because the developer was bored and wanted to learn JavaScript.\n\nThe bot is certainly not perfect, so please drop us some suggestions and/or report bugs at our [<:github:985088394470236160> GitHub issue tracker](https://github.com/SkiddledGitHub/Cryotheum/issues).\n\nCryotheum is licensed under [GNU General Public License Version 3 (or later)](https://www.gnu.org/licenses/gpl.html)',
 				fields: [
-					{ name: 'Basic Information', value: `>>> Online since: <t:${options.uptime}:f>\nBot owner (As set in config): <@${options.botOwnerID}>\nDebug status: *${options.debugStatus}*` },
+					{ name: 'Basic Information', value: `>>> Online since: <t:${options.uptime}:f>\nBot owner (As set in config): <@${options.botOwnerID}>\nDebug status: *\`${options.debugStatus}\`*` },
 					{ name: 'External Links', value: `>>> <:github:985088394470236160> GitHub repository: [Here](https://github.com/SkiddledGitHub/Cryotheum)\n<:bugReporter:965220811302637588> Issue tracker: [Here](https://github.com/SkiddledGitHub/Cryotheum/issues)\n<:botDev:965220811436855326> Developer's solo.to: [Here](https://solo.to/skiddled)` },
 				],
-				footer: { text: 'the bot\'s profile image is the Cryotheum Dust, an item in the Thermal Foundation mod' },
+				footer: { text: 'the bot\'s profile image is the Cryotheum Dust, an item in the Thermal Foundation mod for Minecraft' },
 			};
 
 			/*======================*/
