@@ -13,6 +13,7 @@ Then create a new text file in the **Cryotheum** folder named `config.json` and 
 ```json
 {
 	"botAuth": "insert bot token",
+        "botID": "insert bot client id",
 	"botOwner": "insert bot owner's Discord id",
 	"loggingMessages": false,
 	"debug": false,
