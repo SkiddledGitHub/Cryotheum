@@ -22,8 +22,7 @@ const { stdin: input, stdout: output } = require('process');
 const process = require('process');
 const fs = require('fs');
 const rl = readline.createInterface({ input, output });
-const clientID = "413250765629423636";
-const { botAuth } = require('./config.json');
+const { botAuth, botID } = require('./config.json');
 
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -49,7 +48,7 @@ function cmdMan() {
       console.log(' \x1b[1;32m=> \x1b[1;37mRefreshing (/) commands');
 
       await rest.put(
-        Routes.applicationCommands(clientID),
+        Routes.applicationCommands(botID),
         { body: commands },
       );
 
@@ -66,7 +65,7 @@ function cmdMan() {
       console.log(' \x1b[1;32m=> \x1b[1;37mDestroying (/) commands');
 
       await rest.put(
-        Routes.applicationCommands(clientID),
+        Routes.applicationCommands(botID),
         { body: [] },
       );
 
