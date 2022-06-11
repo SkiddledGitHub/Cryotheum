@@ -36,11 +36,9 @@ module.exports = {
 		// get target 
 		if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
       target = executor;
-   	};
-    if (interaction.options.getMember('target') != null) {
+   	} else if (interaction.options.getMember('target') != null) {
       target = interaction.options.getMember('target');
-    };
-    if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
+    } else if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
     	target = interaction.options.getUser('target')
     };
     const avatarEmbed = embedCreator("avatar", { who: `${target.tag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
