@@ -10,7 +10,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with Foobar. 
+ * You should have received a copy of the GNU General Public License along with the Cryotheum source code. 
  * If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -18,7 +18,7 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { embedCreator } = require('../tools/embeds.js');
-const { debug } = require('../config.json');
+const { debug, botOwner } = require('../config.json');
 const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
@@ -27,8 +27,8 @@ const cooldownTime = 1000;
 
 module.exports = {
   data: new SlashCommandBuilder()
-  .setName('template')
-  .setDescription('cmd template'),
+  .setName('about')
+  .setDescription('Display information about the bot'),
   async execute(interaction) {
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ 
@@ -36,15 +36,15 @@ module.exports = {
           ephemeral: true 
         });
       } else {
-      	// insert commands
-        console.log('test');
-        interaction.reply('test');
-      	
-      	cooldown.add(interaction.user.id);
-        	setTimeout(() => {
-          	// rm cooldown after it has passed
-          	cooldown.delete(interaction.user.id);
-        	}, cooldownTime);
-      	}
+        
+        let embed = embedCreator('about', { uptime: Math.floor(interaction.client.readyTimestamp / 1000), botOwnerID: botOwner, debugStatus: `${debug}` });
+        interaction.reply({ embeds: [embed] });
+        
+        cooldown.add(interaction.user.id);
+            setTimeout(() => {
+            // rm cooldown after it has passed
+            cooldown.delete(interaction.user.id);
+            }, cooldownTime);
+        }
   }
 }

@@ -1,6 +1,18 @@
 /**
+ *
  * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
- * This program is distributed under the terms of the GNU General Public License.
+ *
+ * This file is part of Cryotheum.
+ * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * Cryotheum is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with the Cryotheum source code. 
+ * If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 const { guildUserInfoHandler, userInfoHandler } = require('./userInfoEmbedHandling.js');
@@ -281,6 +293,24 @@ module.exports = {
 				fields: [
 					{ name: 'Reason', value: `>>> ${options.reason}`, inline: false },
 				],
+			};
+
+			/*
+			// about command
+			*/
+
+			case 'about': return {
+				author: {
+					name: 'About Cryotheum',
+					icon_url: 'https://skiddledgithub.github.io/resources/bot/badges/insights/bot.png'
+				},
+				color: '#3365E3',
+				description: 'Cryotheum is an open-source bot created with love <:heart:965220811487191040> by <@285329659023851520> solely because the developer was bored and wanted to learn JavaScript.\n\nThe bot is certainly not perfect, so please drop us some suggestions and/or report bugs at our [<:github:985088394470236160> GitHub issue tracker](https://github.com/SkiddledGitHub/Cryotheum/issues).\n\nCryotheum is licensed under [GNU General Public License Version 3 (or later)](https://www.gnu.org/licenses/gpl.html)',
+				fields: [
+					{ name: 'Basic Information', value: `>>> Online since: <t:${options.uptime}:f>\nBot owner (As set in config): <@${options.botOwnerID}>\nDebug status: *${options.debugStatus}*` },
+					{ name: 'External Links', value: `>>> <:github:985088394470236160> GitHub repository: [Here](https://github.com/SkiddledGitHub/Cryotheum)\n<:bugReporter:965220811302637588> Issue tracker: [Here](https://github.com/SkiddledGitHub/Cryotheum/issues)\n<:botDev:965220811436855326> Developer's solo.to: [Here](https://solo.to/skiddled)` },
+				],
+				footer: { text: 'the bot\'s profile image is the Cryotheum Dust, an item in the Thermal Foundation mod' },
 			};
 
 			/*======================*/
