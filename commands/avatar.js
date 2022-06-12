@@ -32,28 +32,56 @@ module.exports = {
   	.setDescription('Get avatar from a Discord user.')	
 		.addUserOption((option) => option.setName('target').setDescription('The target user to get the avatar from')),
 	async execute(interaction) {
-		const executor = interaction.member.user;
-		// get target 
-		if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
+
+    // set executor
+		const executor = interaction.member;
+    const executorTag = executor.user.tag;
+
+    // variables
+    var target;
+    var targetTag;
+
+		// set target
+    // no target provided
+		if (!interaction.options.getUser('target') && !interaction.options.getMember('target')) {
+
+      // set executor as target
       target = executor;
-   	} else if (interaction.options.getMember('target') != null) {
+      targetTag = target.user.tag;
+
+      // if target is in server
+    } else if (interaction.options.getUser('target') && interaction.options.getMember('target')) {
+
+      // set target
       target = interaction.options.getMember('target');
-    } else if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
-    	target = interaction.options.getUser('target')
+      targetTag = target.user.tag;
+    
+      // if target is outside server
+    } else if (interaction.options.getUser('target') && !interaction.options.getMember('target')) {
+
+      // set target
+      target = interaction.options.getUser('target');
+      targetTag = target.tag;
+
     };
-    const avatarEmbed = embedCreator("avatar", { who: `${target.tag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
-    	if (cooldown.has(interaction.user.id)) {
+
+    // create embed object
+    const avatarEmbed = embedCreator("avatar", { who: `${targetTag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
+    	
+      if (cooldown.has(interaction.user.id)) {
       	await interaction.reply({ 
           	embeds: [cooldownEmbed]
         });
     	} else {
     		
+        // reply
       	await interaction.reply({ 
         	embeds: [avatarEmbed]
       	});
       	if (debug) {
-      	log('genLog', `${executor.tag} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${target.tag}`);
+      	log('genLog', `${executorTag} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${targetTag}`);
       	};
+
       	// add user to cooldown
       	cooldown.add(interaction.user.id);
         	setTimeout(() => {
