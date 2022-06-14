@@ -18,7 +18,7 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, Collection } = require('discord.js')
-const { embedConstructor, log } = require('../tools/cryoLib.js');
+const { embedConstructor, log } = require('../lib/cryoLib.js');
 const { debug } = require('../config.json');
 
 // set cooldown

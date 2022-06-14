@@ -19,6 +19,7 @@
 // warning
 // this file contains bad code that has not been rewritten since ages
 // please dont bully me
+// i will rewrite it someday i swear
 
 
 const { REST } = require('@discordjs/rest');

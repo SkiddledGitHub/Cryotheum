@@ -17,7 +17,7 @@
 
 // modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../tools/cryoLib.js');
+const { embedConstructor, log } = require('../lib/cryoLib.js');
 const { debug, botOwner } = require('../config.json');
 
 module.exports = {

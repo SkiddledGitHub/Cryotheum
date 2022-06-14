@@ -20,7 +20,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 const { debug } = require('../config.json');
-const { embedConstructor, log } = require('../tools/cryoLib.js');
+const { embedConstructor, log } = require('../lib/cryoLib.js');
 
 // set cooldown
 const cooldown = new Set();
