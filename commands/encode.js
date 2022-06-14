@@ -67,6 +67,7 @@ module.exports = {
             if (debug) { log('cmdErr', { event: 'Encode', content: `String is too long to encode in all formats at once` }); };
             let embed = embedConstructor('encodeFailed', { reason: `Specified string is too long to encode in all formats (${inputString.length} character(s)).` })
             interaction.reply({ embeds: [embed] }); 
+            return;
           } else {
             if (debug) { log('genLog', { event: 'Commands > Encode', content: `Succeeded encoding in all formats` }); };
             let embed = embedConstructor('encodeSuccess', { results: 
@@ -87,6 +88,7 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'Encode', content: `String is too long to encode in the binary format` }); };
               let embed = embedConstructor('encodeFailed', { reason: `Specified string is too long to encode in the binary format (${inputString.length} character(s)).` })
               interaction.reply({ embeds: [embed] }); 
+              return;
             } else {
               if (debug) { log('genLog', { event: 'Commands > Encode', content: `Succeeded encoding in the binary format` }); };
               let embed = embedConstructor('encodeSuccessSingle', { results: `**Binary**:\n> ${bin}` });
@@ -99,6 +101,7 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'Encode', content: `String is too long to encode in the hexadecimal format` }); };
               let embed = embedConstructor('encodeFailed', { reason: `Specified string is too long to encode in the hexadecimal format (${inputString.length} character(s)).` })
               interaction.reply({ embeds: [embed] }); 
+              return;
             } else {
               if (debug) { log('genLog', { event: 'Commands > Encode', content: `Succeeded encoding in the hexadecimal format` }); };
               let embed = embedConstructor('encodeSuccessSingle', { results: `**Hexadecimal**:\n> ${hex}` });
@@ -111,6 +114,7 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'Encode', content: `String is too long to encode in the base32 format` }); };
               let embed = embedConstructor('encodeFailed', { reason: `Specified string is too long to encode in the Base32 format (${inputString.length} character(s)).` })
               interaction.reply({ embeds: [embed] }); 
+              return;
             } else {
               if (debug) { log('genLog', { event: 'Commands > Encode', content: `Succeeded encoding in the base32 format` }); };
               let embed = embedConstructor('encodeSuccessSingle', { results: `**Base32**:\n> ${base32}` });
@@ -124,6 +128,7 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'Encode', content: `String is too long to encode in the base64 format` }); };
               let embed = embedConstructor('encodeFailed', { reason: `Specified string is too long to encode in the Base64 format (${inputString.length} character(s)).` })
               interaction.reply({ embeds: [embed] }); 
+              return;
             } else {
               if (debug) { log('genLog', { event: 'Commands > Encode', content: `Succeeded encoding in the base64 format` }); };
               let embed = embedConstructor('encodeSuccessSingle', { results: `**Base64**:\n> ${base64}` });

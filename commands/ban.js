@@ -55,8 +55,8 @@ module.exports = {
 
         // ui
         const buttonRow = new MessageActionRow().addComponents( 
-          new MessageButton().setLabel('Yes').setCustomId('yesBan').setStyle('SUCCESS'), 
-          new MessageButton().setLabel('No').setCustomId('noBan').setStyle('DANGER'),
+          new MessageButton().setLabel('Yes').setCustomId('yesBan').setStyle('SUCCESS').setEmoji('986186601417822228'), 
+          new MessageButton().setLabel('No').setCustomId('noBan').setStyle('DANGER').setEmoji('986186598444056617'),
         );
 
         // get reason
@@ -104,15 +104,16 @@ module.exports = {
 
         // check target id
 
-        // if equal bot, pull error
+        // target is bot
         if (targetID == botID) {
 
           // set embed
-          const embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'You cannot ban the bot itself.' });
+          const embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'You cannot ban the bot itself!' });
 
           // throw
-          await interaction.reply({ embeds: [embed] });
           if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban the bot.`}); };
+          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+          await interaction.reply({ embeds: [embed] });
           return;
 
         };
@@ -124,8 +125,51 @@ module.exports = {
           let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'You cannot ban yourself!' });
 
           // throw
-          await interaction.reply({ embeds: [embed] });
           if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban themselves.`}); };
+          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+          await interaction.reply({ embeds: [embed] });
+          return;
+
+        };
+
+        // role pos checking part 1
+
+        // bot lower than target
+        if (botUser.roles.highest.comparePositionTo(target.roles.highest) < 0) {
+              
+          // set embed
+          let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than the target\'s highest role (${target.roles.highest})` });
+
+          // throw
+          if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'The bot\'s highest role is lower than the target\'s.'}); };
+          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+          await interaction.reply({ embeds: [embed] });
+          return;
+
+        // bot equal target
+        } else if (botUser.roles.highest.comparePositionTo(target.roles.highest) == 0) {
+
+          // set embed
+          let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: `The bot\'s highest role is equal to the target\'s highest role (${target.roles.highest})` });
+
+          // throw
+          if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'The bot\'s highest role is equal to the target\'s.'}); };
+          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+          await interaction.reply({ embeds: [embed] });
+          return;
+
+        };
+
+        // bot no ban perm
+        if (!botUser.permissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
+
+          // set embed
+          let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'The bot does not have the permission to ban members.' });
+
+          // throw
+          if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'Bot did not have the Ban Members permission.' }); };
+          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+          await interaction.reply({ embeds: [embed] });
           return;
 
         };
@@ -133,32 +177,8 @@ module.exports = {
         // user is owner check
         if (!executorID == executorGuild.ownerId) {
 
-          // role pos checking
+          // role pos checking part 2
             
-          // bot lower than target
-          if (botUser.roles.highest.comparePositionTo(target.roles.highest) < 0) {
-              
-            // set embed
-            let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than the target\'s highest role (${target.roles.highest})` });
-
-            // throw
-            await interaction.reply({ embeds: [embed] });
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'The bot\'s highest role is lower than the target\'s.'}); };
-            return;
-
-          // bot equal target
-          } else if (botUser.roles.highest.comparePositionTo(target.roles.highest) == 0) {
-
-            // set embed
-            let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: `The bot\'s highest role is equal to the target\'s highest role (${target.roles.highest})` });
-
-            // throw
-            await interaction.reply({ embeds: [embed] });
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'The bot\'s highest role is equal to the target\'s.'}); };
-            return;
-
-          };
-
           // executor lower than target
           if (executor.roles.highest.comparePositionTo(target.roles.highest) < 0) {
               
@@ -192,24 +212,11 @@ module.exports = {
             let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'You do not have the permission to ban members.' });
 
             // throw
-            await interaction.reply({ embeds: [embed] });
-
             if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'Executor did not have the Ban Members permission.' }); };
-            return;
-
-          };
-
-          // bot no ban perm
-          if (!botUser.permissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
-
-            // set embed
-            let embed = embedConstructor('banFailed', { who: `${targetTag}`, reason: 'The bot does not have the permission to ban members.' });
-
-            // throw
+            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
             await interaction.reply({ embeds: [embed] });
-
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executorTag} tried to ban ${targetTag} but failed`, cause: 'Bot did not have the Ban Members permission.' }); };
             return;
+
           };
 
         };
@@ -252,16 +259,16 @@ module.exports = {
           } else {
 
             // different member tries to answer? block
-            let notForUserEmbed = embedConstructor('banFailedNFU', {});
-            await i.reply({ embeds: [notForUserEmbed], ephemeral: true });
             if (debug) { log('genWarn', { event: 'Ban', content: `Other user tried to use a confirmation embed that did not belong to them` }); };
-
+            let notForUserEmbed = embedConstructor('banFailedNFU', {});
+            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
+            await i.reply({ embeds: [notForUserEmbed], ephemeral: true });
+            
           };
 
           // kills the collector
           if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
           collector.stop();
-        
         });
 
         // cooldown management

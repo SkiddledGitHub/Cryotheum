@@ -63,9 +63,9 @@ module.exports = {
 
             // execute
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Generating function from code` }); };
-            let generatedFunction = new Function('interaction', code);
+            let generatedFunction = new Function('interaction', 'cryoLib', code);
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Executing function` }); };
-            generatedFunction(interaction);
+            generatedFunction(interaction, { log, embedConstructor });
 
             // reply
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
@@ -86,7 +86,7 @@ module.exports = {
             if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
             await interaction.reply({ embeds: [embed], ephemeral: true }); 
 
-            // log fail & return
+            // throw
             if (debug) { log('runtimeErr', { event: 'Eval', errName: `${error.name}`, content: `${error.message}`, extra: `Code: ${code}` }) };
             return;
 
