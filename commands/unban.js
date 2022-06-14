@@ -95,7 +95,7 @@ module.exports = {
             // reply
             const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: `${targetTag} is not banned.` });
             await interaction.reply({ embeds: [embed] });
-            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Target is not banned'); };
+            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Target is not banned'}); };
             return;
           };
 
@@ -107,7 +107,7 @@ module.exports = {
             // reply
             const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: 'You do not have permission to unban members!' });
             await interaction.reply({ embeds: [embed] });
-            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Executor did not have the Ban Members permission.'); };
+            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Executor did not have the Ban Members permission.'}); };
             return;
         };
 
