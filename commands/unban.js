@@ -18,14 +18,13 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, Collection } = require('discord.js')
-const { embedCreator } = require('../tools/embeds.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 const { debug } = require('../config.json');
-const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
-const cooldownEmbed = embedCreator("cooldown", { cooldown: '6 seconds' });
+const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,10 +33,9 @@ module.exports = {
   .addUserOption((option) => option.setName('target').setDescription('Target user to unban').setRequired(true))
   .addStringOption((option) => option.setName('reason').setDescription('Reason why you unbanned this user').setRequired(false)),
   async execute(interaction) {
+      // cooldown management
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ 
-          embeds: [cooldownEmbed]
-        });
+      await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
         // variables
@@ -51,20 +49,25 @@ module.exports = {
         const executor = interaction.member;
         const executorTag = executor.user.tag;
 
+        if (debug) { log('genLog', { event: 'Commands > Unban', content: `Command initialized by ${executorTag}` }); };
+
         // get reason
-        if (interaction.options.getString('reason') == null) {
-          reason = `Executor: ${executorTag}`
+        if (!interaction.options.getString('reason')) {
+          reason = `No reason provided - Executor: ${executorTag}`;
         } else {
           reason = interaction.options.getString('reason');
         };
+        if (debug) { log('genLog', { event: 'Commands > Unban', content: `Unban reason set to \"${reason}\" by ${executorTag}` }); };
 
         // user not in server
-        if (interaction.options.getMember('target') == null) {
+        if (!interaction.options.getMember('target')) {
 
             // set target
             target = interaction.options.getUser('target');
             targetID = target.id;
             targetTag = target.tag;
+
+            if (debug) { log('genLog', { event: 'Commands > Unban', content: `Unban target set to ${targetTag} by ${executorTag}` }); };
 
           // attempt to find target in banned members list 
           await executor.guild.bans.fetch({ cache: false }).then((value) => {
@@ -72,84 +75,72 @@ module.exports = {
           });
 
           // pull an error if cannot find user
-           if (bannedUser == null) {
+           if (!bannedUser) {
 
             // reply
-            const embed = embedCreator("unbanFailed", { who: `${targetTag}`, reason: `${targetTag} is not banned.` });
-              await interaction.reply({
-                embeds: [embed]
-              });
-              if (debug) {
-              log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
-              };
+            const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: `${targetTag} is not banned.` });
+              await interaction.reply({ embeds: [embed] });
+              if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Target is not banned' }); };
               return;
            };
 
         // pull an error if user is in guild (member is not banned)
-        } else if (interaction.options.getMember('target') != null) {
+        } else if (interaction.options.getMember('target')) {
 
             // set target
             target = interaction.options.getUser('target');
             targetTag = target.tag;
+            if (debug) { log('genLog', { event: 'Commands > Unban', content: `Unban target set to ${targetTag} by ${executorTag}` }); };
 
             // reply
-            const embed = embedCreator("unbanFailed", { who: `${targetTag}`, reason: `${targetTag} is not banned.` });
-            await interaction.reply({
-              embeds: [embed]
-            });
-            if (debug) {
-            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is not banned`);
-            };
+            const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: `${targetTag} is not banned.` });
+            await interaction.reply({ embeds: [embed] });
+            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Target is not banned'); };
             return;
           };
 
-        // pull an error if executor does not have ban permissions
+        // perm checking
+
+        // executor no ban perm
         if (!interaction.memberPermissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
 
             // reply
-            const embed = embedCreator("unbanFailed", { who: `${targetTag}`, reason: 'You do not have permission to unban members!' });
-            await interaction.reply({
-              embeds: [embed]
-            });
-            if (debug) {
-            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mExecutor did not have the Ban Members permission.`);
-            };
+            const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: 'You do not have permission to unban members!' });
+            await interaction.reply({ embeds: [embed] });
+            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'Executor did not have the Ban Members permission.'); };
             return;
         };
 
-        // pull an error if bot does not have ban permissions
+        // bot no ban perm
         if (!executor.guild.me.permissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
 
             // reply
-            const embed = embedCreator("unbanFailed", { who: `${targetTag}`, reason: 'The bot does not have permission to unban members!' });
-            await interaction.reply({
-              embeds: [embed]
-            });
-            if (debug) {
-            log('genWarn', `${executorTag} tried to unban ${targetTag} but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mThe bot does not have the Ban Members permission.`);
-            };
+            const embed = embedConstructor("unbanFailed", { who: `${targetTag}`, reason: 'The bot does not have permission to unban members!' });
+            await interaction.reply({ embeds: [embed] });
+            if (debug) { log('genWarn', { event: 'Unban', content: `${executorTag} tried to unban ${targetTag} but failed`, cause: 'The bot does not have the Ban Members permission.' }); };
             return;
         };
 
         // attempt to unban member
         try { 
+          if (debug) { log('genLog', { event: 'Commands > Unban', content: `Attempting to unban ${targetTag}` }); };
           executor.guild.bans.remove(target, reason); 
+          if (debug) { log('genLog', { event: 'Commands > Unban', content: `Successfully unbanned ${targetTag}` }); };
           
           // on success
-          const successEmbed = embedCreator("unbanSuccess", { who: `${targetTag}`, reason: `${reason}` });
-          await interaction.reply({
-            embeds: [successEmbed]
-          });
-          if (debug) {
-          log('genWarn', `${executorTag} unbanned ${targetTag}:\n\x1b[0m\x1b[35m  -> \x1b[37mWith reason: ${reason}`);
-          };
+          const successEmbed = embedConstructor("unbanSuccess", { who: `${targetTag}`, reason: `${reason}` });
+          if (debug) { log('genLog', { event: 'Commands > Unban', content: `Replying with success embed` }); };
+          await interaction.reply({ embeds: [successEmbed] });
+          if (debug) { log('genLog', { event: 'Commands > Unban', content: `${executorTag} unbanned ${targetTag}`, extra: `With reason: ${reason}` }); };
 
         } catch (error) { 
 
+          log('cmdErr', { event: 'Unban', content: `Failed to unban ${targetTag}` });
           // reply
-          if (debug) { errorEmbed = embedCreator("error", { error: `${error}` }) } else { errorEmbed = embedCreator("errorNoDebug", {}) };
+          if (debug) { errorEmbed = embedConstructor("error", { error: `${error}` }) } else { errorEmbed = embedConstructor("errorNoDebug", {}) };
+          log('cmdErr', { event: 'Unban', content: `Replying with failed embed` });
           await interaction.reply({ embeds: [errorEmbed] }); 
-          log('genErr', `${error}`);
+          log('runtimeErr', { errName: error.name, event: 'Unban', content: error.message });
         };
 
         cooldown.add(interaction.user.id);

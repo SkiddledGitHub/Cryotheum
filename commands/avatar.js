@@ -17,14 +17,13 @@
 
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedCreator } = require('../tools/embeds.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 const { debug } = require('../config.json');
-const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
 const cooldownTime = 4000;
-const cooldownEmbed = embedCreator("cooldown", { cooldown: '4 seconds' });
+const cooldownEmbed = embedConstructor("cooldown", { cooldown: '4 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -40,6 +39,8 @@ module.exports = {
     // variables
     var target;
     var targetTag;
+
+    if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Command initialized by ${executorTag}` }); };
 
 		// set target
     // no target provided
@@ -65,29 +66,25 @@ module.exports = {
 
     };
 
+    if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Target set to ${targetTag}` }); };
+
     // create embed object
-    const avatarEmbed = embedCreator("avatar", { who: `${targetTag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
-    	
+    if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Constructing embed` }); };
+    const avatarEmbed = embedConstructor("avatar", { who: `${targetTag}`, image: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` })
+    	// cooldown management
       if (cooldown.has(interaction.user.id)) {
-      	await interaction.reply({ 
-          	embeds: [cooldownEmbed]
-        });
+      await interaction.reply({ embeds: [cooldownEmbed] });
     	} else {
     		
         // reply
-      	await interaction.reply({ 
-        	embeds: [avatarEmbed]
-      	});
-      	if (debug) {
-      	log('genLog', `${executorTag} executed avatar command: \n\x1b[0m\x1b[35m  -> \x1b[37mTarget is ${targetTag}`);
-      	};
+        if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Replying with embed` }); };
+      	await interaction.reply({ embeds: [avatarEmbed] });
+      	if (debug) { if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Avatar command succeeded.`, extra: `Target is ${targetTag}` }); }; };
 
-      	// add user to cooldown
+      	// cooldown management
       	cooldown.add(interaction.user.id);
-        	setTimeout(() => {
-          	// rm cooldown after it has passed
-          	cooldown.delete(interaction.user.id);
-        	}, cooldownTime);
-      	}
-  }
+        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+      	
+        }
+    }
 }

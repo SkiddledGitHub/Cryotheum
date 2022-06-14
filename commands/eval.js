@@ -17,9 +17,8 @@
 
 // modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { embedCreator } = require('../tools/embeds.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 const { debug, botOwner } = require('../config.json');
-const { log } = require('../tools/loggingUtil.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,17 +33,18 @@ module.exports = {
       const code = interaction.options.getString('code');
       const codeHighlighted = codeBlock('js', code);
 
+      // variables
+      var embed;
+
+      if (debug) { log('genLog', { event: 'Commands > Eval', content: `Command initialized by ${executorTag}` }); };
+
         // if user is not bot owner, pull error
       	if (executor.user.id != botOwner) {
 
           // set embed & reply & log fail
-          const embed = embedCreator('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
-          await interaction.reply({
-            embeds: [embed]
-          });
-          if (debug) {
-          log('genLog', `${executorTag} tried to execute eval but failed: \n\x1b[0m\x1b[35m  -> \x1b[37mUser is not bot owner.`);
-          };
+          const embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
+          await interaction.reply({ embeds: [embed] });
+          if (debug) { log('genWarn', { event: 'Eval', content: `${executorTag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
           return;
 
         } else {
@@ -53,35 +53,47 @@ module.exports = {
           try { 
 
             // set embed
-            let embed = embedCreator('evalSuccess', { code: `${codeHighlighted}` });
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
+            if (code.length > 1020) {
+              if (debug) { log('genLog', { event: 'Commands > Eval', content: `Code too long, resort to placeholder` }); };
+              embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` });
+            } else {
+              embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
+            };
 
             // execute
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Generating function from code` }); };
             let generatedFunction = new Function('interaction', code);
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Executing function` }); };
             generatedFunction(interaction);
 
             // reply
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
             await interaction.reply({ embeds: [embed] }); 
 
           } catch (error) { 
 
             // set embed
-            let embed = embedCreator('evalFailed', { reason: `${error}`, code: `${codeHighlighted}` }); 
+            if (debug) { log('cmdErr', { event: 'Eval', content: `Command failed, constructing failed embed` }); };
+            if (code.length > 1020) {
+              if (debug) { log('cmdErr', { event: 'Eval', content: `Code too long, resort to placeholder` }); };
+              embed = embedConstructor('evalFailed', { reason: `${error}`, code: `Too long to display\n(${code.length} characters)` });
+            } else {
+              embed = embedConstructor('evalFailed', { reason: `${error}`, code: `${codeHighlighted}` });
+            };
 
             // reply
+            if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
             await interaction.reply({ embeds: [embed], ephemeral: true }); 
 
             // log fail & return
-            if (debug) { 
-            log('cmdErr', { errtitle: `Failed evaluating code`, content: `\x1b[1;37m${error} \n\x1b[0m\x1b[35m  -> Code: \x1b[37m${code}` })
-            };
+            if (debug) { log('runtimeErr', { event: 'Eval', errName: `${error.name}`, content: `${error.message}`, extra: `Code: ${code}` }) };
             return;
 
           };
 
           // log success
-          if (debug) {
-          log('genLog', `Evaluated code. \n\x1b[0m\x1b[35m  -> Code: \x1b[37m${code}`)
-          };
+          log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: `Code: ${code}` });
         }
   	},
 }

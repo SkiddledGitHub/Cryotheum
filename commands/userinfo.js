@@ -18,16 +18,15 @@
 // modules
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const { embedCreator } = require('../tools/embeds.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 const decache = require('decache');
 const { debug } = require('../config.json');
 const emojis = require('node-emoji');
-const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
-const cooldownEmbed = embedCreator("cooldown", { cooldown: '6 seconds' });
+const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -35,17 +34,13 @@ module.exports = {
   .setDescription('Get user profile from a Discord user')
   .addUserOption((option) => option.setName('target').setDescription('User to get user information from')),
   async execute(interaction) {
+      // cooldown management
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ 
-          embeds: [cooldownEmbed], 
-          ephemeral: true 
-        });
+      await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
       	// constants
       	const executor = interaction.member;
-
-      	// variables
 
       	// define target variables
       	var target;
@@ -66,8 +61,10 @@ module.exports = {
         var sBadges = "";
         var iBadges = "";
 
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Command initialized by ${executorTag}` }); };
+
       	// if option is blank, get executor's data instead
-      	if (interaction.options.getMember('target') == null && interaction.options.getUser('target') == null) {
+      	if (!interaction.options.getMember('target') && !interaction.options.getUser('target')) {
       	  
       		// assign target as executor
       		target = executor;
@@ -88,7 +85,7 @@ module.exports = {
       	};
 
       	// if target is guild member
-      	if (interaction.options.getMember('target') != null) {
+      	if (interaction.options.getMember('target')) {
 
       		// assigning target
       		target = interaction.options.getMember('target');
@@ -109,7 +106,7 @@ module.exports = {
       	};
 
       	// if member is not guild member
-      	if (interaction.options.getMember('target') == null && interaction.options.getUser('target') != null) {
+      	if (!interaction.options.getMember('target') && interaction.options.getUser('target')) {
       	
       		// assigning target
       		target = interaction.options.getUser('target');
@@ -129,6 +126,8 @@ module.exports = {
 
       	};
 
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Target set to ${targetTag}` }); };
+
       	// assign special emojis to certain users
         function specialBadgesParsing() {
           let { specialBadges } = require('../config.json');
@@ -137,16 +136,17 @@ module.exports = {
           if (sBadges == undefined) { sBadges = ''; return; };
         };
         specialBadgesParsing();
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Parsed special badges from target` }); };
 
         function insightBadgesParsing() {
           var isOwner = false;
           var isAdmin = false;
             if (!isGuildMember) {
-            if (target.bot == true) {
+            if (target.bot) {
               iBadges += `<:bot:965220811424288789>.`;
             };
           } else {
-            if (target.user.bot == true) {
+            if (target.user.bot) {
               iBadges += `<:bot:965220811424288789>.`;
             };
              if (target.id == interaction.guild.ownerId) {
@@ -166,20 +166,22 @@ module.exports = {
           if (iBadges == '') { return; };
         };
         insightBadgesParsing();
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Parsed insight badges` }); };
 
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Constructing embed` }); };
       	if (!isGuildMember) {
-      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	embed = embedConstructor('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	} else {
-      	embed = embedCreator('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, roles: `${roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	embed = embedConstructor('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, roles: `${roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	};
 
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Replying with embed` }); };
       	await interaction.reply({ embeds: [embed] });
 
-      	cooldown.add(interaction.user.id);
-        	setTimeout(() => {
-          	// rm cooldown after it has passed
-          	cooldown.delete(interaction.user.id);
-        	}, cooldownTime);
+      	// cooldown management
+        cooldown.add(interaction.user.id);
+        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+
       	}
-  }
+    }
 }

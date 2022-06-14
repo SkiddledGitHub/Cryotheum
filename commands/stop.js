@@ -20,24 +20,21 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 const { debug } = require('../config.json');
-const { embedCreator } = require('../tools/embeds.js');
-const { log } = require('../tools/loggingUtil.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 
 // set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
-const cooldownEmbed = embedCreator("cooldown", { cooldown: '6 seconds' });
+const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('stop')
   .setDescription('Make the bot leave the VC'),
   async execute(interaction) {
+      // cooldown management
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ 
-          embeds: [cooldownEmbed], 
-          ephemeral: true 
-        });
+      await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
       // constants
@@ -45,22 +42,32 @@ module.exports = {
       const executorTag = executor.user.tag;
       const channel = executor.guild.me.voice.channel;
 
-      // if user not in channel, pull error
-      if (channel == null) { const embed = embedCreator('stopFailed', { reason: 'The bot is not in a voice channel!' }); async function failed() { await interaction.reply({ embeds: [embed] }); }; failed(); return; };
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Command initialized by ${executorTag}` }); };
+
+      // if bot not in channel, pull error
+      if (!channel) { 
+        const embed = embedConstructor('stopFailed', { reason: 'The bot is not in a voice channel!' }); 
+        async function failed() { await interaction.reply({ embeds: [embed] }); }; failed();
+        if (debug) { log('cmdErr', { event: 'Stop', content: `Bot is not in a voice channel` }); };
+        return; 
+      };
 
       // get connection
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Getting connection` }); };
       const connection = getVoiceConnection(executor.guild.id);
 
       // destroy the connection
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Attempting to destroy connection` }); };
       connection.destroy();
-      const successEmbed = embedCreator('stopSuccess');
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Connection destroyed.` }); };
+      const successEmbed = embedConstructor('stopSuccess');
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Replying with success embed` }); };
       await interaction.reply({ embeds: [successEmbed] });
 
-      	cooldown.add(interaction.user.id);
-        	setTimeout(() => {
-          	// rm cooldown after it has passed
-          	cooldown.delete(interaction.user.id);
-        	}, cooldownTime);
+      // cooldown management
+      cooldown.add(interaction.user.id);
+      setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+
       	}
-  }
+    }
 }

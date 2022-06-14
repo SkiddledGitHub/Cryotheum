@@ -17,9 +17,8 @@
 
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedCreator } = require('../tools/embeds.js');
+const { embedConstructor, log } = require('../tools/cryoLib.js');
 const { debug, botOwner } = require('../config.json');
-const { log } = require('../tools/loggingUtil.js');
 
 // set cooldown
 const cooldown = new Set();
@@ -30,21 +29,26 @@ module.exports = {
   .setName('about')
   .setDescription('Display information about the bot'),
   async execute(interaction) {
+      // cooldown management
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ 
-          embeds: [cooldownEmbed], 
-          ephemeral: true 
-        });
+      await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
         
-        let embed = embedCreator('about', { uptime: Math.floor(interaction.client.readyTimestamp / 1000), botOwnerID: botOwner, debugStatus: `${debug}` });
+        // constants
+        const executor = interaction.member;
+        const executorTag = executor.user.tag;
+
+        if (debug) { log('genLog', { event: 'Commands > About', content: `Command initialized by ${executorTag}` }); };
+
+        if (debug) { log('genLog', { event: 'Commands > About', content: `Constructing embed` }); };
+        let embed = embedConstructor('about', { uptime: Math.floor(interaction.client.readyTimestamp / 1000), botOwnerID: botOwner, debugStatus: `${debug}` });
+        if (debug) { log('genLog', { event: 'Commands > Eval', content: `Replying with embed` }); };
         interaction.reply({ embeds: [embed] });
         
+        // cooldown management
         cooldown.add(interaction.user.id);
-            setTimeout(() => {
-            // rm cooldown after it has passed
-            cooldown.delete(interaction.user.id);
-            }, cooldownTime);
+        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+        
         }
-  }
+    }
 }

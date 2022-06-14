@@ -15,6 +15,12 @@
  *
  */
 
+
+// warning
+// this file contains bad code that has not been rewritten since ages
+// please dont bully me
+
+
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const readline = require('readline');

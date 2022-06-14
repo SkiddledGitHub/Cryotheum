@@ -20,30 +20,40 @@ const { botAuth, loggingMessages, debug } = require('./config.json');
 const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
 const fs = require('node:fs');
 const process = require('process');
-const { embedCreator } = require('./tools/embeds.js');
+const { embedConstructor, log } = require('./tools/cryoLib.js');
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES ], 
                             presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
                           });
 
-// commands import
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const files of commandFiles) {
-const command = require(`./commands/${files}`);
-client.commands.set(command.data.name, command);
-}
-
 // clear console
 console.clear();
 
+// commands import
+client.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+log('genLog', { event: 'Init > Loading', content: `Loading commands` });
+for (const files of commandFiles) {
+const command = require(`./commands/${files}`);
+client.commands.set(command.data.name, command);
+if (debug) { log('genLog', { event: 'Init > Loading', content: `Loaded \"${command.data.name}\"` }); };
+}
+
 // notify ready
 client.on('ready', () => {
-  console.log(`\x1b[1;33m[Bot Initiation]:\x1b[0m`);
-  console.log(` \x1b[1;32m=> Logged in (${client.user.tag})\x1b[0m`);
-  //client.user.setActivity(`stdout | In ${client.guilds.cache.size} server(s)`, { type: 'WATCHING' });
-  if (loggingMessages) { console.log(` \x1b[1;32m=> Bot is now logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> Bot is not logging messages. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m loggingMessages is set to \"false\" in config.json`); };
-  if (debug) { console.log(` \x1b[1;32m=> Bot is now in Debug mode. Almost all events will be logged.\n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"true\" in config.json`); } else { console.log(` \x1b[1;32m=> Bot is in Production mode. Only errors will be logged. \n\x1b[0m\x1b[35m  -> Cause:\x1b[0;37m debug is set to \"false\" in config.json`); };
-  console.log(`\n\x1b[1;33m[Log]:\x1b[0m`);
+  log('genLog', { event: 'Init > Ready', content: `Logged in as \x1b[1;37m${client.user.tag}\x1b[0;37m` });
+
+  if (loggingMessages) { 
+    log('genLog', { event: 'Init > Logging', content: 'Bot is now logging messages', cause: '\"loggingMessages\" = \x1b[31mtrue\x1b[37m in config.json' }); 
+  } else { 
+    log('genLog', { event: 'Init > Logging', content: 'Bot is not logging messages.', cause: '\"loggingMessages\" = \x1b[31mfalse\x1b[37m in config.json' }); 
+  };
+
+  if (debug) { 
+    log('genLog', { event: 'Init > Logging', content: 'Bot is now in Debug mode. Almost all events will be logged.', cause: '\"debug\" = \x1b[31mtrue\x1b[37m in config.json'}); 
+  } else { 
+    log('genLog', { event: 'Init > Logging', content: `Bot is in Production mode. Only errors will be logged.`, cause: '\"debug\" = \x1b[31mfalse\x1b[37m in config.json' })
+  };
+
 });
 
 // slash command handling
@@ -58,8 +68,8 @@ const command = client.commands.get(interaction.commandName);
     await command.execute(interaction);
   } catch (error) {
     let embed
-    if (debug) { embed = embedCreator("error", { error: `${error}` }) } else { embed = embedCreator("errorNoDebug", {}) };
-    console.error(error);
+    if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) };
+    log('runtimeErr', { errName: error.name, content: error.message });
     await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 });
@@ -68,10 +78,10 @@ const command = client.commands.get(interaction.commandName);
 if (loggingMessages) {
   client.on('messageCreate', async message => {
     try {
-      console.log(` \x1b[0m\x1b[1;36m=> \x1b[1;37m${message.author.tag}\x1b[0m from \x1b[1;37m${message.guild.name} (${message.channel.name})\x1b[0m: ${message.content}`);
-      if (message.attachments.size != 0) { var attachmentList = message.attachments.toJSON(); for (let i in attachmentList) { console.log(`    \x1b[1;37mAttachment\x1b[0m: ${attachmentList[i].attachment}`); }; };
+      log('genLog', { event: 'Logging > Message', content: `\x1b[1;37m${message.author.tag}\x1b[0m from \x1b[1;37m${message.guild.name} (${message.channel.name})\x1b[0m: ${message.content}` })
+      if (message.attachments.size != 0) { var attachmentList = message.attachments.toJSON(); for (let i in attachmentList) { log('genLog', { event: 'Logging > Message', content: `\x1b[1;37mAttachment\x1b[0m: ${attachmentList[i].attachment}` }) }; };
     } catch(error) {
-      console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
+      log('runtimeErr', { errName: error.name, event: 'Logging > Message', content: error.message });
     }
   });
 };
