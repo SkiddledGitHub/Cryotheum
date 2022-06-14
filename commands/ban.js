@@ -126,7 +126,7 @@ module.exports = {
         };
 
         // user is owner check
-        if (executorID == executorGuild.ownerId) {
+        if (!executorID == executorGuild.ownerId) {
 
           // role pos checking
             
