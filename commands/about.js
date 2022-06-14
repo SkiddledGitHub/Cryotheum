@@ -42,7 +42,7 @@ module.exports = {
 
         if (debug) { log('genLog', { event: 'Commands > About', content: `Constructing embed` }); };
         let embed = embedConstructor('about', { uptime: Math.floor(interaction.client.readyTimestamp / 1000), botOwnerID: botOwner, debugStatus: `${debug}` });
-        if (debug) { log('genLog', { event: 'Commands > Eval', content: `Replying with embed` }); };
+        if (debug) { log('genLog', { event: 'Commands > About', content: `Replying with embed` }); };
         interaction.reply({ embeds: [embed] });
         
         // cooldown management
