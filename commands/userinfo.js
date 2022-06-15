@@ -41,6 +41,7 @@ module.exports = {
 
       	// constants
       	const executor = interaction.member;
+	const executorTag = executor.user.tag;
 
       	// define target variables
       	var target;
