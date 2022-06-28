@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
+ * Copyright 2022 SkiddledGitHub
  *
  * This file is part of Cryotheum.
  * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -62,10 +62,7 @@ module.exports = {
             };
 
             // execute
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Generating function from code` }); };
-            let generatedFunction = new Function('interaction', 'cryoLib', code);
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Executing function` }); };
-            generatedFunction(interaction, { log, embedConstructor });
+            let output = eval(code);
 
             // reply
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };

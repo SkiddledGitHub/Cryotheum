@@ -48,7 +48,7 @@ Format is [^3]:
 }
 ``` 
 ## License
-Copyright 2022 SkiddledGitHub (Discord: Skiddled#0802)
+Copyright 2022 SkiddledGitHub
   
 This program is licensed under the terms of the **GNU General Public License**.
   
