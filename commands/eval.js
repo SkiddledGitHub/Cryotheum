@@ -43,7 +43,11 @@ module.exports = {
 
           // set embed & reply & log fail
           const embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
-          await interaction.reply({ embeds: [embed] });
+          if (interaction.replied == true) {
+            await interaction.followUp({ embeds: [embed] });
+          } else {
+            await interaction.reply({ embeds: [embed] });
+          }
           if (debug) { log('genWarn', { event: 'Eval', content: `${executorTag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
           return;
 
@@ -66,7 +70,11 @@ module.exports = {
 
             // reply
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
-            await interaction.reply({ embeds: [embed] }); 
+            if (interaction.replied == true) {
+              await interaction.followUp({ embeds: [embed] });
+            } else {
+              await interaction.reply({ embeds: [embed] });
+            }
 
           } catch (error) { 
 
@@ -81,7 +89,11 @@ module.exports = {
 
             // reply
             if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
-            await interaction.reply({ embeds: [embed], ephemeral: true }); 
+            if (interaction.replied == true) {
+              await interaction.followUp({ embeds: [embed], ephemeral: true });
+            } else {
+              await interaction.reply({ embeds: [embed], ephemeral: true });
+            } 
 
             // throw
             if (debug) { log('runtimeErr', { event: 'Eval', errName: `${error.name}`, content: `${error.message}`, extra: `Code: ${code}` }) };
