@@ -19,7 +19,7 @@
 const { SlashCommandBuilder, time } = require('@discordjs/builders');
 const { MessageAttachment } = require('discord.js');
 const { embedConstructor, log } = require('../lib/cryoLib.js');
-const { debug } = require('../config.json');
+const { debug, githubAuth } = require('../config.json');
 const axios = require('axios');
 
 // set cooldown
@@ -53,9 +53,16 @@ module.exports = {
 
           async function githubRepoSearch(query) {
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Attempting to search using the /repos/(owner)/(repoName) endpoint' }); };
-            var resData;
+            let resData;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found (githubAuth in config.json), some contribution data might be unavailable!' }); };
+              headers = { Accept: 'application/vnd.github.v3+json' };
+            } else {
+              headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
+            }
              await axios
-              .get(`https://api.github.com/repos/${query}`, { headers: { 'Accept': 'application:vnd.github.v3+json' } })
+              .get(`https://api.github.com/repos/${query}`, {}, { headers: headers })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 resData = res.data;
@@ -79,9 +86,16 @@ module.exports = {
 
           async function githubQueryRepoSearch(query) {
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Attempting to search using the /search/repositories endpoint' }); };
-            var resData;
+            let resData;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found (githubAuth in config.json), some contribution data might be unavailable!' }); };
+              headers = { Accept: 'application/vnd.github.v3+json' };
+            } else {
+              headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
+            }
              await axios
-              .get(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`, { headers: { 'Accept': 'application:vnd.github.v3+json' } })
+              .get(`https://api.github.com/search/repositories`, {}, { headers: headers, params: { q: encodeURIComponent(query) } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using top result.' }); };
@@ -106,9 +120,16 @@ module.exports = {
 
           async function githubContributions(repo) {
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Looking up contributions for repository...' }); };
-            var resData;
+            let resData;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found (githubAuth in config.json), some contribution data might be unavailable!' }); };
+              headers = { Accept: 'application/vnd.github.v3+json' };
+            } else {
+              headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
+            }
             await axios
-              .get(`https://api.github.com/repos/${repo}/contributors?anon=true`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+              .get(`https://api.github.com/repos/${repo}/contributors`, {}, { headers: headers, params: { anon: 'true' } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved results from GitHub API.' }); };
                 resData = res.data;
@@ -236,7 +257,7 @@ module.exports = {
 
             async function sendResponse() {
               await axios
-            .get(`https://api.github.com/repos/${repoRawData.full_name}/readme`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+            .get(`https://api.github.com/repos/${repoRawData.full_name}/readme`, {}, { headers: { Accept: 'application/vnd.github.v3+json' } })
             .then(att => {
               let buffer = Buffer.from(Buffer.from(att.data.content, 'base64').toString(), 'utf-8');
               if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'README.md seems to exist on the repository, making it an attachment...' }); };
@@ -262,9 +283,16 @@ module.exports = {
 
           async function githubUserSearch(query) {
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Attempting to search using the /users/(username) endpoint' }); };
-            var userRes;
+            let userRes;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found (githubAuth in config.json), some contribution data might be unavailable!' }); };
+              headers = { Accept: 'application/vnd.github.v3+json' };
+            } else {
+              headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
+            }
             await axios
-              .get(`https://api.github.com/users/${query}`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+              .get(`https://api.github.com/users/${query}`, {}, { headers: headers })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 userRes = res.data;
@@ -285,9 +313,16 @@ module.exports = {
 
           async function githubQueryUserSearch(query) {
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Attempting to search using the /search/users endpoint' }); };
-            var userRes;
+            let userRes;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found (githubAuth in config.json), some contribution data might be unavailable!' }); };
+              headers = { Accept: 'application/vnd.github.v3+json' };
+            } else {
+              headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
+            }
             await axios
-              .get(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+              .get(`https://api.github.com/search/users`, {}, { headers: headers, params: { q: encodeURIComponent(query) } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using top result.' }); };
@@ -373,6 +408,12 @@ module.exports = {
             user.data.push({ name: 'Twitter Username', value: userRawData.twitter_username, inline: true })
           };
 
+          let creationRawTime = new Date(repoRawData.created_at);
+          let creationFullTime = time(Math.round(creationRawTime.getTime() / 1000), 'f');
+          let creationMiniTime = time(Math.round(creationRawTime.getTime() / 1000), 'R');
+
+          repo.data.push({ name: 'Creation Date', value: `${creationFullTime} \n(${creationMiniTime})`, inline: true });
+
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Data parsed:' }); console.log(user); };
 
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Constructing reply embed' }); };
@@ -383,7 +424,7 @@ module.exports = {
 
           async function sendResponse() {
             await axios
-              .get(`https://api.github.com/repos/${userRawData.login}/${userRawData.login}/readme`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+              .get(`https://api.github.com/repos/${userRawData.login}/${userRawData.login}/readme`, {}, { headers: { Accept: 'application/vnd.github.v3+json' } })
               .then(att => {
                 let buffer = Buffer.from(Buffer.from(att.data.content, 'base64').toString(), 'utf-8');
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'User seems to have a special README.md file, making it an attachment...' }); };
