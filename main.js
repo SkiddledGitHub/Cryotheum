@@ -70,10 +70,11 @@ const command = client.commands.get(interaction.commandName);
     let embed
     if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) };
     log('runtimeErr', { errName: error.name, event: command.data.name, content: error.message });
-    if (interaction.replied) {
-      await interaction.followUp({ embeds: [embed], ephemeral: true });
-    } else {
+    try {
       await interaction.reply({ embeds: [embed], ephemeral: true });
+    } catch (e) {
+      if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+      await interaction.followUp({ embeds: [embed], ephemeral: true });
     }
   }
 });
