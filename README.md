@@ -21,6 +21,7 @@ Then create a new text file in the **Cryotheum** folder named `config.json` and 
 	"botOwner": "insert bot owner's Discord id",
 	"loggingMessages": false,
 	"debug": false,
+	"githubAuth": "insert github personal access token, this is optional",
 	"specialBadges": {
 
 	}
@@ -50,7 +51,16 @@ Format is [^3]:
 "specialBadges": {
 	"user id": "emoji"
 }
-``` 
+```  
+#### The `githubAuth` string in `config.json`  
+This string allows you to provide the bot a GitHub Personal Access Token.  
+The token allows the bot to have better access to the GitHub API (currently for accessing contribution data on repositories)  
+However this is optional and can be left blank.  
+If you want to provide an access token for the bot, please access https://github.com/settings/tokens/new and create a new token with the `public_repo` and `read:user` scopes (Preferably make the token not expire) then paste the token in the config file.  
+Example:
+```json
+"githubAuth": "ghp_XXXXXXXXXXXXXXXXXXXXXX"
+```
 ## License
 Copyright 2022 SkiddledGitHub
   
@@ -64,6 +74,6 @@ You should have received a copy of the GNU General Public License along with thi
   
 [^1]: This will be removed from the public release soonTM
   
-[^2]: Actions that will be logged once the debug flag is enabled: avatar, ban, eval, play, unban, userinfo success and failures and generic NodeJS errors
+[^2]: Actions that will be logged once the debug flag is enabled: Almost everything (command execution status, generic NodeJS errors... does not include messages)
   
 [^3]: Example: ```"285329659023851520": "<:botDev:965220811436855326>"```
