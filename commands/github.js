@@ -16,7 +16,7 @@
  */
 
 // modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, time } = require('@discordjs/builders');
 const { MessageAttachment } = require('discord.js');
 const { embedConstructor, log } = require('../lib/cryoLib.js');
 const { debug } = require('../config.json');
@@ -67,6 +67,7 @@ module.exports = {
                   return;
                 } else {
                   if (debug) { log('runtimeErr', { event: 'GitHub', errName: error.name, content: error.message }); };
+                  return;
                 }
               } else {
                 if (debug) { log('runtimeErr', { event: 'GitHub', errName: error.name, content: error.message }); };
@@ -101,6 +102,35 @@ module.exports = {
               };
             });
             return resData;
+          };
+
+          async function githubContributions(repo) {
+            if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Looking up contributions for repository...' }); };
+            var resData;
+            await axios
+              .get(`https://api.github.com/repos/${repo}/contributors?anon=true`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+              .then(res => {
+                if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved results from GitHub API.' }); };
+                resData = res.data;
+              })
+              .catch(error => {
+                if (error.response) {
+                  if (error.response.status == 404) {
+                    if (debug) { log('cmdErr', { event: 'GitHub', content: 'Something went wrong while looking up contributions for repository! Status code is \"404\"' }); };
+                    return;
+                  } else if (error.response.status == 403) {
+                    if (debug) { log('cmdErr', { event: 'GitHub', content: 'Contributions data is unavailable! Status code is \"403\" (Forbidden)' }); };
+                    return;
+                  } else {
+                    if (debug) { log('runtimeErr', { event: 'GitHub', errName: error.name, content: error.message }); };
+                    return;
+                  }
+                } else {
+                  if (debug) { log('runtimeErr', { event: 'GitHub', errName: error.name, content: error.message }); };
+                  return;
+                }
+              })
+              return resData;
           };
 
           async function mainRepoFunction() {
@@ -148,6 +178,19 @@ module.exports = {
 
             repo.data.push({ name: 'Forks', value: `${repoRawData.forks}`, inline: true });
 
+            let contributionsData = await githubContributions(repo.name);
+            let contributions = 0;
+
+            if (contributionsData) {
+              contributionsData.forEach((item, index, array) => {
+                contributions = contributions + item.contributions;
+              });
+              repo.data.push({ name: 'Commits', value: `${contributions}`, inline: true });
+            } else {
+              repo.data.push({ name: 'Commits', value: '0 \`(Unavailable)\`', inline: true });
+            }
+
+
             if (repoRawData.description) {
               repo.desc = `*${repoRawData.description}*`;
             } else {
@@ -163,6 +206,12 @@ module.exports = {
             if (repoRawData.license) {
               repo.data.push({ name: 'License', value: repoRawData.license.name, inline: true });
             };
+            
+            let creationRawTime = new Date(repoRawData.created_at);
+            let creationFullTime = time(Math.round(creationRawTime.getTime() / 1000), 'f');
+            let creationMiniTime = time(Math.round(creationRawTime.getTime() / 1000), 'R');
+
+            repo.data.push({ name: 'Creation Date', value: `${creationFullTime} \n(${creationMiniTime})`, inline: true });
 
             if (repoRawData.parent) {
               repo.data.push({ name: 'Parent', value: `[${repoRawData.parent.full_name}](${repoRawData.parent.html_url})` })
