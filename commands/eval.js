@@ -43,66 +43,74 @@ module.exports = {
 
           // set embed & reply & log fail
           const embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
-          if (interaction.replied == true) {
-            await interaction.followUp({ embeds: [embed] });
-          } else {
+          try {
             await interaction.reply({ embeds: [embed] });
+          } catch (e) {
+            if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+            await interaction.followUp({ embeds: [embed] });
           }
           if (debug) { log('genWarn', { event: 'Eval', content: `${executorTag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
           return;
 
         } else {
 
-          // try catch for eval errors
-          try { 
+          // set embed
+          if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
+          if (code.length > 1020) {
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Code too long, resort to placeholder` }); };
+            embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` });
+          } else {
+            embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
+          };
 
-            // set embed
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
-            if (code.length > 1020) {
-              if (debug) { log('genLog', { event: 'Commands > Eval', content: `Code too long, resort to placeholder` }); };
-              embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` });
-            } else {
-              embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
-            };
+          // execute
+          let errObj;
+          eval(`try {
+                  ${code}
+                } catch (e) {
+                  errObj = e;
+                }`);
 
-            // execute
-            let output = eval(code);
-
-            // reply
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
-            if (interaction.replied == true) {
-              await interaction.followUp({ embeds: [embed] });
-            } else {
-              await interaction.reply({ embeds: [embed] });
-            }
-
-          } catch (error) { 
-
+          if (errObj) {
             // set embed
             if (debug) { log('cmdErr', { event: 'Eval', content: `Command failed, constructing failed embed` }); };
             if (code.length > 1020) {
               if (debug) { log('cmdErr', { event: 'Eval', content: `Code too long, resort to placeholder` }); };
-              embed = embedConstructor('evalFailed', { reason: `${error}`, code: `Too long to display\n(${code.length} characters)` });
+              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `Too long to display\n(${code.length} characters)` });
             } else {
-              embed = embedConstructor('evalFailed', { reason: `${error}`, code: `${codeHighlighted}` });
+              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `${codeHighlighted}` });
             };
 
             // reply
             if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
-            if (interaction.replied == true) {
-              await interaction.followUp({ embeds: [embed], ephemeral: true });
-            } else {
+            try {
               await interaction.reply({ embeds: [embed], ephemeral: true });
-            } 
+            } catch (e) {
+              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+              await interaction.followUp({ embeds: [embed], ephemeral: true });
+            }
 
             // throw
-            if (debug) { log('runtimeErr', { event: 'Eval', errName: `${error.name}`, content: `${error.message}`, extra: `Code: ${code}` }) };
+            if (debug) { log('runtimeErr', { event: 'Eval', errName: errObj.name, content: errObj.message, extra: `Code: ${code}` }) };
             return;
 
-          };
+          } else {
 
-          // log success
-          log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: `Code: ${code}` });
+            // reply
+            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
+
+            try {
+              await interaction.reply({ embeds: [embed] });
+            } catch (e) {
+              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+              await interaction.followUp({ embeds: [embed] });
+            }
+
+            // log success
+            log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: `Code: ${code}` });
+
+          }
+          
         }
-  	},
+  	}
 }

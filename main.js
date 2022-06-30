@@ -69,8 +69,12 @@ const command = client.commands.get(interaction.commandName);
   } catch (error) {
     let embed
     if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) };
-    log('runtimeErr', { errName: error.name, event: command, content: error.message });
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    log('runtimeErr', { errName: error.name, event: command.data.name, content: error.message });
+    if (interaction.replied) {
+      await interaction.followUp({ embeds: [embed], ephemeral: true });
+    } else {
+      await interaction.reply({ embeds: [embed], ephemeral: true });
+    }
   }
 });
 
