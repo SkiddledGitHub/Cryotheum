@@ -240,7 +240,7 @@ module.exports = {
             .then(att => {
               let buffer = Buffer.from(Buffer.from(att.data.content, 'base64').toString(), 'utf-8');
               if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'README.md seems to exist on the repository, making it an attachment...' }); };
-              attachment = new MessageAttachment(buffer, att.data.name);
+              attachment = new MessageAttachment(buffer, 'README.md');
             })
             .catch(error => {
               if (error.response) {
@@ -387,7 +387,7 @@ module.exports = {
               .then(att => {
                 let buffer = Buffer.from(Buffer.from(att.data.content, 'base64').toString(), 'utf-8');
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'User seems to have a special README.md file, making it an attachment...' }); };
-                attachment = new MessageAttachment(buffer, att.data.name);
+                attachment = new MessageAttachment(buffer, 'README.md');
               })
               .catch(error => {
                 if (error.response) {
