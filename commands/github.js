@@ -208,7 +208,7 @@ module.exports = {
               });
               repo.data.push({ name: 'Commits', value: `${contributions}`, inline: true });
             } else {
-              repo.data.push({ name: 'Commits', value: '0 \`(Unavailable)\`', inline: true });
+              repo.data.push({ name: 'Commits', value: '(Unavailable)', inline: true });
             }
 
 
@@ -345,6 +345,32 @@ module.exports = {
               return userRes;
           };
 
+          async function githubUserContributions(user) {
+            if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Attempting to get user commits count by using GitHub GraphQL API...' }); };
+            let graphqlRes;
+            let headers;
+            if (!githubAuth) {
+              if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'No GitHub access token found, skipping...' }); };
+              return '(Unavailable)';
+            } else {
+              headers = { headers: { Authorization: `bearer ${githubAuth}` } };
+            };
+            let data = { query: `query {user(login:"${user}"){contributionsCollection{totalCommitContributions}}}` };
+
+            await axios
+              .post('https://api.github.com/graphql', data, headers)
+              .then(res => {
+                if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved data from the GitHub GraphQL API.' }); };
+                graphqlRes = res.data.data.user.contributionsCollection.totalCommitContributions;
+              })
+              .catch(error => {
+                  if (debug) { log('runtimeErr', { event: 'GitHub', errName: error.name, content: error.message }); };
+                  return;
+              })
+
+              return graphqlRes;
+          }
+
           async function mainUserFunction() {
             interaction.deferReply();
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'User selected user search.' }); };
@@ -386,6 +412,13 @@ module.exports = {
             { name: 'Following', value: `${userRawData.following}`, inline: true }
           ];
 
+          let commitsCount = await githubUserContributions(userRawData.login);
+          if (!commitsCount) {
+            user.data.push({ name: 'Commits', value: '(Unavailable)', inline: true });
+          } else {
+            user.data.push({ name: 'Commits', value: `${commitsCount}`, inline: true });
+          };
+
           if (userRawData.bio) {
             user.bio = `*${userRawData.bio}*`;
           } else {
@@ -408,11 +441,11 @@ module.exports = {
             user.data.push({ name: 'Twitter Username', value: userRawData.twitter_username, inline: true })
           };
 
-          let creationRawTime = new Date(repoRawData.created_at);
+          let creationRawTime = new Date(userRawData.created_at);
           let creationFullTime = time(Math.round(creationRawTime.getTime() / 1000), 'f');
           let creationMiniTime = time(Math.round(creationRawTime.getTime() / 1000), 'R');
 
-          repo.data.push({ name: 'Creation Date', value: `${creationFullTime} \n(${creationMiniTime})`, inline: true });
+          user.data.push({ name: 'Creation Date', value: `${creationFullTime} \n(${creationMiniTime})`, inline: true });
 
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Data parsed:' }); console.log(user); };
 
