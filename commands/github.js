@@ -59,7 +59,6 @@ module.exports = {
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 resData = res.data;
-                console.log(resData);
               })
               .catch(error => {
               if (error.response) {
@@ -131,7 +130,7 @@ module.exports = {
             
           await mainRepoFunction();
 
-          if (quit = 1) { return; };
+          if (quit == 1) { return; };
 
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Parsing data...' }); };
 
@@ -287,7 +286,7 @@ module.exports = {
 
           await mainUserFunction();
 
-          if (quit = 1) { return; };
+          if (quit == 1) { return; };
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Parsing data...' }); };
 
           let user = {
