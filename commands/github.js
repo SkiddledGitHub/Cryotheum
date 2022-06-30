@@ -43,6 +43,7 @@ module.exports = {
 
         const executor = interaction.member;
         const executorTag = executor.user.tag;
+        var quit = 0;
 
         if (debug) { log('genLog', { event: 'Commands > GitHub', content: `Command initialized by ${executorTag}` }); };
 
@@ -122,12 +123,15 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'GitHub', content: 'Sending error message...' }); };
               let embed = embedConstructor('githubFailed', { type: 'repository', reason: 'No search results was found with your keywords!' });
               await interaction.editReply({ embeds: [embed] });
+              quit = 1;
               return;
             };
 
           };
             
           await mainRepoFunction();
+
+          if (quit = 1) { return; };
 
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Parsing data...' }); };
 
@@ -276,12 +280,14 @@ module.exports = {
               if (debug) { log('cmdErr', { event: 'GitHub', content: 'Sending error message' }); };
               let embed = embedConstructor('githubFailed', { type: 'user', reason: 'No search result was found with your keywords!' });
               await interaction.editReply({ embeds: [embed] });
+              quit = 1;
               return;
             }
           }
 
           await mainUserFunction();
 
+          if (quit = 1) { return; };
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Parsing data...' }); };
 
           let user = {
