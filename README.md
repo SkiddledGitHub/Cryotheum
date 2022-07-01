@@ -54,7 +54,7 @@ Format is [^3]:
 ```  
 #### The `githubAuth` string in `config.json`  
 This string allows you to provide the bot a GitHub Personal Access Token.  
-The token allows the bot to have better access to the GitHub API (currently for accessing contribution data on repositories)  
+The token allows the bot to have better access to the GitHub API (currently for accessing contribution data on repositories and is required for accessing commits data on users)  
 However this is optional and can be left blank.  
 If you want to provide an access token for the bot, please access https://github.com/settings/tokens/new and create a new token with the `public_repo` and `read:user` scopes (Preferably make the token not expire) then paste the token in the config file.  
 Example:
