@@ -401,7 +401,7 @@ module.exports = {
           if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Parsing data...' }); };
 
           let user = {
-            name: userRawData.name,
+            name: userRawData.login,
             avatarURL: userRawData.avatar_url,
             url: userRawData.html_url
           };
