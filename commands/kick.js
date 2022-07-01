@@ -18,7 +18,8 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, MessageButton, MessageActionRow } = require('discord.js')
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug, botID } = require('../config.json');
 
 // set cooldown
@@ -224,23 +225,33 @@ module.exports = {
         collector.on('collect', async i => {
           if (i.user.id === executorID) {
             if (i.customId === 'yesKick') {
+              await i.deferUpdate();
               if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executorTag} proceeded with kicking ${targetTag}` }); };
 
               // kick then edit with success embed
               await executorGuild.kick(target, {reason});
-              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executorTag} kicked ${targetTag}`, extra: `With reason: ${reason}` }); };
+              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executorTag} kicked ${targetTag}`, extra: [`With reason: ${reason}`] }); };
               let successEmbed = embedConstructor('kickSuccess', { who: `${targetTag}`, reason: `${reason}` });
 
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `Kick embed updated with success embed` }); };
-              await i.update({ embeds: [successEmbed], components: [] });
+              await i.editReply({ embeds: [successEmbed], components: [] });
+
+              // kills the collector
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
+              collector.stop();
 
             } else if (i.customId === 'noKick') {
+              await i.deferUpdate();
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} cancelled kicking ${targetTag}` }); };
 
               // edit with cancelled embed
               let cancelledEmbed = embedConstructor('kickCancel', { who: `${targetTag}` });
               if (debug) { log('genLog', { event: 'Commands > Kick', content: `Kick embed updated with cancelled embed` }); };
-              await i.update({ embeds: [cancelledEmbed], components: [] });
+              await i.editReply({ embeds: [cancelledEmbed], components: [] });
+
+              // kills the collector
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
+              collector.stop();
 
             }
 
@@ -250,13 +261,10 @@ module.exports = {
             if (debug) { log('genWarn', { event: 'Kick', content: `Other user tried to use a confirmation embed that did not belong to them` }); };
             let notForUserEmbed = embedConstructor('kickFailedNFU', {});
             if (debug) { log('genWarn', { event: 'Kick', content: 'Sending error embed' }); };
-            await i.reply({ embeds: [notForUserEmbed], ephemeral: true });
+            await i.followUp({ embeds: [notForUserEmbed], ephemeral: true });
             
           };
 
-          // kills the collector
-          if (debug) { log('genLog', { event: 'Commands > Kick', content: `Component collector was killed` }); };
-          collector.stop();
         });
 
 

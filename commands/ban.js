@@ -18,7 +18,8 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, MessageButton, MessageActionRow } = require('discord.js');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug, botID } = require('../config.json');
 
 // set cooldown
@@ -74,7 +75,7 @@ module.exports = {
             target = interaction.options.getUser('target');
             targetTag = target.tag;
             targetID = target.id;
-            if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${targetTag} by ${executorTag}`, extra: 'Target is outside server' }); };
+            if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${targetTag} by ${executorTag}`, extra: ['Target is outside server'] }); };
 
           await executor.guild.bans.fetch({ cache: false }).then((value) => {
             bannedUser = value.get(targetID);
@@ -98,7 +99,7 @@ module.exports = {
             target = interaction.options.getMember('target');   
             targetTag = target.user.tag;
             targetID = target.user.id;
-            if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${targetTag} by ${executorTag}`, extra: 'Target is inside server' }); };
+            if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${targetTag} by ${executorTag}`, extra: ['Target is inside server'] }); };
 
         };
 
@@ -236,23 +237,33 @@ module.exports = {
         collector.on('collect', async i => {
           if (i.user.id === executorID) {
             if (i.customId === 'yesBan') {
+              await i.deferUpdate();
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} proceeded with banning ${targetTag}` }); };
 
               // create ban then edit with success embed
               await executorGuild.bans.create(target, {reason});
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} banned ${targetTag}`, extra: `With reason: ${reason}` }); };
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} banned ${targetTag}`, extra: [`With reason: ${reason}`] }); };
               let successEmbed = embedConstructor('banSuccess', { who: `${targetTag}`, reason: `${reason}` });
 
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban embed updated with success embed` }); };
-              await i.update({ embeds: [successEmbed], components: [] });
+              await i.editReply({ embeds: [successEmbed], components: [] });
+
+              // kills the collector
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
+              collector.stop();
 
             } else if (i.customId === 'noBan') {
+              await i.deferUpdate();
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} cancelled banning ${targetTag}` }); };
 
               // edit with cancelled embed
               let cancelledEmbed = embedConstructor('banCancel', { who: `${targetTag}` });
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban embed updated with cancelled embed` }); };
-              await i.update({ embeds: [cancelledEmbed], components: [] });
+              await i.editReply({ embeds: [cancelledEmbed], components: [] });
+
+              // kills the collector
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
+              collector.stop();
 
             }
 
@@ -266,9 +277,6 @@ module.exports = {
             
           };
 
-          // kills the collector
-          if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
-          collector.stop();
         });
 
         // cooldown management
