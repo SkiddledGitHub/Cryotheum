@@ -17,7 +17,8 @@
 
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug, botOwner } = require('../config.json');
 
 // set cooldown

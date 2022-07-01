@@ -17,7 +17,8 @@
 
 // modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug } = require('../config.json');
 const encd = require('@root/encoding');
 const b32cd = require('base32-encoding');

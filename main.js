@@ -20,7 +20,8 @@ const { botAuth, loggingMessages, debug } = require('./config.json');
 const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
 const fs = require('node:fs');
 const process = require('process');
-const { embedConstructor, log } = require('./lib/cryoLib.js');
+const { embedConstructor } = require('./lib/embeds.js');
+const { log } = require('./lib/logging.js');
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES ], 
                             presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
                           });

@@ -17,7 +17,8 @@
 
 // modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug, botOwner } = require('../config.json');
 
 module.exports = {
@@ -91,7 +92,7 @@ module.exports = {
             }
 
             // throw
-            if (debug) { log('runtimeErr', { event: 'Eval', errName: errObj.name, content: errObj.message, extra: `Code: ${code}` }) };
+            if (debug) { log('runtimeErr', { event: 'Eval', errName: errObj.name, content: errObj.message, extra: [`Code: ${code}`] }) };
             return;
 
           } else {
@@ -107,7 +108,7 @@ module.exports = {
             }
 
             // log success
-            log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: `Code: ${code}` });
+            log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: [`Code: ${code}`] });
 
           }
           

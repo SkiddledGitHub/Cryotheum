@@ -20,7 +20,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 const { debug } = require('../config.json');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const ytdl = require('ytdl-core');
 
 
@@ -54,7 +55,7 @@ module.exports = {
       if (!isYoutubeUrl) { 
         const embed = embedConstructor('playFailed', { url: `${url}`, reason: 'Link provided is not a YouTube video link.' }); 
         async function failed() { await interaction.reply({ embeds: [embed] }); }; failed(); 
-        if (debug) { log('cmdErr', { event: 'Play', content: `Link provided is not a YouTube video link`, extra: `Link: ${url}` }); };
+        if (debug) { log('cmdErr', { event: 'Play', content: `Link provided is not a YouTube video link`, extra: [`Link: ${url}`] }); };
         return; 
       };
 
@@ -91,7 +92,7 @@ module.exports = {
       const successEmbed = embedConstructor('playSuccess', { url: `${url}` });
       if (debug) { log('genLog', { event: 'Commands > Play', content: `Sending success embed` }); };
       await interaction.reply({ embeds: [successEmbed] });
-      if (debug) { log('genLog', { event: 'Commands > Play', content: `${executorTag} is playing audio of a video`, extra: `Link: ${url}` }); };
+      if (debug) { log('genLog', { event: 'Commands > Play', content: `${executorTag} is playing audio of a video`, extra: [`Link: ${url}`] }); };
       // if player inactive, destroy connection
       player.on(voice.AudioPlayerStatus.Idle, () => {
         if (debug) { log('genLog', { event: 'Commands > Play', content: `Player idling, destroying connection...` }); };

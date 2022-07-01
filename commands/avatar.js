@@ -17,7 +17,8 @@
 
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require ('../lib/logging.js');
 const { debug } = require('../config.json');
 
 // set cooldown
@@ -79,7 +80,7 @@ module.exports = {
         // reply
         if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Replying with embed` }); };
       	await interaction.reply({ embeds: [avatarEmbed] });
-      	if (debug) { if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Avatar command succeeded.`, extra: `Target is ${targetTag}` }); }; };
+      	if (debug) { if (debug) { log('genLog', { event: 'Commands > Avatar', content: `Avatar command succeeded.`, extra: [`Target is ${targetTag}`] }); }; };
 
       	// cooldown management
       	cooldown.add(interaction.user.id);

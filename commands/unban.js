@@ -18,7 +18,8 @@
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, Collection } = require('discord.js')
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug } = require('../config.json');
 
 // set cooldown
@@ -131,7 +132,7 @@ module.exports = {
           const successEmbed = embedConstructor("unbanSuccess", { who: `${targetTag}`, reason: `${reason}` });
           if (debug) { log('genLog', { event: 'Commands > Unban', content: `Replying with success embed` }); };
           await interaction.reply({ embeds: [successEmbed] });
-          if (debug) { log('genLog', { event: 'Commands > Unban', content: `${executorTag} unbanned ${targetTag}`, extra: `With reason: ${reason}` }); };
+          if (debug) { log('genLog', { event: 'Commands > Unban', content: `${executorTag} unbanned ${targetTag}`, extra: [`With reason: ${reason}`] }); };
 
         } catch (error) { 
 

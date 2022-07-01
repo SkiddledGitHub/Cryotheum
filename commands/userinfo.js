@@ -18,7 +18,8 @@
 // modules
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const decache = require('decache');
 const { debug } = require('../config.json');
 const emojis = require('node-emoji');

@@ -18,7 +18,8 @@
 // modules
 const { SlashCommandBuilder, time } = require('@discordjs/builders');
 const { MessageAttachment } = require('discord.js');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
 const { debug, githubAuth } = require('../config.json');
 const axios = require('axios');
 
