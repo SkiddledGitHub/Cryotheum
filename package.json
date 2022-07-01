@@ -32,6 +32,7 @@
     "bufferutil": "^4.0.6",
     "decache": "^4.6.1",
     "discord-api-types": "^0.31.1",
+    "discord-player": "^5.2.2",
     "discord.js": "^13.6.0",
     "erlpack": "github:discord/erlpack",
     "install": "^0.13.0",
