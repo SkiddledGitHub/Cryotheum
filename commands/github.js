@@ -413,12 +413,17 @@ module.exports = {
             { name: 'Following', value: `${userRawData.following}`, inline: true }
           ];
 
-          let commitsCount = await githubUserContributions(userRawData.login);
-          if (!commitsCount) {
-            user.data.push({ name: 'Commits', value: '(Unavailable)', inline: true });
-          } else {
-            user.data.push({ name: 'Commits', value: `${commitsCount}`, inline: true });
-          };
+          if (userRawData.type == 'User') {
+            let commitsCount = await githubUserContributions(userRawData.login);
+            if (!commitsCount) {
+              user.data.push({ name: 'Commits', value: '(Unavailable)', inline: true });
+            } else {
+              user.data.push({ name: 'Commits', value: `${commitsCount}`, inline: true });
+            };
+            user.org = false;
+          } else if (userRawData.type == 'Organization') {
+            user.org = true;
+          }
 
           if (userRawData.bio) {
             user.bio = `*${userRawData.bio}*`;
