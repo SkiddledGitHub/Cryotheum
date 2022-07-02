@@ -25,7 +25,8 @@ module.exports = {
   data: new SlashCommandBuilder()
   	.setName('eval')
   	.setDescription('Evaluate JS code. Restricted to bot owner (for obvious reasons)')
-  	.addStringOption((option) => option.setName('code').setDescription('Code to evaluate').setRequired(true)),
+  	.addStringOption((option) => option.setName('code').setDescription('Code to evaluate').setRequired(true))
+    .addBooleanOption((option) => option.setName('async').setDescription('Make the code run in an async function').setRequired(false)),
   async execute(interaction) {
 
       // constants
@@ -66,11 +67,11 @@ module.exports = {
 
           // execute
           let errObj;
-          eval(`try {
-                  ${code}
-                } catch (e) {
-                  errObj = e;
-                }`);
+          if (interaction.options.getBoolean('async')) {
+            try { await eval(`try { async function evaluation() { ${code} }; evaluation(); } catch (e) { errObj = e; }`); } catch (e) { errObj = e };
+          } else {
+            try { await eval(`try { ${code} } catch (e) { errObj = e; }`); } catch (e) { errObj = e; };
+          }
 
           if (errObj) {
             // set embed
