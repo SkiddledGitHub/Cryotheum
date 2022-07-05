@@ -34,9 +34,9 @@ client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 log('genLog', { event: 'Init > Loading', content: `Loading commands` });
 for (const files of commandFiles) {
-const command = require(`./commands/${files}`);
-client.commands.set(command.data.name, command);
-if (debug) { log('genLog', { event: 'Init > Loading', content: `Loaded \"${command.data.name}\"` }); };
+  const command = require(`./commands/${files}`);
+  client.commands.set(command.data.name, command);
+  if (debug) { log('genLog', { event: 'Init > Loading', content: `Loaded \"${command.data.name}\"` }); };
 }
 
 // notify ready
@@ -74,8 +74,10 @@ const command = client.commands.get(interaction.commandName);
     try {
       await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (e) {
-      if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
-      await interaction.followUp({ embeds: [embed], ephemeral: true });
+      if (e.message == 'Interaction has already been acknowledged.') { 
+        if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+        await interaction.followUp({ embeds: [embed], ephemeral: true });
+      }
     }
   }
 });
