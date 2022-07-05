@@ -17,7 +17,8 @@
 
 // modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedConstructor, log } = require('../lib/cryoLib.js');
+const { embedConstructor } = require('../lib/embeds.js');
+const { log }= require('../lib/logging.js');
 const { debug } = require('../config.json');
 
 // set cooldown
@@ -47,5 +48,13 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
       }
+  },
+  documentation: {
+    name: 'template',
+    category: 'Testing',
+    description: 'template command, replies with \"test\" and outputs \"test\" in the console',
+    syntax: '/template',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: []
   }
 }
