@@ -35,7 +35,7 @@ module.exports = {
   .addStringOption((option) => option.setName('type').setDescription('Select what you want to search').setRequired(true)
                                      .addChoice('GitHub Repository', 'repo')
                                      .addChoice('GitHub User', 'user'))
-  .addStringOption((option) => option.setName('target').setDescription('GitHub Repository or User').setRequired(true)),
+  .addStringOption((option) => option.setName('target').setDescription('Search query').setRequired(true)),
   async execute(interaction) {
     // cooldown management
     if (cooldown.has(interaction.user.id)) {
@@ -156,7 +156,7 @@ module.exports = {
           };
 
           async function mainRepoFunction() {
-            interaction.deferReply();
+            await interaction.deferReply();
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'User selected repo search.' }); };
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using Axios to search GitHub API...' }); };
 
@@ -373,7 +373,7 @@ module.exports = {
           }
 
           async function mainUserFunction() {
-            interaction.deferReply();
+            await interaction.deferReply();
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'User selected user search.' }); };
             if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using Axios to search GitHub API...' }); };
 
@@ -488,5 +488,16 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
       }
+  },
+  documentation: {
+    name: 'github',
+    category: 'Information',
+    description: 'Get information on a GitHub Repository or user.',
+    syntax: '/github type:[StringSelection] target:[String]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'type', targetValue: 'String [Selection]', description: 'Select what you want to search.\nSelection: [ repo user ]' },
+      { name: 'target', targetValue: 'String', description: 'Search query.'  }
+    ]
   }
 }
