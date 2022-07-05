@@ -135,5 +135,16 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
         }
-    }
+    },
+  documentation: {
+    name: 'decode',
+    category: 'Utility',
+    description: 'Decode a string from various formats',
+    syntax: '/decode string:[String] format:[StringSelection]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'string', targetValue: 'String', description: 'String to decode' },
+      { name: 'format', targetValue: 'String [Selection]', description: 'Format to decode your string from.', selection: '*`binary`* | *`hex`* | *`base32`* | *`base64`*' }
+    ]
+  }
 }

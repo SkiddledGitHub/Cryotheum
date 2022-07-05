@@ -27,6 +27,7 @@ const cooldown = new Set();
 const cooldownTime = 4000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '4 seconds' });
 
+
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('kick')
@@ -273,5 +274,16 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
         
         }
+    },
+    documentation: {
+      name: 'kick',
+      category: 'Moderation',
+      description: 'Kick a member with a reason (optional).',
+      syntax: '/kick target:[User] reason:[StringOptional]',
+      cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+      arguments: [
+        { name: 'target', targetValue: 'User', description: 'The target to kick.' },
+        { name: 'reason', targetValue: 'String [Optional]', description: 'The reason for kicking the target member.' }
+      ]
     }
 }

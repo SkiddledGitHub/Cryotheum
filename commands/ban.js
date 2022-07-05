@@ -284,5 +284,16 @@ module.exports = {
         setTimeout(() => { cooldown.delete(executorID); }, cooldownTime);
         
         }
-    }
+    },
+  documentation: {
+    name: 'ban',
+    category: 'Moderation',
+    description: 'Ban a person from the Discord server.',
+    syntax: '/ban target:[User] reason:[StringOptional]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'target', targetValue: 'User', description: 'Target user to ban.' },
+      { name: 'reason', targetValue: 'String [Optional]', description: 'Reason why you banned this user.' }
+    ]
+  }
 }

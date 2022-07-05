@@ -70,5 +70,13 @@ module.exports = {
       setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
       	}
-    }
+    },
+  documentation: {
+    name: 'stop',
+    category: 'Media',
+    description: 'Make the bot leave the VC',
+    syntax: '/stop',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: []
+  }
 }

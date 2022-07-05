@@ -150,5 +150,16 @@ module.exports = {
             cooldown.delete(interaction.user.id);
           }, cooldownTime);
         }
+  },
+  documentation: {
+    name: 'unban',
+    category: 'Moderation',
+    description: 'Unban a person from the Discord server.',
+    syntax: '/unban target:[User] reason:[StringOptional]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'target', targetValue: 'User [ID]', description: 'Target user to unban' },
+      { name: 'reason', targetValue: 'String [Optional]', description: 'Reason why you unbanned this user' }
+    ]
   }
 }

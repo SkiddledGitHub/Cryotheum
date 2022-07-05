@@ -496,7 +496,7 @@ module.exports = {
     syntax: '/github type:[StringSelection] target:[String]',
     cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
     arguments: [
-      { name: 'type', targetValue: 'String [Selection]', description: 'Select what you want to search.\nSelection: [ repo user ]' },
+      { name: 'type', targetValue: 'String [Selection]', description: 'Select what you want to search.', selection: '*`repo`* | *`user`*' },
       { name: 'target', targetValue: 'String', description: 'Search query.'  }
     ]
   }

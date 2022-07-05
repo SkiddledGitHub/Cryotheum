@@ -144,5 +144,16 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
       	}
-    }
+    },
+  documentation: {
+    name: 'encode',
+    category: 'Utility',
+    description: 'Encode a string to various formats.',
+    syntax: '/encode string:[String] format:[StringSelection]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'string', targetValue: 'String', description: 'String to encode' },
+      { name: 'format', targetValue: 'String [Optional Selection]', description: 'Format to encode your string into.', selection: '*`binary`* | *`hex`* | *`base32`* | *`base64`*' }
+    ]
+  }
 }

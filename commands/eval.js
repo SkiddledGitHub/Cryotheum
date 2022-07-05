@@ -114,5 +114,15 @@ module.exports = {
           }
           
         }
-  	}
+  	},
+  documentation: {
+    name: 'eval',
+    category: 'Utility',
+    description: 'Evaluate JS code. Restricted to bot owner (for obvious reasons)',
+    syntax: '/eval code:[String] async:[Boolean]',
+    arguments: [
+      { name: 'code', targetValue: 'String', description: 'Code to evaluate' },
+      { name: 'async', targetValue: 'Boolean [Optional Selection]', description: 'Make the code run in an async function.', selection: '*`True`* | *`False`*' }
+    ]
+  }
 }

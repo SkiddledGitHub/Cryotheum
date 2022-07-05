@@ -42,7 +42,7 @@ module.exports = {
 
       	// constants
       	const executor = interaction.member;
-	const executorTag = executor.user.tag;
+	      const executorTag = executor.user.tag;
 
       	// define target variables
       	var target;
@@ -185,5 +185,15 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
 
       	}
-    }
+    },
+  documentation: {
+    name: 'userinfo',
+    category: 'Information',
+    description: 'Get user profile from a Discord user',
+    syntax: '/userinfo target:[UserOptional]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'target', targetValue: 'User [Optional]', description: 'User to get user information on' }
+    ]
+  }
 }

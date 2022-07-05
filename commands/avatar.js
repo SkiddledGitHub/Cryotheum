@@ -87,5 +87,15 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
       	
         }
-    }
+    },
+  documentation: {
+    name: 'avatar',
+    category: 'Information',
+    description: 'Get avatar from a Discord user.',
+    syntax: '/avatar target:[UserOptional]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'target', targetValue: 'User [Optional]', description: 'The target user to get the avatar from.' }
+    ]
+  }
 }

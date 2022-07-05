@@ -33,8 +33,8 @@ const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('play')
-  .setDescription('Play audio to VC from specified video link')
-  .addStringOption((option) => option.setName('link').setDescription('Link of the video to play audio').setRequired(true)),
+  .setDescription('Play audio to VC from specified YouTube video link')
+  .addStringOption((option) => option.setName('link').setDescription('Link of the video to play audio from').setRequired(true)),
   async execute(interaction) {
       // cooldown management
       if (cooldown.has(interaction.user.id)) {
@@ -105,5 +105,15 @@ module.exports = {
       setTimeout(() => { cooldown.delete(executorID); }, cooldownTime);
 
       	}
-    }
+    },
+  documentation: {
+    name: 'play',
+    category: 'Media',
+    description: 'Play audio to VC from specified YouTube video link.',
+    syntax: '/play link:[String]',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: [
+      { name: 'link', targetValue: 'String', description: 'The link of the video to play audio from' }
+    ]
+  }
 }

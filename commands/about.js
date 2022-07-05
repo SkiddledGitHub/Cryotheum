@@ -51,5 +51,13 @@ module.exports = {
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
         
         }
-    }
+    },
+  documentation: {
+    name: 'about',
+    category: 'Information',
+    description: 'Display information about the bot.',
+    syntax: '/about',
+    cooldown: `${Math.round(cooldownTime / 1000)} seconds`,
+    arguments: []
+  }
 }
