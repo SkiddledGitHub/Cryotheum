@@ -66,6 +66,21 @@ module.exports = {
           // force fetch
           target.obj.fetch();
 
+          // avatar determination
+          if (target.obj.avatar) {
+            if (target.obj.avatar.slice(0,2) == 'a_') {
+              target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 });
+            } else {
+              target.avatar = target.obj.displayAvatarURL({ dynamic: true, size: 1024 });
+            };
+          } else {
+            if (target.obj.user.avatar.slice(0,2) == 'a_') {
+              target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 });
+            } else {
+              target.avatar = target.obj.displayAvatarURL({ dynamic: true, size: 1024 });
+            };
+          };
+
       		// get target's roles
       		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
@@ -86,6 +101,21 @@ module.exports = {
           // force fetch
           target.obj.fetch();
 
+          // avatar determination
+          if (target.obj.avatar) {
+            if (target.obj.avatar.slice(0,2) == 'a_') {
+              target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 });
+            } else {
+              target.avatar = target.obj.displayAvatarURL({ dynamic: true, size: 1024 });
+            };
+          } else {
+            if (target.obj.user.avatar.slice(0,2) == 'a_') {
+              target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 });
+            } else {
+              target.avatar = target.obj.displayAvatarURL({ dynamic: true, size: 1024 });
+            };
+          };
+
       		// get target's roles
       		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
@@ -105,6 +135,13 @@ module.exports = {
 
           // force fetch
           target.obj.fetch();
+
+          // avatar determination
+          if (target.obj.avatar.slice(0,2) == 'a_') {
+            target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 });
+          } else {
+            target.avatar = target.obj.displayAvatarURL({ dynamic: true, size: 1024 });
+          };
 
           if (target.obj.banner) {
             target.banner = target.obj.bannerURL({ extension: 'png', size: 1024 });
@@ -160,9 +197,9 @@ module.exports = {
         if (debug) { log('genLog', { event: 'Commands > User Info', content: `Constructing embed` }); };
 
       	if (!target.member) {
-      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.obj.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.avatar}` });
       	} else {
-      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, roles: `${target.roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.obj.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, roles: `${target.roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.avatar}` });
       	};
 
         if (debug) { log('genLog', { event: 'Commands > User Info', content: `Replying with embed` }); };
