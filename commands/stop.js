@@ -39,11 +39,10 @@ module.exports = {
       } else {
 
       // constants
-      const executor = interaction.member;
-      const executorTag = executor.user.tag;
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild };
       const channel = executor.guild.me.voice.channel;
 
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Command initialized by ${executorTag}` }); };
+      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Command initialized by ${executor.tag}` }); };
 
       // if bot not in channel, pull error
       if (!channel) { 

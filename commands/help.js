@@ -38,10 +38,9 @@ module.exports = {
     await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-        const executor = interaction.member;
-        const executorTag = executor.user.tag;
+        const executor = { obj: interaction.member, tag: interaction.user.tag };
 
-        if (debug) { log('genLog', { event: 'Commands > Help', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > Help', content: `Command initialized by ${executor.tag}` }); };
 
         if (!interaction.options.getString('command')) {
           if (debug) { log('genLog', { event: 'Commands > Help', content: `User provided no command to display documentation, displaying command list` }); };

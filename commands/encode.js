@@ -47,10 +47,9 @@ module.exports = {
       } else {
 
         // constants
-        const executor = interaction.member;
-        const executorTag = executor.user.tag;
+        const executor = { obj: interaction.member, tag: interaction.user.tag };
 
-        if (debug) { log('genLog', { event: 'Commands > Encode', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > Encode', content: `Command initialized by ${executor.tag}` }); };
 
       	const inputString = interaction.options.getString('string');
 

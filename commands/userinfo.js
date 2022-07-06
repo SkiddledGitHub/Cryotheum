@@ -41,125 +41,112 @@ module.exports = {
       } else {
 
       	// constants
-      	const executor = interaction.member;
-	      const executorTag = executor.user.tag;
+      	const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id };
 
-      	// define target variables
-      	var target;
-      	var targetTag;
-      	var targetID;
-        var targetBannerImage;
+      	// define target
+      	var target = {};
 
       	// define date variables
       	var joinedAt;
       	var createdAt;
 
-      	// define guild member data variables
-      	var roles;
-
       	// define other variables
-      	var embed;
-      	var isGuildMember;
+        var embed;
         var sBadges = "";
         var iBadges = "";
 
-        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Command initialized by ${executor.tag}` }); };
 
       	// if option is blank, get executor's data instead
       	if (!interaction.options.getMember('target') && !interaction.options.getUser('target')) {
       	  
       		// assign target as executor
-      		target = executor;
-      		targetTag = target.user.tag;
-          targetID = codeBlock('yaml', `ID: ${target.id}`);
-          isGuildMember = true;
+      		target = { obj: executor.obj, tag: executor.tag, id: codeBlock('yaml', `ID: ${executor.id}`), member: true };
 
           // force fetch
-          target.fetch();
+          target.obj.fetch();
 
       		// get target's roles
-      		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
+      		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
       		// get target's guild join and account creation date
-          	joinedAt = { full: `${time(target.joinedAt, 'f')}`, mini: `${time(target.joinedAt, 'R')}` };
-            createdAt = { full: `${time(target.user.createdAt, 'f')}`, mini: `${time(target.user.createdAt, 'R')}` };
+          	joinedAt = { full: `${time(target.obj.joinedAt, 'f')}`, mini: `${time(target.obj.joinedAt, 'R')}` };
+            createdAt = { full: `${time(target.obj.user.createdAt, 'f')}`, mini: `${time(target.obj.user.createdAt, 'R')}` };
       	
       	};
 
       	// if target is guild member
       	if (interaction.options.getMember('target')) {
 
+          let userCache = interaction.options.getMember('target');
+
       		// assigning target
-      		target = interaction.options.getMember('target');
-      		targetTag = target.user.tag;
-      		targetID = codeBlock('yaml', `ID: ${target.id}`);
-      		isGuildMember = true;
+      		target = { obj: userCache, tag: userCache.user.tag, id: codeBlock('yaml', `ID: ${userCache.user.id}`), member: true };
 
           // force fetch
-          target.fetch();
+          target.obj.fetch();
 
       		// get target's roles
-      		roles = target.roles.cache.map(r => r).toString().replace(/,/g, ' ');
+      		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ');
 
       		// get target's guild join and account creation date
-          	joinedAt = { full: `${time(target.joinedAt, 'f')}`, mini: `${time(target.joinedAt, 'R')}` };
-            createdAt = { full: `${time(target.user.createdAt, 'f')}`, mini: `${time(target.user.createdAt, 'R')}` };
+          	joinedAt = { full: `${time(target.obj.joinedAt, 'f')}`, mini: `${time(target.obj.joinedAt, 'R')}` };
+            createdAt = { full: `${time(target.obj.user.createdAt, 'f')}`, mini: `${time(target.obj.user.createdAt, 'R')}` };
 
       	};
 
       	// if member is not guild member
       	if (!interaction.options.getMember('target') && interaction.options.getUser('target')) {
       	
+          let userCache = interaction.options.getUser('target');
+
       		// assigning target
-      		target = interaction.options.getUser('target');
-      		targetTag = target.tag;
-      		targetID = codeBlock('yaml', `ID: ${target.id}`);
-      		isGuildMember = false;
+          target = { obj: userCache, tag: userCache.tag, id: codeBlock('yaml', `ID: ${userCache.id}`), member: false };
 
           // force fetch
-          target.fetch();
+          target.obj.fetch();
 
-          if (target.banner != undefined) {
-            targetBannerImage = target.bannerURL({ extension: 'png', size: 1024 });
-          }
+          if (target.obj.banner) {
+            target.banner = target.obj.bannerURL({ extension: 'png', size: 1024 });
+          };
 
       		// get target's account creation date
-            createdAt = { full: `${time(target.createdAt, 'f')}`, mini: `${time(target.createdAt, 'R')}` };
+            createdAt = { full: `${time(target.obj.createdAt, 'f')}`, mini: `${time(target.obj.createdAt, 'R')}` };
 
       	};
 
-        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Target set to ${targetTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Target set to ${target.tag}` }); };
 
       	// assign special emojis to certain users
         function specialBadgesParsing() {
           let { specialBadges } = require('../config.json');
-          sBadges = specialBadges[target.id];
+          sBadges = specialBadges[target.obj.id];
           decache('../config.json');
-          if (sBadges == undefined) { sBadges = ''; return; };
+          if (!sBadges) { sBadges = ''; return; };
         };
         specialBadgesParsing();
         if (debug) { log('genLog', { event: 'Commands > User Info', content: `Parsed special badges from target` }); };
 
         function insightBadgesParsing() {
-          var isOwner = false;
-          var isAdmin = false;
-            if (!isGuildMember) {
-            if (target.bot) {
+          let isOwner = false;
+          let isAdmin = false;
+            if (!target.member) {
+            if (target.obj.bot) {
               iBadges += `<:bot:965220811424288789>.`;
             };
           } else {
-            if (target.user.bot) {
+            if (target.obj.user.bot) {
               iBadges += `<:bot:965220811424288789>.`;
             };
-             if (target.id == interaction.guild.ownerId) {
+             if (target.obj.id == interaction.guild.ownerId) {
               iBadges += `<:guildOwner:965220811638202378>.`
               isOwner = true;
             };
-            if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !isOwner) {
+            if (interaction.guild.members.cache.get(target.obj.id).permissions.has([Permissions.FLAGS.ADMINISTRATOR]) && !isOwner) {
               iBadges += `<:guildAdmin:965220811248107550>.`
               isAdmin = true;
             };
-            if (interaction.guild.members.cache.get(target.id).permissions.has([Permissions.FLAGS.MANAGE_MESSAGES]) && !isOwner && !isAdmin) {
+            if (interaction.guild.members.cache.get(target.obj.id).permissions.has([Permissions.FLAGS.MANAGE_MESSAGES]) && !isOwner && !isAdmin) {
               iBadges += `<:guildModerator:965220811571093545>.`
             };
           };
@@ -168,13 +155,14 @@ module.exports = {
           if (iBadges == '') { return; };
         };
         insightBadgesParsing();
-        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Parsed insight badges` }); };
 
+        if (debug) { log('genLog', { event: 'Commands > User Info', content: `Parsed insight badges` }); };
         if (debug) { log('genLog', { event: 'Commands > User Info', content: `Constructing embed` }); };
-      	if (!isGuildMember) {
-      	embed = embedConstructor('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+
+      	if (!target.member) {
+      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.obj.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	} else {
-      	embed = embedConstructor('userinfoSuccess', { guildMember: `${isGuildMember}`, who: `${target}`, whoTag: `${targetTag}`, idBlock: `${targetID}`, roles: `${roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.displayAvatarURL({ dynamic: true, size: 1024 })}` });
+      	 embed = embedConstructor('userinfoSuccess', { guildMember: `${target.member}`, who: `${target.obj}`, whoTag: `${target.tag}`, idBlock: `${target.id}`, roles: `${target.roles}`, joinedAt: {full: `${joinedAt.full}`, mini: `${joinedAt.mini}`}, createdAt: {full: `${createdAt.full}`, mini: `${createdAt.mini}`}, sBadges: `${sBadges}`, iBadges: `${iBadges}`, avatar: `${target.obj.displayAvatarURL({ dynamic: true, size: 1024 })}` });
       	};
 
         if (debug) { log('genLog', { event: 'Commands > User Info', content: `Replying with embed` }); };

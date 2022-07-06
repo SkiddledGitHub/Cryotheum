@@ -41,17 +41,12 @@ module.exports = {
       } else {
 
         // variables
-        var target;
-        var targetTag;
-        var targetID;
+        var target = {};
         var reason;
 
         // constants
-        const executor = interaction.member;
-        const executorTag = executor.user.tag;
-        const executorID = executor.user.id;
-        const executorGuild = executor.guild;
-        const botUser = executorGuild.me;
+        const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild };
+        const botUser = executor.guild.me;
 
         // ui
         const buttonRow = new MessageActionRow().addComponents( 
@@ -59,26 +54,27 @@ module.exports = {
           new MessageButton().setLabel('No').setCustomId('noKick').setStyle('DANGER').setEmoji('986186598444056617'),
         );
 
-        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Command initialized by ${executor.tag}` }); };
 
         // get reason
         if (!interaction.options.getString('reason')) {
-            reason = `No reasons given - Executor: ${executorTag}`;
+            reason = `No reasons given - Executor: ${executor.tag}`;
         } else {
-            reason = `${interaction.options.getString('reason')} - Executor: ${executorTag}`
+            reason = `${interaction.options.getString('reason')} - Executor: ${executor.tag}`
         };
-        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Kick reason set to \"${reason}\" by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Kick reason set to \"${reason}\" by ${executor.tag}` }); };
 
         // user not in server
         if (!interaction.options.getMember('target')) {
 
+          let userCache = interaction.options.getUser('target')
+
           // set target
-          target = interaction.options.getUser('target');
-          targetTag = target.tag;
+          target = { obj: userCache, tag: userCache.tag };
 
           // throw
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'Target is not in server' }); };
-          let embed = embedConstructor('kickFailed', { who: targetTag, reason: 'Target is not in the server!' });
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'Target is not in server' }); };
+          let embed = embedConstructor('kickFailed', { who: target.tag, reason: 'Target is not in the server!' });
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };          
           interaction.reply({ embeds: [embed] });
           return;
@@ -86,23 +82,23 @@ module.exports = {
         // user in server
         } else {
 
+          let userCache = interaction.options.getMember('target');
+
           // set target
-          target = interaction.options.getMember('target');
-          targetID = target.user.id;
-          targetTag = target.user.tag;
+          target = { obj: userCache, tag: userCache.user.tag, id: userCache.user.id };
 
         };
 
-        log('genLog', { event: 'Commands > Kick', content: `Kick target set to ${targetTag} by ${executorTag}` });
+        log('genLog', { event: 'Commands > Kick', content: `Kick target set to ${target.tag} by ${executor.tag}` });
 
         // target is bot
-        if (targetID == botID) {
+        if (target.id == botID) {
 
           // set embed
-          let embed = embedConstructor('kickFailed', { who: targetTag, reason: 'You cannot kick the bot itself!' });
+          let embed = embedConstructor('kickFailed', { who: target.tag, reason: 'You cannot kick the bot itself!' });
 
           // throw
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick the bot` }); };
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick the bot` }); };
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
           interaction.reply({ embeds: [embed] });
           return;
@@ -110,13 +106,13 @@ module.exports = {
         }
 
         // target is executor
-        if (targetID == executorID) {        
+        if (target.id == executor.id) {        
 
           // set embed
-          let embed = embedConstructor('kickFailed', { who: targetTag, reason: 'You cannot kick yourself!' });
+          let embed = embedConstructor('kickFailed', { who: target.tag, reason: 'You cannot kick yourself!' });
 
           // throw 
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick themselves` }); };
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick themselves` }); };
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
           interaction.reply({ embeds: [embed] });
           return;
@@ -126,25 +122,25 @@ module.exports = {
         // role pos checking part 1
 
         // bot highest role lower than target
-        if (botUser.roles.highest.comparePositionTo(target.roles.highest) < 0) {
+        if (botUser.roles.highest.comparePositionTo(target.obj.roles.highest) < 0) {
 
           // set embed
-          let embed = embedConstructor('kickFailed', { who: targetTag, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than target\'s highest role (${target.roles.highest})` });
+          let embed = embedConstructor('kickFailed', { who: target.tag, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than target\'s highest role (${target.obj.roles.highest})` });
           
           // throw
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'The bot\'s highest role is lower than the target\'s highest role' }); };
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'The bot\'s highest role is lower than the target\'s highest role' }); };
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
           await interaction.reply({ embeds: [embed] });
           return;
           
         // bot highest role equal target
-        } else if (botUser.roles.highest.comparePositionTo(target.roles.highest) == 0) {
+        } else if (botUser.roles.highest.comparePositionTo(target.obj.roles.highest) == 0) {
 
           // set embed
-          let embed = embedConstructor('kickFailed', { who: targetTag, reason: `The bot\'s highest role is equal to the target\'s highest role (${botUser.roles.highest})` });
+          let embed = embedConstructor('kickFailed', { who: target.tag, reason: `The bot\'s highest role is equal to the target\'s highest role (${botUser.obj.roles.highest})` });
 
           // throw
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'The bot\'s highest role is equal to the target\'s highest role' }); };
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'The bot\'s highest role is equal to the target\'s highest role' }); };
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
           await interaction.reply({ embeds: [embed] });
           return;
@@ -155,10 +151,10 @@ module.exports = {
         if (!botUser.permissions.has([Permissions.FLAGS.KICK_MEMBERS])) {
 
           // set embed
-          let embed = embedConstructor('kickFailed', { who: `${targetTag}`, reason: 'The bot does not have the permission to kick members.' });
+          let embed = embedConstructor('kickFailed', { who: `${target.tag}`, reason: 'The bot does not have the permission to kick members.' });
 
           // throw
-          if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'Bot did not have the Kick Members permission.' }); };
+          if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'Bot did not have the Kick Members permission.' }); };
           if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
           await interaction.reply({ embeds: [embed] });
           return;
@@ -166,29 +162,29 @@ module.exports = {
         };
 
         // target is not owner
-        if (!executorID == executorGuild.ownerId) {
+        if (!executor.id == executor.guild.ownerId) {
 
           // role pos checking part 2
           // executor lower than target
-          if (executor.roles.highest.comparePositionTo(target.roles.highest) < 0) {
+          if (executor.obj.roles.highest.comparePositionTo(target.obj.roles.highest) < 0) {
 
             // set embed
-            let embed = embedConstructor('kickFailed', { who: targetTag, reason: `Your highest role is lower than the target\'s highest role (${botUser.roles.highest})` });
+            let embed = embedConstructor('kickFailed', { who: target.tag, reason: `Your highest role is lower than the target\'s highest role (${botUser.roles.highest})` });
 
             // throw
-            if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'Executor\'s highest role is lower than the target\'s highest role' }); };
+            if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'Executor\'s highest role is lower than the target\'s highest role' }); };
             if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
             await interaction.reply({ embeds: [embed] });
             return;   
 
           // executor equal to target
-          } else if (executor.roles.highest.comparePositionTo(target.roles.highest) == 0) {
+          } else if (executor.obj.roles.highest.comparePositionTo(target.obj.roles.highest) == 0) {
 
             // set embed
-            let embed = embedConstructor('kickFailed', { who: targetTag, reason: `Your highest role is equal to the target\'s highest role (${botUser.roles.highest})` });
+            let embed = embedConstructor('kickFailed', { who: target.tag, reason: `Your highest role is equal to the target\'s highest role (${botUser.roles.highest})` });
 
             // throw
-            if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'Executor\'s highest role is equal to the target\'s highest role' }); };
+            if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'Executor\'s highest role is equal to the target\'s highest role' }); };
             if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
             await interaction.reply({ embeds: [embed] });
             return;
@@ -199,10 +195,10 @@ module.exports = {
           if (!interaction.memberPermissions.has([Permissions.FLAGS.KICK_MEMBERS])) {
 
             // set embed
-            let embed = embedConstructor('kickFailed', { who: `${targetTag}`, reason: 'You do not have the permission to kick members.' });
+            let embed = embedConstructor('kickFailed', { who: `${target.tag}`, reason: 'You do not have the permission to kick members.' });
 
             // throw
-            if (debug) { log('genWarn', { event: 'Kick', content: `${executorTag} tried to kick ${targetTag} but failed`, cause: 'Executor did not have the Kick Members permission.' }); };
+            if (debug) { log('genWarn', { event: 'Kick', content: `${executor.tag} tried to kick ${target.tag} but failed`, cause: 'Executor did not have the Kick Members permission.' }); };
             if (debug) { log('genWarn', { event: 'Kick', content: `Sending error embed` }); };
             await interaction.reply({ embeds: [embed] });
             return;
@@ -212,11 +208,11 @@ module.exports = {
         };
 
         // construct confirm embed
-        let confirmationEmbed = embedConstructor('kickConfirmation', { who: `${targetTag}` });
+        let confirmationEmbed = embedConstructor('kickConfirmation', { who: `${target.tag}` });
 
         // send confirm
         await interaction.reply({ embeds: [confirmationEmbed], components: [buttonRow] });
-        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Confirmation embed was spawned due to ${executorTag}\'s request` }); };
+        if (debug) { log('genLog', { event: 'Commands > Kick', content: `Confirmation embed was spawned due to ${executor.tag}\'s request` }); };
 
         // collector
         const filter = i => i.customId === 'yesKick' || i.customId === 'noKick';
@@ -224,15 +220,15 @@ module.exports = {
         if (debug) { log('genLog', { event: 'Commands > Kick', content: `Component collector initialized` }); };
 
         collector.on('collect', async i => {
-          if (i.user.id === executorID) {
+          if (i.user.id === executor.id) {
             if (i.customId === 'yesKick') {
               await i.deferUpdate();
-              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executorTag} proceeded with kicking ${targetTag}` }); };
+              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executor.tag} proceeded with kicking ${target.tag}` }); };
 
               // kick then edit with success embed
-              await executorGuild.kick(target, {reason});
-              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executorTag} kicked ${targetTag}`, extra: [`With reason: ${reason}`] }); };
-              let successEmbed = embedConstructor('kickSuccess', { who: `${targetTag}`, reason: `${reason}` });
+              await executor.guild.kick(target, {reason});
+              if (debug) { log('genLog', { event: 'Commands > Kick', content: `${executor.tag} kicked ${target.tag}`, extra: [`With reason: ${reason}`] }); };
+              let successEmbed = embedConstructor('kickSuccess', { who: `${target.tag}`, reason: `${reason}` });
 
               if (debug) { log('genLog', { event: 'Commands > Ban', content: `Kick embed updated with success embed` }); };
               await i.editReply({ embeds: [successEmbed], components: [] });
@@ -243,10 +239,10 @@ module.exports = {
 
             } else if (i.customId === 'noKick') {
               await i.deferUpdate();
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executorTag} cancelled kicking ${targetTag}` }); };
+              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executor.tag} cancelled kicking ${target.tag}` }); };
 
               // edit with cancelled embed
-              let cancelledEmbed = embedConstructor('kickCancel', { who: `${targetTag}` });
+              let cancelledEmbed = embedConstructor('kickCancel', { who: `${target.tag}` });
               if (debug) { log('genLog', { event: 'Commands > Kick', content: `Kick embed updated with cancelled embed` }); };
               await i.editReply({ embeds: [cancelledEmbed], components: [] });
 

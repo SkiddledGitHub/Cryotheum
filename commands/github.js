@@ -42,11 +42,10 @@ module.exports = {
     await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-        const executor = interaction.member;
-        const executorTag = executor.user.tag;
+        const executor = { obj: interaction.member, tag: interaction.user.tag };
         var quit = 0;
 
-        if (debug) { log('genLog', { event: 'Commands > GitHub', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > GitHub', content: `Command initialized by ${executor.tag}` }); };
 
         if (interaction.options.getString('type') == 'repo') {
 

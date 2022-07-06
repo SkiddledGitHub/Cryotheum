@@ -42,13 +42,11 @@ module.exports = {
       } else {
 
       // constants
-      const executor = interaction.member;
-      const executorTag = executor.user.tag;
-      const executorID = executor.user.id;
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id };
       const url = interaction.options.getString('link');
-      const channel = executor.voice.channel;
+      const channel = executor.obj.voice.channel;
 
-      if (debug) { log('genLog', { event: 'Commands > Play', content: `Command initialized by ${executorTag}` }); };
+      if (debug) { log('genLog', { event: 'Commands > Play', content: `Command initialized by ${executor.tag}` }); };
 
       // check if url provided is a youtube url, if not then reply & return
       var isYoutubeUrl = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/.test(url);
@@ -60,10 +58,10 @@ module.exports = {
       };
 
       // if executor is not in channel, pull error
-      if (channel == null) { 
+      if (!channel) { 
         const embed = embedConstructor("playFailed", { url: `${url}`, reason: 'You are not in a voice channel!' }); 
         async function failed() { await interaction.reply({ embeds: [embed] }); }; failed();
-        if (debug) { log('cmdErr', { event: 'Play', content: `User (${executorTag}) is not in a voice channel` }); };
+        if (debug) { log('cmdErr', { event: 'Play', content: `User (${executor.tag}) is not in a voice channel` }); };
         return; 
       };
 
@@ -76,7 +74,7 @@ module.exports = {
       if (debug) { log('genLog', { event: 'Commands > Play', content: `Resource initialized` }); };
       if (debug) { log('genLog', { event: 'Commands > Play', content: `Attempting to join voice channel` }); };
       try {
-        const connection = joinVoiceChannel({ channelId: interaction.member.voice.channelId, guildId: interaction.member.guild.id, adapterCreator: interaction.member.guild.voiceAdapterCreator });
+        const connection = joinVoiceChannel({ channelId: executor.obj.voice.channelId, guildId: executor.obj.guild.id, adapterCreator: executor.obj.guild.voiceAdapterCreator });
       } catch (error) {
         if (debug) { log('runtimeErr', { errName: error.name, event: 'Play', content: `Cannot join voice channel`, cause: error.message }); };
       }
@@ -92,7 +90,7 @@ module.exports = {
       const successEmbed = embedConstructor('playSuccess', { url: `${url}` });
       if (debug) { log('genLog', { event: 'Commands > Play', content: `Sending success embed` }); };
       await interaction.reply({ embeds: [successEmbed] });
-      if (debug) { log('genLog', { event: 'Commands > Play', content: `${executorTag} is playing audio of a video`, extra: [`Link: ${url}`] }); };
+      if (debug) { log('genLog', { event: 'Commands > Play', content: `${executor.tag} is playing audio of a video`, extra: [`Link: ${url}`] }); };
       // if player inactive, destroy connection
       player.on(voice.AudioPlayerStatus.Idle, () => {
         if (debug) { log('genLog', { event: 'Commands > Play', content: `Player idling, destroying connection...` }); };
@@ -101,8 +99,8 @@ module.exports = {
       });
 
       // cooldown management
-    	cooldown.add(executorID);
-      setTimeout(() => { cooldown.delete(executorID); }, cooldownTime);
+    	cooldown.add(executor.id);
+      setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime);
 
       	}
     },

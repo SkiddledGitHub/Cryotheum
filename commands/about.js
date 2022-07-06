@@ -36,10 +36,9 @@ module.exports = {
       } else {
         
         // constants
-        const executor = interaction.member;
-        const executorTag = executor.user.tag;
+        const executor = { obj: interaction.member, tag: interaction.member.user.tag };
 
-        if (debug) { log('genLog', { event: 'Commands > About', content: `Command initialized by ${executorTag}` }); };
+        if (debug) { log('genLog', { event: 'Commands > About', content: `Command initialized by ${executor.tag}` }); };
 
         if (debug) { log('genLog', { event: 'Commands > About', content: `Constructing embed` }); };
         let embed = embedConstructor('about', { uptime: Math.floor(interaction.client.readyTimestamp / 1000), botOwnerID: botOwner, debugStatus: `${debug}` });

@@ -30,18 +30,17 @@ module.exports = {
   async execute(interaction) {
 
       // constants
-      const executor = interaction.member;
-      const executorTag = executor.user.tag;
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id };
       const code = interaction.options.getString('code');
       const codeHighlighted = codeBlock('js', code);
 
       // variables
       var embed;
 
-      if (debug) { log('genLog', { event: 'Commands > Eval', content: `Command initialized by ${executorTag}` }); };
+      if (debug) { log('genLog', { event: 'Commands > Eval', content: `Command initialized by ${executor.tag}` }); };
 
         // if user is not bot owner, pull error
-      	if (executor.user.id != botOwner) {
+      	if (executor.id != botOwner) {
 
           // set embed & reply & log fail
           const embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
@@ -51,7 +50,7 @@ module.exports = {
             if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
             await interaction.followUp({ embeds: [embed] });
           }
-          if (debug) { log('genWarn', { event: 'Eval', content: `${executorTag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
+          if (debug) { log('genWarn', { event: 'Eval', content: `${executor.tag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
           return;
 
         } else {
@@ -68,9 +67,9 @@ module.exports = {
           // execute
           let errObj;
           if (interaction.options.getBoolean('async')) {
-            try { await eval(`try { async function evaluation() { ${code} }; evaluation(); } catch (e) { errObj = e; }`); } catch (e) { errObj = e };
+            try { await eval(`try { let i = interaction; async function evaluation() { ${code} }; evaluation(); } catch (e) { errObj = e; }`); } catch (e) { errObj = e };
           } else {
-            try { await eval(`try { ${code} } catch (e) { errObj = e; }`); } catch (e) { errObj = e; };
+            try { await eval(`try { let i = interaction; ${code} } catch (e) { errObj = e; }`); } catch (e) { errObj = e; };
           }
 
           if (errObj) {
