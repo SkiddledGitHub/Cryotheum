@@ -36,7 +36,7 @@ log('genLog', { event: 'Init > Loading', content: `Loading commands` });
 for (const files of commandFiles) {
   const command = require(`./commands/${files}`);
   client.commands.set(command.data.name, command);
-  if (debug) { log('genLog', { event: 'Init > Loading', content: `Loaded \"${command.data.name}\"` }); };
+  if (debug) { log('extra', { event: 'Loading', content: `Loaded \"${command.data.name}\"` }); };
 }
 
 // notify ready
