@@ -21,7 +21,7 @@
   "homepage": "https://github.com/SkiddledGitHub/Cryotheum#readme",
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
-    "@discordjs/opus": "^0.5.3",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/rest": "^0.3.0",
     "@discordjs/voice": "^0.8.0",
     "@root/encoding": "^1.0.1",
