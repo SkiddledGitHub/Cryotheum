@@ -49,7 +49,7 @@ module.exports = {
 
           if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsing command list data` }); };
 
-          interaction.client.commands.forEach((value, key) => {
+          interaction.client.commands.forEach((value) => {
             if (value.documentation.name) {
               if (value.documentation.category) {
                 commandList.push({ name: value.documentation.name, category: value.documentation.category });
@@ -62,7 +62,7 @@ module.exports = {
           if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsed command list data:` }); console.log(commandList); };
           if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsing command categories` }); };
 
-          interaction.client.commands.forEach((value, key) => {
+          interaction.client.commands.forEach((value) => {
             if (value.documentation.category) {
               if (!commandCategories.includes(value.documentation.category)) {
                 commandCategories.push(value.documentation.category);

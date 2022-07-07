@@ -1,6 +1,6 @@
 /**
- *
- * Copyright 2022 SkiddledGitHub
+ * @license
+ * @copyright Copyright 2022 SkiddledGitHub
  *
  * This file is part of Cryotheum.
  * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ const { embedConstructor } = require('../lib/embeds.js');
 const { log }= require('../lib/logging.js');
 const { debug } = require('../config.json');
 
-// set cooldown
+// cooldown
 const cooldown = new Set();
 const cooldownTime = 1000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '1 seconds' });

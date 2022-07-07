@@ -203,7 +203,7 @@ module.exports = {
             let contributions = 0;
 
             if (contributionsData) {
-              contributionsData.forEach((item, index, array) => {
+              contributionsData.forEach((item) => {
                 contributions = contributions + item.contributions;
               });
               repo.data.push({ name: 'Commits', value: `${contributions}`, inline: true });
@@ -241,7 +241,7 @@ module.exports = {
             var repoTopics = '';
 
             if (repoRawData.topics.length != 0) {
-              repoRawData.topics.forEach((item, index, array) => {
+              repoRawData.topics.forEach((item) => {
                 repoTopics += `\`${item}\` `;
               })
               repo.data.push({ name: 'Topics', value: repoTopics })
