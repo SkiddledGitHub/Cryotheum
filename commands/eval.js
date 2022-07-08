@@ -47,8 +47,13 @@ module.exports = {
           try {
             await interaction.reply({ embeds: [embed] });
           } catch (e) {
-            if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
-            await interaction.followUp({ embeds: [embed] });
+            if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+            try {
+              await interaction.followUp({ embeds: [embed] });
+            } catch (e) {
+              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
+              await interaction.channel.send({ embeds: [embed] });
+            }
           }
           if (debug) { log('genWarn', { event: 'Eval', content: `${executor.tag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
           return;
@@ -87,8 +92,13 @@ module.exports = {
             try {
               await interaction.reply({ embeds: [embed], ephemeral: true });
             } catch (e) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
-              await interaction.followUp({ embeds: [embed], ephemeral: true });
+              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+              try {
+                await interaction.followUp({ embeds: [embed], ephemeral: true });
+              } catch (e) {
+                if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
+                await interaction.channel.send({ embeds: [embed], ephemeral: true });
+              }
             }
 
             // throw
@@ -103,8 +113,13 @@ module.exports = {
             try {
               await interaction.reply({ embeds: [embed] });
             } catch (e) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
-              await interaction.followUp({ embeds: [embed] });
+              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+              try {
+                await interaction.followUp({ embeds: [embed] });
+              } catch (e) {
+                if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
+                await interaction.channel.send({ embeds: [embed] });
+              }
             }
 
             // log success

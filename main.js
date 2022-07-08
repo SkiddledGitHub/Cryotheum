@@ -75,9 +75,12 @@ const command = client.commands.get(interaction.commandName);
     try {
       await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (e) {
-      if (e.message == 'Interaction has already been acknowledged.') { 
-        if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction has already been replied! Trying fallback reply method' }); };
+       if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+      try {
         await interaction.followUp({ embeds: [embed], ephemeral: true });
+      } catch (e) {
+        if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
+        await interaction.channel.send({ embeds: [embed], ephemeral: true });
       }
     }
   }
