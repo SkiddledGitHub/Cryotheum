@@ -69,6 +69,9 @@ module.exports = {
             embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
           };
 
+          // defer
+          interaction.deferReply();
+
           // execute
           let errObj;
           if (interaction.options.getBoolean('async')) {
@@ -90,7 +93,7 @@ module.exports = {
             // reply
             if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
             try {
-              await interaction.reply({ embeds: [embed], ephemeral: true });
+              await interaction.editReply({ embeds: [embed], ephemeral: true });
             } catch (e) {
               if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
               try {
@@ -111,7 +114,7 @@ module.exports = {
             if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
 
             try {
-              await interaction.reply({ embeds: [embed] });
+              await interaction.editReply({ embeds: [embed] });
             } catch (e) {
               if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
               try {
