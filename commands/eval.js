@@ -60,6 +60,9 @@ module.exports = {
 
         } else {
 
+          // defer
+          interaction.deferReply();
+
           // set embed
           if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
           if (code.length > 1020) {
@@ -68,9 +71,6 @@ module.exports = {
           } else {
             embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
           };
-
-          // defer
-          interaction.deferReply();
 
           // execute
           let errObj;
