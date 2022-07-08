@@ -99,7 +99,7 @@ module.exports = {
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using top result.' }); };
-                resData = res.data.items[1];
+                resData = res.data.items[0];
               })
               .catch(error => {
               if (error.response) {
