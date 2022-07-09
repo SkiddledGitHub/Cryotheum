@@ -61,7 +61,7 @@ module.exports = {
         } else {
 
           // defer
-          interaction.deferReply();
+          await interaction.deferReply();
 
           // set embed
           if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
