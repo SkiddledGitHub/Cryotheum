@@ -256,7 +256,7 @@ module.exports = {
 
             // different member tries to answer? block
             if (debug) { log('genWarn', { event: 'Kick', content: `Other user tried to use a confirmation embed that did not belong to them` }); };
-            let notForUserEmbed = embedConstructor('kickFailedNFU', {});
+            let notForUserEmbed = embedConstructor('notForUser', {});
             if (debug) { log('genWarn', { event: 'Kick', content: 'Sending error embed' }); };
             await i.followUp({ embeds: [notForUserEmbed], ephemeral: true });
             
