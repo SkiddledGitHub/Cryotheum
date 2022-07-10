@@ -15,16 +15,19 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 const { MessageActionRow, MessageButton } = require('discord.js');
-const { debug } = require('../config.json');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 const invidious = require('../lib/invidious.js');
 
+// data
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();

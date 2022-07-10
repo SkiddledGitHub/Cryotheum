@@ -15,19 +15,24 @@
  *
  */
 
+// node modules
 const process = require('process');
 const { stdin: input, stdout: output } = require('process');
-
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-
 const fs = require('fs');
 const readline = require('readline');
 const rl = readline.createInterface({ input, output });
 
+// discord.js modules
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+
+// data
 const { botAuth, botID } = require('./config.json');
+
+// rest module
 const rest = new REST({ version: '9' }).setToken(botAuth);
 
+// custom modules
 const { createLogString, log } = require('./lib/logging.js');
 const { gitRevision, commandsManagement } = require('./lib/miscellaneous.js');
 

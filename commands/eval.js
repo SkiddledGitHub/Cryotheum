@@ -15,10 +15,14 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
+
+// 3rd party modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
+
+// data
 const { debug, botOwner } = require('../config.json');
 
 module.exports = {

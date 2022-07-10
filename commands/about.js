@@ -15,10 +15,14 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { embedConstructor } = require('../lib/embeds.js');
+
+// custom modules
 const { log } = require('../lib/logging.js');
+const { embedConstructor } = require('../lib/embeds.js');
+
+// data
 const { debug, botOwner } = require('../config.json');
 
 // set cooldown

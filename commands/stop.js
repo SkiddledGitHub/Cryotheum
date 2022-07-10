@@ -15,13 +15,17 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
-const { debug } = require('../config.json');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
+
+// data
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();

@@ -15,12 +15,15 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
+
+// data
 const { debug } = require('../config.json');
-const fs = require('node:fs');
 
 // set cooldown
 const cooldown = new Set();

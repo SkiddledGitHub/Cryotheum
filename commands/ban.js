@@ -15,11 +15,15 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, MessageButton, MessageActionRow } = require('discord.js');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
+
+// data
 const { debug, botID } = require('../config.json');
 
 // set cooldown

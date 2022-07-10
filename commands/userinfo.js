@@ -15,14 +15,20 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder, codeBlock, time } = require('@discordjs/builders');
 const { Permissions } = require('discord.js');
+
+// 3rd party modules
+const decache = require('decache');
+const emojis = require('node-emoji');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
-const decache = require('decache');
+
+// data
 const { debug } = require('../config.json');
-const emojis = require('node-emoji');
 
 // set cooldown
 const cooldown = new Set();

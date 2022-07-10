@@ -15,15 +15,21 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { embedConstructor } = require('../lib/embeds.js');
-const { log } = require('../lib/logging.js');
-const { debug } = require('../config.json');
+
+// 3rd party modules
 const encd = require('@root/encoding');
 const b32cd = require('base32-encoding');
 const binf = require('bin-converter');
 const bincd = new binf();
+
+// custom modules
+const { embedConstructor } = require('../lib/embeds.js');
+const { log } = require('../lib/logging.js');
+
+// data
+const { debug } = require('../config.json');
 
 // set cooldown
 const cooldown = new Set();

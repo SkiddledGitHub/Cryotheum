@@ -15,13 +15,19 @@
  *
  */
 
-// modules
+// discord.js modules
 const { SlashCommandBuilder, time } = require('@discordjs/builders');
 const { MessageAttachment } = require('discord.js');
+
+// 3rd party modules
+const axios = require('axios');
+
+// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
+
+// data
 const { debug, githubAuth } = require('../config.json');
-const axios = require('axios');
 
 // set cooldown
 const cooldown = new Set();
