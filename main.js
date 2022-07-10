@@ -22,6 +22,7 @@ const fs = require('node:fs');
 const process = require('process');
 const { embedConstructor } = require('./lib/embeds.js');
 const { log } = require('./lib/logging.js');
+const { gitRevision } = require('./lib/miscellaneous.js');
 const client = new Client({ 
   intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES ], 
   presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
@@ -29,6 +30,8 @@ const client = new Client({
 
 // clear console
 console.clear();
+
+log('genLog', { event: 'Main', content: `Running Cryotheum, revision ${gitRevision(true)}` })
 
 // commands import
 client.commands = new Collection();
