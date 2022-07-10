@@ -1,6 +1,6 @@
 /**
- *
- * Copyright 2022 SkiddledGitHub
+ * @license
+ * @copyright Copyright 2022 SkiddledGitHub
  *
  * This file is part of Cryotheum.
  * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -15,81 +15,49 @@
  *
  */
 
-
-// warning
-// this file contains bad code that has not been rewritten since ages
-// please dont bully me
-// i will rewrite it someday i swear
-
+const process = require('process');
+const { stdin: input, stdout: output } = require('process');
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const readline = require('readline');
-const { stdin: input, stdout: output } = require('process');
-const process = require('process');
+
 const fs = require('fs');
+const readline = require('readline');
 const rl = readline.createInterface({ input, output });
+
 const { botAuth, botID } = require('./config.json');
+const rest = new REST({ version: '9' }).setToken(botAuth);
+
+const { createLogString, log } = require('./lib/logging.js');
+const { gitRevision, commandsManagement } = require('./lib/miscellaneous.js');
 
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   commands.push(command.data.toJSON());
 }
 
-const rest = new REST({ version: '9' }).setToken(botAuth);
-
 console.clear();
 
-function cmdMan() {
-  rl.question('\x1b[1;33m[Bot Commands Manager]:\n\x1b[0m\x1b[32m => \x1b[37mWhat would you like to do?\n\x1b[0m\x1b[32m => \x1b[37mEnter an option:\n\x1b[0m\x1b[32m => \x1b[37m(Destroy, Refresh, Exit)\n\x1b[0m\x1b[35m  ->\x1b[1;37m ', (option) => {
+function main() {
+  rl.question(`${createLogString('genLog', { event: 'Commands', content: `Cryotheum Command Manager, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m\nChoose an option below:`, extra: ['\x1b[1;37m1\x1b[0;37m. Refresh commands', '\x1b[1;37m2\x1b[0;37m. Destroy commands', '\x1b[1;37m3\x1b[0;37m. Quit'] })}\n${createLogString('extra', { event: 'Selection', content: '\x1b[0;90m(1, 2 or 3) \x1b[0;37m' })}`,
+    async (option) => {
 
-  option = option.toLowerCase();
-
-  if ( option == "refresh" ) {
-  (async () => {
-    try {
-      console.clear();
-      console.log(' \x1b[1;32m=> \x1b[1;37mRefreshing (/) commands');
-
-      await rest.put(
-        Routes.applicationCommands(botID),
-        { body: commands },
-      );
-
-      console.log(' \x1b[1;32m=> SUCCESS: \x1b[1;37mSuccessfully refreshed (/) commands.\n');
-      cmdMan();
-    } catch (error) {
-      console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
+    if (option === '1') {
+      try { await commandsManagement({ rest: rest, botID: botID, commands: commands, method: 'refresh' }); } catch (e) { log('runtimeErr', { errName: e.name, event: 'Commands', content: `${e.message} ${e.reason}` }); }
+    } else if (option === '2') {
+      try { await commandsManagement({ rest: rest, botID: botID, method: 'destroy' }); } catch (e) { log('runtimeErr', { errName: e.name, event: 'Commands', content: `${e.message} ${e.reason}` }); }
+    } else if (option === '3') {
+      log('genLog', { event: 'Commands', content: 'Exiting!' });
+      return rl.close();
+    } else {
+      log('error', { errName: 'Commands', content: 'Invalid option!' });
     }
-  })();
-  } else if ( option == "destroy" ) {
-    (async () => {
-    try {
-      console.clear();
-      console.log(' \x1b[1;32m=> \x1b[1;37mDestroying (/) commands');
 
-      await rest.put(
-        Routes.applicationCommands(botID),
-        { body: [] },
-      );
-
-      console.log(' \x1b[1;32m=> SUCCESS: \x1b[1;37mSuccessfully destroyed (/) commands.\n');
-      cmdMan();    
-    } catch (error) {
-      console.error(` \x1b[1;31m=> ERROR: \x1b[1;37m${error}`);
-    }
-  })();
-  } else if ( option == "exit" ) {
-    console.clear();
-    console.log(' \x1b[1;32m=> \x1b[1;37mExiting!');
-    process.exit();
-  } else {
-    console.log(' \x1b[1;31m=> ERROR: \x1b[1;37mInvalid option!\n');
-    cmdMan();
-  }
+    main();
   })
 }
-cmdMan();
+
+main();
+
