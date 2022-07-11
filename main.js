@@ -19,14 +19,25 @@
 const process = require('process');
 const fs = require('node:fs');
 
+// custom modules
+const { log } = require('./lib/logging.js');
+const { embedConstructor } = require('./lib/embeds.js');
+const { gitRevision } = require('./lib/miscellaneous.js');
+
+// clear console
+console.clear();
+
+log('genLog', { event: 'Main', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
+
 try {
   let configTemp = JSON.parse(fs.readFileSync('./config.json','utf8'));
-  console.log(configTemp.botAuth)
   if (configTemp.botAuth === "" || !configTemp) {
+    log('genWarn', { event: 'Main', content: 'Invalid config file was found! Launching setup' })
     const { mainSetupFunction } = require('./setup.js');
     mainSetupFunction();
   }
 } catch (e) {
+  log('genWarn', { event: 'Main', content: 'No config file was found! Launching setup' })
   const { mainSetupFunction } = require('./setup.js');
   mainSetupFunction();
 }
@@ -37,20 +48,10 @@ const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
 // data
 const { botAuth, loggingMessages, debug } = require('./config.json');
 
-// custom modules
-const { log } = require('./lib/logging.js');
-const { embedConstructor } = require('./lib/embeds.js');
-const { gitRevision } = require('./lib/miscellaneous.js');
-
 const client = new Client({ 
   intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES ], 
   presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
 });
-
-// clear console
-console.clear();
-
-log('genLog', { event: 'Main', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
 
 // commands import
 client.commands = new Collection();
