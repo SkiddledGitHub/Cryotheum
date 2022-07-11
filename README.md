@@ -12,24 +12,9 @@ A portable, easy-to-modify [Discord](https://discord.com) bot
 git clone https://github.com/SkiddledGitHub/Cryotheum
 cd Cryotheum
 npm install
-node setup.js # if you used this to create a config file, you do not need to do step 2
+node setup.js
 ```
-2. Then create a new text file in the **Cryotheum** folder named `config.json` and add these lines:
-```json
-{
-	"botAuth": "insert bot token",
-    "botID": "insert bot client id",
-	"botOwner": "insert bot owner's Discord id",
-	"loggingMessages": false,
-	"debug": false,
-	"githubAuth": "insert github personal access token, this is optional",
-	"specialBadges": {
-
-	}
-}
-```
-then save the file.  
-3. Return to terminal and execute:
+2. Return to terminal and execute:
 ```bash
 node cmdManager.js
 ```
