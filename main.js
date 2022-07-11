@@ -19,6 +19,18 @@
 const process = require('process');
 const fs = require('node:fs');
 
+try {
+  let configTemp = JSON.parse(fs.readFileSync('./config.json','utf8'));
+  console.log(configTemp.botAuth)
+  if (configTemp.botAuth === "" || !configTemp) {
+    const { mainSetupFunction } = require('./setup.js');
+    mainSetupFunction();
+  }
+} catch (e) {
+  const { mainSetupFunction } = require('./setup.js');
+  mainSetupFunction();
+}
+
 // discord.js modules
 const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
 
