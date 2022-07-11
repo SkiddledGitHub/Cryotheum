@@ -7,17 +7,18 @@ A portable, easy-to-modify [Discord](https://discord.com) bot
 <sub>it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow</sub>
 
 ## Setup
-First, execute these commands listed in order:
+1. First, execute these commands listed in order:
 ```bash
 git clone https://github.com/SkiddledGitHub/Cryotheum
 cd Cryotheum
 npm install
+node setup.js # if you used this to create a config file, you do not need to do step 2
 ```
-Then create a new text file in the **Cryotheum** folder named `config.json` and add these lines:
+2. Then create a new text file in the **Cryotheum** folder named `config.json` and add these lines:
 ```json
 {
 	"botAuth": "insert bot token",
-        "botID": "insert bot client id",
+    "botID": "insert bot client id",
 	"botOwner": "insert bot owner's Discord id",
 	"loggingMessages": false,
 	"debug": false,
@@ -28,7 +29,7 @@ Then create a new text file in the **Cryotheum** folder named `config.json` and 
 }
 ```
 then save the file.  
-Return to terminal and execute:
+3. Return to terminal and execute:
 ```bash
 node cmdManager.js
 ```
