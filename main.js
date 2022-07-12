@@ -27,17 +27,17 @@ const { gitRevision } = require('./lib/miscellaneous.js');
 // clear console
 console.clear();
 
-log('genLog', { event: 'Main', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
+log('genLog', { event: 'Init', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
 
 try {
   let configTemp = JSON.parse(fs.readFileSync('./config.json','utf8'));
   if (configTemp.botAuth === "" || !configTemp) {
-    log('genWarn', { event: 'Main', content: 'Invalid config file was found! Launching setup' })
+    log('genWarn', { event: 'Init', content: 'Invalid config file was found! Launching setup' })
     const { mainSetupFunction } = require('./setup.js');
     mainSetupFunction();
   }
 } catch (e) {
-  log('genWarn', { event: 'Main', content: 'No config file was found! Launching setup' })
+  log('genWarn', { event: 'Init', content: 'No config file was found! Launching setup' })
   const { mainSetupFunction } = require('./setup.js');
   mainSetupFunction();
 }
@@ -122,4 +122,8 @@ if (loggingMessages) {
 };
 
 // login
-client.login(botAuth);
+try {
+  client.login(botAuth);
+} catch (e) {
+  log('runtimeErr', { errName: e.name, event: 'Login', content: e.message });
+}
