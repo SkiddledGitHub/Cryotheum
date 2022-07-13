@@ -68,7 +68,7 @@ module.exports = {
               headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
             }
              await axios
-              .get(`https://api.github.com/repos/${query}`, {}, { headers: headers })
+              .get(`https://api.github.com/repos/${query}`, { headers: headers })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 resData = res.data;
@@ -101,7 +101,7 @@ module.exports = {
               headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
             }
              await axios
-              .get(`https://api.github.com/search/repositories`, {}, { headers: headers, params: { q: encodeURIComponent(query) } })
+              .get(`https://api.github.com/search/repositories`, { headers: headers, params: { q: encodeURIComponent(query) } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using top result.' }); };
@@ -135,7 +135,7 @@ module.exports = {
               headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
             }
             await axios
-              .get(`https://api.github.com/repos/${repo}/contributors`, {}, { headers: headers, params: { anon: 'true' } })
+              .get(`https://api.github.com/repos/${repo}/contributors`, { headers: headers, params: { anon: 'true' } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved results from GitHub API.' }); };
                 resData = res.data;
@@ -263,7 +263,7 @@ module.exports = {
 
             async function sendResponse() {
               await axios
-            .get(`https://api.github.com/repos/${repoRawData.full_name}/readme`, {}, { headers: { Accept: 'application/vnd.github.v3+json' } })
+            .get(`https://api.github.com/repos/${repoRawData.full_name}/readme`, { headers: { Accept: 'application/vnd.github.v3+json' } })
             .then(att => {
               let buffer = Buffer.from(Buffer.from(att.data.content, 'base64').toString(), 'utf-8');
               if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'README.md seems to exist on the repository, making it an attachment...' }); };
@@ -298,7 +298,7 @@ module.exports = {
               headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
             }
             await axios
-              .get(`https://api.github.com/users/${query}`, {}, { headers: headers })
+              .get(`https://api.github.com/users/${query}`, { headers: headers })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 userRes = res.data;
@@ -328,7 +328,7 @@ module.exports = {
               headers = { Accept: 'application/vnd.github.v3+json', Authorization: `token ${githubAuth}` };
             }
             await axios
-              .get(`https://api.github.com/search/users`, {}, { headers: headers, params: { q: encodeURIComponent(query) } })
+              .get(`https://api.github.com/search/users`, { headers: headers, params: { q: encodeURIComponent(query) } })
               .then(res => {
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Axios recieved search results from GitHub API.' }); };
                 if (debug) { log('genLog', { event: 'Commands > GitHub', content: 'Using top result.' }); };
