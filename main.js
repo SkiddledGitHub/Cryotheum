@@ -23,6 +23,7 @@ const fs = require('node:fs');
 const { log } = require('./lib/logging.js');
 const { embedConstructor } = require('./lib/embeds.js');
 const { gitRevision } = require('./lib/miscellaneous.js');
+const configUtils = require('./lib/config.js');
 
 // clear console
 console.clear();
@@ -30,14 +31,15 @@ console.clear();
 log('genLog', { event: 'Init', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
 
 try {
-  let configTemp = JSON.parse(fs.readFileSync('./config.json','utf8'));
-  if (configTemp.botAuth === "" || !configTemp) {
-    log('genWarn', { event: 'Init', content: 'Invalid config file was found! Launching setup' })
-    const { mainSetupFunction } = require('./setup.js');
-    mainSetupFunction();
-  }
+  configUtils.validate();
 } catch (e) {
-  log('genWarn', { event: 'Init', content: 'No config file was found! Launching setup' })
+  if (e.status === 'ENOENT') {
+    log('genWarn', { event: 'Init', content: 'No config file was found! Launching setup' })
+  } else if (e.status === 'MALFORMED') {
+    log('genWarn', { event: 'Init', content: 'A malformed config file was found! Launching setup' })
+  } else if (e.status === 'MISSING') {
+    log('genWarn', { event: 'Init', content: 'A malformed config file was found with missing parameters! Launching setup' })
+  }
   const { mainSetupFunction } = require('./setup.js');
   mainSetupFunction();
 }
