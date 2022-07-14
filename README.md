@@ -1,6 +1,6 @@
 # Cryotheum
 [![GitHub Issues Tracker](https://img.shields.io/github/issues/SkiddledGitHub/Cryotheum?logo=github&style=flat)](https://github.com/SkiddledGitHub/Cryotheum/issues)
-[![GitHub Issues Tracker](https://img.shields.io/badge/Project%20Page-Cryotheum-blue?logo=github&style=flat)](https://github.com/users/SkiddledGitHub/projects/1)
+[![GitHub Project Page](https://img.shields.io/badge/Project%20Page-Cryotheum-blue?logo=github&style=flat)](https://github.com/users/SkiddledGitHub/projects/1)
 [![License](https://img.shields.io/github/license/SkiddledGitHub/Cryotheum?logo=gnu&logoColor=ffffff&style=flat)](https://www.gnu.org/licenses/gpl-3.0-standalone.html)
 [![Language](https://img.shields.io/badge/Language-NodeJS-%23339933?logo=node.js&logoColor=ffffff&style=flat)](https://nodejs.org)  
 A portable, easy-to-modify [Discord](https://discord.com) bot  
