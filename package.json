@@ -42,6 +42,7 @@
     "prompt-sync": "^4.2.0",
     "utf-8-validate": "^5.0.9",
     "ytdl-core": "^4.11.0",
+    "ytsr": "^3.8.0",
     "zlib-sync": "^0.1.7"
   }
 }
