@@ -16,7 +16,7 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
+const { SlashCommandBuilder, codeBlock } = require('discord.js');
 
 // 3rd party modules
 const encd = require('@root/encoding');
@@ -42,10 +42,12 @@ module.exports = {
   .setDescription('Decode a string from various formats')
   .addStringOption((option) => option.setName('string').setDescription('String to decode').setRequired(true))
   .addStringOption((option) => option.setName('format').setDescription('Format to decode your string from').setRequired(true)
-                                     .addChoice('Binary', 'binary')
-                                     .addChoice('Hexadecimal', 'hex')
-                                     .addChoice('Base32', 'base32')
-                                     .addChoice('Base64', 'base64')),
+    .addChoices(
+      { name: 'Binary', value: 'binary' },
+      { name: 'Hexadecimal', value: 'hex' },
+      { name: 'Base32', value: 'base32' },
+      { name: 'Base64', value: 'base64' }
+    )),
   async execute(interaction) {
       // cooldown management
       if (cooldown.has(interaction.user.id)) {
@@ -55,92 +57,87 @@ module.exports = {
         // constants
         const executor = { obj: interaction.member, tag: interaction.user.tag };
 
-        if (debug) { log('genLog', { event: 'Commands > Decode', content: `Command initialized by ${executor.tag}` }); };
+        if (debug) log('genLog', { event: 'Commands > Decode', content: `Initialize`, extra: [`${executor.tag}`] })
 
-        const inputString = interaction.options.getString('string');
-
-        if (!interaction.options.getString('format')) {
-
-            if (debug) { log('cmdErr', { event: 'Decode', content: 'Cannot decode in all formats' }); };
-            let embed = embedConstructor('decodeFailed', { reason: 'You cannot decode in all formats!' });
+        const inputString = interaction.options.getString('string')
+        if (interaction.options.getString('format') == 'binary') {
+          try {
+            let bin = bincd.parseBinaryFromString(inputString)
+            if (bin.length > 2048) {
+              if (debug) log('cmdErr', { event: 'Commands > Decode', content: `Failed.`, cause: `String too long: ${bin.length}/2048 chars`, extra: [`Method: Binary`,`${executor.tag}`] })
+              let embed = embedConstructor('decodeFailed', { reason: `Output string is too long: ${bin.length}/2048 characters.` })
+              interaction.reply({ embeds: [embed] })
+              log('genLog', { event: 'Commands > Decode', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`${executor.tag}`] })
+              return
+            } else {
+              if (debug) log('genLog', { event: 'Commands > Decode', content: `Decode success.`, extra: [`Method: Binary`,`${executor.tag}`] })
+              let embed = embedConstructor('decodeSuccess', { results: `**Binary**:\n> ${bin}` })
+              interaction.reply({ embeds: [embed] })
+              log('genLog', { event: 'Commands > Decode', content: `Done.`, extra: [`Method: Binary`,`${executor.tag}`] })
+            }
+          } catch (error) {
+            if (debug) { log('runtimeErr', { event: 'Commands > Decode', errName: error.name, content: error.message }) };
+            let embed = embedConstructor('decodeFailed', { reason: 'String provided is not a binary string!' });
             interaction.reply({ embeds: [embed] });
-            return;
-
-        } else {
-          if (interaction.options.getString('format') == 'binary') {
-            try {
-                let bin = bincd.parseBinaryFromString(inputString);
-                if (bin.length > 2048) {
-                    if (debug) { log('cmdErr', { event: 'Decode', content: `String is too long to decode from the binary format` }); };
-                    let embed = embedConstructor('decodeFailed', { reason: `Specified string is too long to decode from the binary format (${inputString.length} character(s)).` })
-                    interaction.reply({ embeds: [embed] }); 
-                    return;
-                } else {
-                    if (debug) { log('genLog', { event: 'Commands > Decode', content: `Succeeded decoding from the binary format` }); };
-                    let embed = embedConstructor('decodeSuccess', { results: `**Binary**:\n> ${bin}` });
-                    if (debug) { log('genLog', { event: 'Commands > Decode', content: `Replied with decoded string` }); };
-                    interaction.reply({ embeds: [embed] });
-                }
-            } catch (error) {
-                if (debug) { log('runtimeErr', { event: 'Decode', errName: error.name, content: error.message }) };
-                let embed = embedConstructor('decodeFailed', { reason: 'String provided is not a binary string!' });
-                interaction.reply({ embeds: [embed] });
-            }
-          } else if (interaction.options.getString('format') == 'hex') {
-            let hex = encd.hexToStr(inputString);
-            if (!hex) {
-              if (debug) { log('cmdErr', { event: 'Decode', content: 'String provided is not a hexadecimal string' }); };
-              let embed = embedConstructor('decodeFailed', { reason: 'String provided is not a hexadecimal string!' });
-              interaction.reply({ embeds: [embed] });
-              return;
-            }
-            if (hex.length > 2048) {
-              if (debug) { log('cmdErr', { event: 'Decode', content: `String is too long to decode from the hexadecimal format` }); };
-              let embed = embedConstructor('decodeFailed', { reason: `Specified string is too long to decode from the hexadecimal format (${inputString.length} character(s)).` })
-              interaction.reply({ embeds: [embed] }); 
-              return;
-            } else {
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: `Succeeded decoding from the hexadecimal format` }); };
-              let embed = embedConstructor('decodeSuccess', { results: `**Hexadecimal**:\n> ${hex}` });
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: 'Replied with decoded string' }); };
-              interaction.reply({ embeds: [embed] });
-            }
-          } else if (interaction.options.getString('format') == 'base32') {
-            let base32 = b32cd.parse(inputString).toString('utf8');
-            if (base32.length > 2048) {
-              if (debug) { log('cmdErr', { event: 'Decode', content: `String is too long to decode from the base32 format` }); };
-              let embed = embedConstructor('decodeFailed', { reason: `Specified string is too long to decode from the Base32 format (${inputString.length} character(s)).` })
-              interaction.reply({ embeds: [embed] }); 
-              return;
-            } else {
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: `Succeeded decoding from the base32 format` }); };
-              let embed = embedConstructor('decodeSuccess', { results: `**Base32**:\n> ${base32}` });
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: 'Replied with decoded string' }); };
-              interaction.reply({ embeds: [embed] });
-            }
-          } else if (interaction.options.getString('format') == 'base64') {
-            let buffer = Buffer.from(inputString, 'base64');
-            let base64 = buffer.toString('utf8');
-            if (base64.length > 2048) {
-              if (debug) { log('cmdErr', { event: 'Decode', content: `String is too long to decode from the base64 format` }); };
-              let embed = embedConstructor('decodeFailed', { reason: `Specified string is too long to decode from the Base64 format (${inputString.length} character(s)).` })
-              interaction.reply({ embeds: [embed] }); 
-              return;
-            } else {
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: `Succeeded decoding from the base64 format` }); };
-              let embed = embedConstructor('decodeSuccess', { results: `**Base64**:\n> ${base64}` });
-              if (debug) { log('genLog', { event: 'Commands > Decode', content: 'Replied with decoded string' }); };
-              interaction.reply({ embeds: [embed] });
-            }
+          }
+        } else if (interaction.options.getString('format') == 'hex') {
+          let hex = encd.hexToStr(inputString)
+          if (!hex) {
+            if (debug) log('cmdErr', { event: 'Commands > Decode', content: 'Failed.', extra: [`Method: Hexadecimal`,`${executor.tag}`], cause: 'Expected string with hexadecimal values' })
+            let embed = embedConstructor('decodeFailed', { reason: 'String provided is not a hexadecimal string!' })
+            interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Decode', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`Method: Hexadecimal`,`${executor.tag}`] })
+            return
+          }
+          if (hex.length > 2048) {
+            if (debug) log('cmdErr', { event: 'Commands > Decode', content: `String too long: ${hex.length}/2048 chars`, extra: [`Method: Hexadecimal`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeFailed', { reason: `Output string is too long: ${hex.length}/2048 characters.` })
+            interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Decode', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`Method: Hexadecimal`,`${executor.tag}`] })
+            return
+          } else {
+            if (debug) log('genLog', { event: 'Commands > Decode', content: `Decode success.`, extra: [`Method: Hexadecimal`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeSuccess', { results: `**Hexadecimal**:\n> ${hex}` })
+            log('genLog', { event: 'Commands > Decode', content: `Done.`, extra: [`Method: Hexadecimal`,`${executor.tag}`] })
+            interaction.reply({ embeds: [embed] })
+          }
+        } else if (interaction.options.getString('format') == 'base32') {
+          let base32 = b32cd.parse(inputString).toString('utf8')
+          if (base32.length > 2048) {
+            if (debug) log('cmdErr', { event: 'Commands > Decode', content: `String too long: ${base32.length}/2048 chars`, extra: [`Method: Base32`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeFailed', { reason: `Output string is too long: ${base32.length}/2048 characters.` })
+            interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Decode', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`Method: Base32`,`${executor.tag}`] })
+            return
+          } else {
+            if (debug) log('genLog', { event: 'Commands > Decode', content: `Decode success.`, extra: [`Method: Base32`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeSuccess', { results: `**Base32**:\n> ${base32}` })
+            log('genLog', { event: 'Commands > Decode', content: `Done.`, extra: [`Method: Base32`,`${executor.tag}`] })
+            interaction.reply({ embeds: [embed] })
+          }
+        } else if (interaction.options.getString('format') == 'base64') {
+          let buffer = Buffer.from(inputString, 'base64')
+          let base64 = buffer.toString('utf8')
+          if (base64.length > 2048) {
+            if (debug) log('cmdErr', { event: 'Commands > Decode', content: `String too long: ${base64.length}/2048 chars`, extra: [`Method: Base64`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeFailed', { reason: `Output string is too long: ${base64.length}/2048 characters.` })
+            interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Decode', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`Method: Base64`,`${executor.tag}`] })
+            return
+          } else {
+            if (debug) log('genLog', { event: 'Commands > Decode', content: `Decode success.`, extra: [`Method: Base64`,`${executor.tag}`] })
+            let embed = embedConstructor('decodeSuccess', { results: `**Base64**:\n> ${base64}` })
+            log('genLog', { event: 'Commands > Decode', content: `Done.`, extra: [`Method: Base64`,`${executor.tag}`] })
+            interaction.reply({ embeds: [embed] })
           }
         }
         
-        // cooldown management
-        cooldown.add(interaction.user.id);
-        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+      // cooldown management
+      cooldown.add(interaction.user.id)
+      setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 
-        }
-    },
+    }
+  },
   documentation: {
     name: 'decode',
     category: 'Utility',

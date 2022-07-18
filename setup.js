@@ -113,10 +113,6 @@ var self = module.exports = {
         ans.debug = askAsync(createLogString('extra', { event: 'Selection', content: '\x1b[0;90m(1 or 2) \x1b[0;37m' }), ['1', '2']);
         ans.debug = ans.debug === '1' ? true : false
 
-        log('genLog', { event: 'Setup > Guided', content: 'Do you want to enable Message Logging mode? (For debugging purposes)',  extra: ['\x1b[1;37m1\x1b[0;37m. Yes', '\x1b[1;37m2\x1b[0;37m. No'] });
-        ans.logMessages = askAsync(createLogString('extra', { event: 'Selection', content: '\x1b[0;90m(1 or 2) \x1b[0;37m' }), ['1', '2']);
-        ans.logMessages = ans.logMessages === '1' ? true : false
-        
         log('genLog', { event: 'Setup > Guided', content: 'Do you want to add a GitHub Personal Access Token?', extra: ['\x1b[1;37m1\x1b[0;37m. Yes', '\x1b[1;37m2\x1b[0;37m. No'] });
         ans.github = askAsync(createLogString('extra', { event: 'Selection', content: '\x1b[0;90m(1 or 2) \x1b[0;37m' }), ['1', '2']);
         ans.github = ans.github === '1' ? true : false
@@ -132,7 +128,6 @@ var self = module.exports = {
             { o: 'e', key: 'botID', value: ans.id },
             { o: 'e', key: 'botOwner', value: ans.owner },
             { o: 'e', key: 'debug', value: ans.debug },
-            { o: 'e', key: 'loggingMessages', value: ans.logMessages },
             { o: 'e', key: 'githubAuth', value: ans.github },
             { o: 'sav' }
         ]));

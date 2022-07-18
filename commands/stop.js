@@ -16,7 +16,7 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 
@@ -43,37 +43,36 @@ module.exports = {
       } else {
 
       // constants
-      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild };
-      const channel = executor.guild.me.voice.channel;
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild }
+      const channel = executor.guild.members.me.voice.channel
 
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Command initialized by ${executor.tag}` }); };
+      if (debug) log('genLog', { event: 'Commands > Stop', content: `Initialize`, extra: [`${executor.tag}`] })
 
       // if bot not in channel, pull error
-      if (!channel) { 
-        const embed = embedConstructor('stopFailed', { reason: 'The bot is not in a voice channel!' }); 
-        async function failed() { await interaction.reply({ embeds: [embed] }); }; failed();
-        if (debug) { log('cmdErr', { event: 'Stop', content: `Bot is not in a voice channel` }); };
-        return; 
-      };
+      if (!channel) {
+        if (debug) log('genWarn', { event: 'Commands > Stop', content: 'Failed.', cause: 'Bot is not connected to a voice channel in specified guild.', extra: [`${executor.tag}`] })
+        let embed = embedConstructor('stopFailed', { reason: 'The bot is not in a voice channel!' })
+        interaction.reply({ embeds: [embed] })
+        log('genLog', { event: 'Commands > Stop', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`${executor.tag}`] })
+        return
+      }
 
       // get connection
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Getting connection` }); };
-      const connection = getVoiceConnection(executor.guild.id);
+      const connection = getVoiceConnection(executor.guild.id)
 
       // destroy the connection
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Attempting to destroy connection` }); };
-      connection.destroy();
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Connection destroyed.` }); };
-      const successEmbed = embedConstructor('stopSuccess');
-      if (debug) { log('genLog', { event: 'Commands > Stop', content: `Replying with success embed` }); };
-      await interaction.reply({ embeds: [successEmbed] });
+      connection.destroy()
+      if (debug) log('genLog', { event: 'Commands > Stop', content: `Connection destroyed.`, extra: [`${executor.tag}`] })
+      const successEmbed = embedConstructor('stopSuccess')
+      await interaction.reply({ embeds: [successEmbed] })
+      log('genLog', { event: 'Commands > Stop', content: `Done.`, extra: [`${executor.tag}`] })
 
       // cooldown management
-      cooldown.add(interaction.user.id);
-      setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+      cooldown.add(interaction.user.id)
+      setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 
-      	}
-    },
+    }
+  },
   documentation: {
     name: 'stop',
     category: 'Media',

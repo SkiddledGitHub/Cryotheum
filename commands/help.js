@@ -16,7 +16,7 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 
 // custom modules
 const { embedConstructor } = require('../lib/embeds.js');
@@ -41,85 +41,73 @@ module.exports = {
     await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-        const executor = { obj: interaction.member, tag: interaction.user.tag };
+        const executor = { obj: interaction.member, tag: interaction.user.tag }
 
-        if (debug) { log('genLog', { event: 'Commands > Help', content: `Command initialized by ${executor.tag}` }); };
+        if (debug) log('genLog', { event: 'Commands > Help', content: `Initialize`, extra: [`${executor.tag}`] })
+
+        await interaction.deferReply()
 
         if (!interaction.options.getString('command')) {
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `User provided no command to display documentation, displaying command list` }); };
-          let commandList = [];
-          let commandCategories = [];
+          if (debug) log('genLog', { event: 'Commands > Help', content: `Displaying command list`, cause: 'Executor provided no query', extra: [`${executor.tag}`] })
+          let commandList = []
+          let commandCategories = []
 
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsing command list data` }); };
+          if (debug) log('genLog', { event: 'Commands > Help', content: `Fetching command list data`, extra: [`${executor.tag}`] })
 
           interaction.client.commands.forEach((value) => {
             if (value.documentation.name) {
               if (value.documentation.category) {
-                commandList.push({ name: value.documentation.name, category: value.documentation.category });
+                commandList.push({ name: value.documentation.name, category: value.documentation.category })
               } else {
-                commandList.push({ name: value.documentation.name, category: 'Uncategorized' });
-              };
-            };
-          });
+                commandList.push({ name: value.documentation.name, category: 'Uncategorized' })
+              }
+            }
+          })
 
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsed command list data:` }); console.log(commandList); };
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsing command categories` }); };
+          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsed command list data`, extra: [`${executor.tag}`] }); console.log(commandList); }
+          if (debug) log('genLog', { event: 'Commands > Help', content: `Parsing command categories`, extra: [`${executor.tag}`] })
 
           interaction.client.commands.forEach((value) => {
             if (value.documentation.category) {
               if (!commandCategories.includes(value.documentation.category)) {
-                commandCategories.push(value.documentation.category);
-              };
-            };
-          });
+                commandCategories.push(value.documentation.category)
+              }
+            }
+          })
 
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsed command categories:` }); console.log(commandCategories); };
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Embed construction` }); };
+          if (debug) { log('genLog', { event: 'Commands > Help', content: `Parsed command categories`, extra: [`${executor.tag}`] }); console.log(commandCategories); }
 
-          let embed = embedConstructor('helpList', { list: commandList, categories: commandCategories });
+          let embed = embedConstructor('helpList', { list: commandList, categories: commandCategories })
 
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Replying with commands list` }); };
-
-          await interaction.deferReply();
-          await interaction.editReply({ embeds: [embed] });
+          await interaction.editReply({ embeds: [embed] })
+          log('genLog', { event: 'Commands > Help', content: 'Done.', extra: [`${executor.tag}`] })
         } else if (interaction.options.getString('command')) {
-          let inputCommandName = interaction.options.getString('command').toLowerCase();
+          let inputCommandName = interaction.options.getString('command').toLowerCase()
 
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `User provided command name: ${inputCommandName}` }); };
-          if (debug) { log('genLog', { event: 'Commands > Help', content: `Looking up command documentation` }); };
+          if (debug) log('genLog', { event: 'Commands > Help', content: `Looking up command documentation`, extra: [`${inputCommandName}`,`${executor.tag}`] })
 
-          let commandObject = interaction.client.commands.find(d => d.documentation.name.toLowerCase() === inputCommandName);
-          let docsObject = undefined;
+          let commandObject = interaction.client.commands.find(d => d.documentation.name.toLowerCase() === inputCommandName)
+          let docsObject = undefined
           if (commandObject) {
-            docsObject = commandObject.documentation;
-          };
+            docsObject = commandObject.documentation
+          }
 
           if (!docsObject) {
-            if (debug) { log('cmdErr', { event: 'Help', content: `Could not find documentation data, assuming command name is invalid` }); };
-            if (debug) { log('cmdErr', { event: 'Help', content: `Embed construction` }); };
-
-            let embed = embedConstructor('helpGetFailed', { reason: 'Inputted command name is invalid!' });
-
-            if (debug) { log('cmdErr', { event: 'Help', content: `Replying with failed embed` }); };
-
-            await interaction.deferReply();
-            await interaction.editReply({ embeds: [embed] });
+            if (debug) log('cmdErr', { event: 'Commands > Help', content: `Failed.`, cause: 'No documentation data found for query. Assuming invalid command name', extra: [`${inputCommandName}`,`${executor.tag}`] })
+            let embed = embedConstructor('helpGetFailed', { reason: 'Inputted command name is invalid!' })
+            await interaction.editReply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Help', content: `Done${debug ? '' : ' with suppressed errors'}.`, extra: [`${inputCommandName}`,`${executor.tag}`] })
           } else if (docsObject) {
-            if (debug) { log('genLog', { event: 'Commands > Help', content: `Documentation data found` }); };
-            if (debug) { log('genLog', { event: 'Commands > Help', content: `Embed construction` }); };
-
-            let embed = embedConstructor('helpGetSuccess', { documentation: docsObject, type: 'Command' });
-
-            if (debug) { log('genLog', { event: 'Commands > Help', content: `Replying with command documentation` }); };
-
-            await interaction.deferReply();
-            await interaction.editReply({ embeds: [embed] });
-          };
+            if (debug) log('genLog', { event: 'Commands > Help', content: `Documentation data found`, extra: [`${inputCommandName}`,`${executor.tag}`] })
+            let embed = embedConstructor('helpGetSuccess', { documentation: docsObject, type: 'Command' })
+            await interaction.editReply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Help', content: `Done.`, extra: [`${inputCommandName}`,`${executor.tag}`] })
+          }
         }
 
         // cooldown management
-      	cooldown.add(interaction.user.id);
-        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime);
+      	cooldown.add(interaction.user.id)
+        setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 
       }
   },

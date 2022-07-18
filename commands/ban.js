@@ -16,8 +16,18 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Permissions, GuildMember, Role, GuildMemberRoleManager, Guild, GuildBanManager, MessageButton, MessageActionRow } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  PermissionsBitField,
+  GuildMember,
+  Role,
+  GuildMemberRoleManager,
+  Guild,
+  GuildBanManager,
+  ButtonBuilder,
+  ActionRowBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 // custom modules
 const { embedConstructor } = require('../lib/embeds.js');
@@ -34,71 +44,73 @@ const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('ban')
-  .setDescription('Ban a person from the Discord server.')
+  .setDescription('Ban a person from the Disiscordcord server.')
   .addUserOption((option) => option.setName('target').setDescription('Target user to ban').setRequired(true))
   .addStringOption((option) => option.setName('reason').setDescription('Reason why you banned this user').setRequired(false)),
   async execute(interaction) {
       // cooldown management
       if (cooldown.has(interaction.user.id)) {
-      await interaction.reply({ embeds: [cooldownEmbed] });
+      await interaction.reply({ embeds: [cooldownEmbed] })
       } else {
 
         // variables
-        var target = {};
-        var reason;
+        var target = {}
+        var reason
 
         // constants
-        const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild };
-        const botUser = executor.guild.me;
+        const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id, guild: interaction.guild }
+        const botUser = executor.guild.members.me
 
-        if (debug) { log('genLog', { event: 'Commands > Ban', content: `Command initialized by ${executor.tag}` }); };
+        if (debug) log('genLog', { event: 'Commands > Ban', content: `Initialize`, extra: [`${executor.tag}`] })
 
         // ui
-        const buttonRow = new MessageActionRow().addComponents( 
-          new MessageButton().setLabel('Yes').setCustomId('yesBan').setStyle('SUCCESS').setEmoji('986186601417822228'), 
-          new MessageButton().setLabel('No').setCustomId('noBan').setStyle('DANGER').setEmoji('986186598444056617'),
-        );
+        const buttonRow = new ActionRowBuilder()
+          .addComponents( 
+            new ButtonBuilder().setLabel('Yes').setCustomId('yesBan').setStyle(ButtonStyle.Success).setEmoji({ id: '986186601417822228' }), 
+            new ButtonBuilder().setLabel('No').setCustomId('noBan').setStyle(ButtonStyle.Danger).setEmoji({ id: '986186598444056617' }),
+          );
 
         // get reason
         if (!interaction.options.getString('reason')) {
-          reason = `No reason given - Executor: ${executor.tag}`;
+          reason = `No reason given - Executor: ${executor.tag}`
         } else {
-          reason = `${interaction.options.getString('reason')} - Executor: ${executor.tag}`;
+          reason = `${interaction.options.getString('reason')} - Executor: ${executor.tag}`
         };
-        if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban reason set to \"${reason}\" by ${executor.tag}` }); };
+        if (debug) log('genLog', { event: 'Commands > Ban', content: `Ban reason set`, extra: [`Reason: ${reason}`,`${executor.tag}`] })
 
         // user not in server
         if (!interaction.options.getMember('target')) {
 
-          let userCache = interaction.options.getUser('target');
+          let userCache = interaction.options.getUser('target')
 
           // set target
-          target = { obj: userCache, tag: userCache.tag, id: userCache.id, member: false };
-          if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${target.tag} by ${executor.tag}`, extra: ['Target is outside server'] }); };
+          target = { obj: userCache, tag: userCache.tag, id: userCache.id, member: false }
 
           await executor.guild.bans.fetch({ cache: false }).then((value) => {
-            bannedUser = value.get(target.id);
+            bannedUser = value.get(target.id)
           });
 
-          // pull an error if user is already banned
+          // already banned
            if (bannedUser) {
 
-            // throw
-            let embed = embedConstructor("banFailed", { who: `${target.tag}`, reason: `${target.tag} is already banned!` });
-            await interaction.reply({ embeds: [embed] });
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'Target is already banned' }); };
-            return;
+            // set embed
+            let embed = embedConstructor("banFailed", { who: `${target.tag}`, reason: `${target.tag} is already banned!` })
 
-           };
+            // throw
+            if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Already banned' })
+            await interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+            return
+
+           }
 
         // user in server
         } else if (interaction.options.getMember('target')) {
 
-          let userCache = interaction.options.getMember('target');
+          let userCache = interaction.options.getMember('target')
 
           // set target
-          target = { obj: userCache, tag: userCache.user.tag, id: userCache.user.id, member: true }; 
-          if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban target set to ${target.tag} by ${executor.tag}`, extra: ['Target is inside server'] }); };
+          target = { obj: userCache, tag: userCache.user.tag, id: userCache.user.id, member: true };
         
         }
 
@@ -108,29 +120,31 @@ module.exports = {
         if (target.id == botID) {
 
           // set embed
-          const embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You cannot ban the bot itself!' });
+          let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You cannot ban the bot itself!' })
 
           // throw
-          if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban the bot.`}); };
-          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-          await interaction.reply({ embeds: [embed] });
-          return;
+          if (debug) log('genWarn', { event: 'Commands > Ban', content: 'Failed.', extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Executor tried to ban the bot'})
+          await interaction.reply({ embeds: [embed] })
+          log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings.'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+          return
 
-        };
+        }
 
         // executor checking
         if (target.id == executor.id) {
 
           // set embed
-          let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You cannot ban yourself!' });
+          let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You cannot ban yourself!' })
 
           // throw
-          if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban themselves.`}); };
-          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-          await interaction.reply({ embeds: [embed] });
-          return;
+          if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`], cause: 'Executor tried to ban themselves'})
+          await interaction.reply({ embeds: [embed] })
+          log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings.'}.`, extra: [`Executor: ${executor.tag}`] })
+          return
 
-        };
+        }
+
+        if (debug) log('genLog', { event: 'Commands > Ban', content: `Target set`, extra: [`${target.tag}`,`${target.member ? 'In guild' : 'Outside guild'}`] })
 
         // role pos checking part 1
 
@@ -140,13 +154,13 @@ module.exports = {
           if (botUser.roles.highest.comparePositionTo(target.obj.roles.highest) < 0) {
               
             // set embed
-            let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than the target\'s highest role (${target.obj.roles.highest})` });
+            let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `The bot\'s highest role (${botUser.roles.highest}) is lower than the target\'s highest role (${target.obj.roles.highest})` })
 
             // throw
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'The bot\'s highest role is lower than the target\'s.'}); };
-            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-            await interaction.reply({ embeds: [embed] });
-            return;
+            if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Role position mismatch (Target > Bot)'})
+            await interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings.'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+            return
 
           // bot equal target
           } else if (botUser.roles.highest.comparePositionTo(target.obj.roles.highest) == 0) {
@@ -155,27 +169,27 @@ module.exports = {
             let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `The bot\'s highest role is equal to the target\'s highest role (${target.obj.roles.highest})` });
 
             // throw
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'The bot\'s highest role is equal to the target\'s.'}); };
-            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-            await interaction.reply({ embeds: [embed] });
-            return;
+            if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Role position mismatch (Target = Bot)'})
+            await interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings.'}`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+            return
 
-          };
-        };
+          }
+        }
 
         // bot no ban perm
-        if (!botUser.permissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
+        if (!botUser.permissions.has([PermissionsBitField.Flags.BAN_MEMBERS])) {
 
           // set embed
           let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'The bot does not have the permission to ban members.' });
 
           // throw
-          if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'Bot did not have the Ban Members permission.' }); };
-          if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-          await interaction.reply({ embeds: [embed] });
-          return;
+          if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Permission mismatch (Ban Members missing from Bot)' })
+          await interaction.reply({ embeds: [embed] })
+          log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+          return
 
-        };
+        }
 
         // user is owner check
         if (!executor.id == executor.guild.ownerId) {
@@ -188,105 +202,107 @@ module.exports = {
             if (executor.obj.roles.highest.comparePositionTo(target.obj.roles.highest) < 0) {
               
               // set embed
-              let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `Your highest role (${executor.obj.roles.highest}) is lower than target\'s highest role (${target.obj.roles.highest})` });
+              let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `Your highest role (${executor.obj.roles.highest}) is lower than target\'s highest role (${target.obj.roles.highest})` })
 
               // throw
-              await interaction.reply({ embeds: [embed] });
-              if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'Executor\'s highest role was lower than the target\'s.'}); };
-              return;
+              if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Role position mismatch (Target > Executor)' })
+              await interaction.reply({ embeds: [embed] })
+              log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+              return
 
             // executor equal target
             } else if (executor.obj.roles.highest.comparePositionTo(target.obj.roles.highest) == 0) {
 
               // set embed
-              let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `Your highest role is equal to the target\'s highest role (${target.obj.roles.highest})` });
+              let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: `Your highest role is equal to the target\'s highest role (${target.obj.roles.highest})` })
 
               // throw
-              await interaction.reply({ embeds: [embed] });
-              if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'Executor\'s role was lower than the target\'s.'}); };
-              return;
+              if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Role position mismatch (Target = Executor)' })
+              await interaction.reply({ embeds: [embed] })
+              log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+              return
 
-            };
-          };
+            }
+          }
 
           // perm check
 
           // executor no ban perm
-          if (!interaction.memberPermissions.has([Permissions.FLAGS.BAN_MEMBERS])) {
+          if (!interaction.memberPermissions.has([PermissionsBitField.Flags.BAN_MEMBERS])) {
 
             // set embed
-            let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You do not have the permission to ban members.' });
+            let embed = embedConstructor('banFailed', { who: `${target.tag}`, reason: 'You do not have the permission to ban members.' })
 
             // throw
-            if (debug) { log('genWarn', { event: 'Ban', content: `${executor.tag} tried to ban ${target.tag} but failed`, cause: 'Executor did not have the Ban Members permission.' }); };
-            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-            await interaction.reply({ embeds: [embed] });
-            return;
+            if (debug) log('genWarn', { event: 'Commands > Ban', content: `Failed`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`], cause: 'Permission mismatch (Ban Members missing from Executor)' })
+            await interaction.reply({ embeds: [embed] })
+            log('genLog', { event: 'Commands > Ban', content: `Done${debug ? '' : ' with suppressed warnings'}.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+            return
 
-          };
+          }
 
-        };
+        }
 
         // construct confirm embed
-        let confirmationEmbed = embedConstructor('banConfirmation', { who: `${target.tag}` });
+        let confirmationEmbed = embedConstructor('banConfirmation', { who: `${target.tag}` })
 
         // send confirm
-        await interaction.reply({ embeds: [confirmationEmbed], components: [buttonRow] });
-        if (debug) { log('genLog', { event: 'Commands > Ban', content: `Confirmation embed was spawned due to ${executor.tag}\'s request` }); };
+        await interaction.reply({ embeds: [confirmationEmbed], components: [buttonRow] })
+        if (debug) log('genLog', { event: 'Commands > Ban', content: `Embed spawned`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
 
         // collector
-        const filter = i => i.customId === 'yesBan' || i.customId === 'noBan';
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
-        if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector initialized` }); };
+        const filter = i => i.customId === 'yesBan' || i.customId === 'noBan'
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 })
+        if (debug) log('genLog', { event: 'Commands > Ban', content: `Component collector initialized` })
 
         collector.on('collect', async i => {
           if (i.user.id === executor.id) {
             if (i.customId === 'yesBan') {
-              await i.deferUpdate();
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executor.tag} proceeded with banning ${target.tag}` }); };
+              await i.deferUpdate()
+              if (debug) log('genLog', { event: 'Commands > Ban', content: `Proceeded`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
 
               // create ban then edit with success embed
-              await executor.guild.bans.create(target.obj, {reason});
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executor.tag} banned ${target.tag}`, extra: [`With reason: ${reason}`] }); };
-              let successEmbed = embedConstructor('banSuccess', { who: `${target.tag}`, reason: `${reason}` });
+              await executor.guild.bans.create(target.obj, {reason})
+              if (debug) log('genLog', { event: 'Commands > Ban', content: `Banned`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`, `With reason: ${reason}`] })
+              let successEmbed = embedConstructor('banSuccess', { who: `${target.tag}`, reason: `${reason}` })
 
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban embed updated with success embed` }); };
+              log('genLog', { event: 'Commands > Ban', content: `Done.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
               await i.editReply({ embeds: [successEmbed], components: [] });
 
               // kills the collector
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
-              collector.stop();
+              if (debug) log('genLog', { event: 'Commands > Ban', content: `Component collector killed` })
+              collector.stop()
 
             } else if (i.customId === 'noBan') {
-              await i.deferUpdate();
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `${executor.tag} cancelled banning ${target.tag}` }); };
+              await i.deferUpdate()
+              if (debug) log('genLog', { event: 'Commands > Ban', content: `Cancelled`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
 
               // edit with cancelled embed
-              let cancelledEmbed = embedConstructor('banCancel', { who: `${target.tag}` });
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Ban embed updated with cancelled embed` }); };
-              await i.editReply({ embeds: [cancelledEmbed], components: [] });
+              let cancelledEmbed = embedConstructor('banCancel', { who: `${target.tag}` })
+
+              log('genLog', { event: 'Commands > Ban', content: `Done.`, extra: [`Executor: ${executor.tag}`, `Target: ${target.tag}`] })
+              await i.editReply({ embeds: [cancelledEmbed], components: [] })
 
               // kills the collector
-              if (debug) { log('genLog', { event: 'Commands > Ban', content: `Component collector was killed` }); };
-              collector.stop();
+              if (debug) log('genLog', { event: 'Commands > Ban', content: `Component collector killed` })
+              collector.stop()
 
             }
 
           } else {
 
             // different member tries to answer? block
-            if (debug) { log('genWarn', { event: 'Ban', content: `Other user tried to use a confirmation embed that did not belong to them` }); };
-            let notForUserEmbed = embedConstructor('notForUser', {});
-            if (debug) { log('genWarn', { event: 'Ban', content: 'Sending error embed' }); };
-            await i.reply({ embeds: [notForUserEmbed], ephemeral: true });
+            if (debug) log('genWarn', { event: 'Commands > Ban', content: `Interaction owner mismatch`, extra: [`Expected: ${executor.tag}`, `Got: ${i.user.tag}`] })
+            let notForUserEmbed = embedConstructor('notForUser', {})
+            await i.reply({ embeds: [notForUserEmbed], ephemeral: true })
             
-          };
+          }
 
-        });
+        })
 
         // cooldown management
-        cooldown.add(executor.id);
-        setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime);
+        cooldown.add(executor.id)
+        setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime)
         
         }
     },

@@ -16,10 +16,9 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const {SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
-const { MessageActionRow, MessageButton } = require('discord.js');
 
 // custom modules
 const { embedConstructor } = require('../lib/embeds.js');
@@ -37,8 +36,8 @@ const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
 module.exports = {
   data: new SlashCommandBuilder()
   .setName('play')
-  .setDescription('Play audio to VC from specified YouTube video link')
-  .addStringOption((option) => option.setName('link').setDescription('Link of the video to play audio from').setRequired(true)),
+  .setDescription('Play audio to VC from specified search query')
+  .addStringOption((option) => option.setName('query').setDescription('Search query').setRequired(true)),
   async execute(interaction) {
       // cooldown management
       if (cooldown.has(interaction.user.id)) {
@@ -46,106 +45,111 @@ module.exports = {
       } else {
 
       // constants
-      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id };
-      const query = interaction.options.getString('link');
-      const channel = executor.obj.voice.channel;
-      let connection;
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id }
+      const query = interaction.options.getString('query')
+      const channel = executor.obj.voice.channel
+      let connection
 
-      if (debug) { log('genLog', { event: 'Commands > Play', content: `Command initialized by ${executor.tag}` }); };
+      if (debug) log('genLog', { event: 'Commands > Play', content: `Initialized`, extra: [`${executor.tag}`] })
 
       if (channel) {
         connection = joinVoiceChannel({ 
           channelId: executor.obj.voice.channelId,
           guildId: executor.obj.guild.id,
           adapterCreator: executor.obj.guild.voiceAdapterCreator
-        });
+        })
       } else {
-        interaction.reply('ur not in a channel lmao');
-        return;
+        if (debug) log('genWarn', { event: 'Commands > Play', content: 'Failed.', cause: 'Executor is not in a voice channel.', extra: [`${executor.tag}`] })
+        let embed = embedConstructor('playFailed', { reason: 'You are not in a voice channel!', query: query })
+        interaction.reply({ embeds: [embed] })
+        log('genLog', { event: 'Commands > Play', content: `Done${debug ? '' : ' with suppressed warnings'}.` })
+        return
       }
 
       // defer
-      await interaction.deferReply();
+      let patient = embedConstructor('playAwait', {})
+      await interaction.reply({ embeds: [patient] })
 
-      let searchResults;
+      let searchResults
       try {
-         searchResults = await invidious.search(query, {type: 'video'});
+         searchResults = await invidious.search(query, {type: 'video'})
       } catch (e) {
-        let embed = embedConstructor('playFailed', { reason: e.message, query: query });
-        interaction.editReply({ embeds: [embed] });
-        return;
+        if (debug) log('genWarn', { event: 'Commands > Play', content: 'Failed.', cause: 'Search failure!', extra: [`${query}`,`${executor.tag}`] })
+        let embed = embedConstructor('playFailed', { reason: e.message, query: query })
+        interaction.editReply({ embeds: [embed] })
+        log('genLog', { event: 'Commands > Play', content: `Done${debug ? '' : ' with suppressed warnings'}.` })
+        return
       }
 
-      let buttons = new MessageActionRow().addComponents(
-        new MessageButton().setLabel('1').setCustomId('0').setStyle('SECONDARY'),
-        new MessageButton().setLabel('2').setCustomId('1').setStyle('SECONDARY'),
-        new MessageButton().setLabel('3').setCustomId('2').setStyle('SECONDARY'),
-        new MessageButton().setLabel('4').setCustomId('3').setStyle('SECONDARY'),
-        new MessageButton().setLabel('5').setCustomId('4').setStyle('SECONDARY')
-      );
+      let buttons = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setLabel('1').setCustomId('0').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setLabel('2').setCustomId('1').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setLabel('3').setCustomId('2').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setLabel('4').setCustomId('3').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setLabel('5').setCustomId('4').setStyle(ButtonStyle.Secondary)
+      )
 
       if (!searchResults.length == 5) {
         for (var i = 4; i > (searchResults.length - 1); i--) {
-          buttons.components[i].disabled = true;
+          buttons.components[i].disabled = true
         }
       }
 
-      let embed = embedConstructor('playSelection', { results: searchResults });
-      await interaction.editReply({ embeds: [embed], components: [buttons] });
-      let selected;
-      let link;
+      let embed = embedConstructor('playSelection', { results: searchResults })
+      if (debug) log('genWarn', { event: 'Commands > Play', content: 'Embed spawned', extra: [`${query}`,`${executor.tag}`] })
+      await interaction.editReply({ embeds: [embed], components: [buttons] })
+      let selected
+      let link
 
       // collector
-      const filter = i => i.customId === '0' || i.customId === '1' || i.customId === '2' || i.customId === '3' || i.customId === '4';
-      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+      const filter = i => i.customId === '0' || i.customId === '1' || i.customId === '2' || i.customId === '3' || i.customId === '4'
+      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 })
+      if (debug) log('genLog', { event: 'Commands > Play', content: 'Component collector spawned', extra: [`${executor.tag}`] })
 
       collector.on('collect', async i => {
         if (i.user.id === executor.id) {
           await i.deferUpdate();
-          selected = await invidious.getVideo(searchResults[i.customId].metadata.id);
-          link = selected.video.adaptive.find(item => item.itag === '140').url;
+          await i.editReply({ embeds: [patient], components: [] });
+          selected = await invidious.getVideo(searchResults[i.customId].metadata.id)
+          link = selected.video.adaptive.find(item => item.itag === '140').url
+          if (debug) log('genWarn', { event: 'Commands > Play', content: 'Executor selected a video', extra: [`${searchResults[i.customId].metadata.title} by ${searchResults[i.customId].author.name}`,`${executor.tag}`] })
           let selectedEmbed = embedConstructor('playSelected', { title: searchResults[i.customId].metadata.title, name: searchResults[i.customId].author.name });
-          await i.editReply({ embeds: [selectedEmbed], components: [] });
-          collector.stop();
+          await i.editReply({ embeds: [selectedEmbed], components: [] })
+
+          if (debug) log('genLog', { event: 'Commands > Play', content: 'Component collector killed' })
+          collector.stop()
         } else {
-          let notForUserEmbed = embedConstructor('notForUser');
-          await i.reply({ embeds: [embed] });
-        }
-      });
-
-      await collector.on('end', collected => {
-        if (selected) {
-          let player = voice.createAudioPlayer();
-          let successEmbed = embedConstructor('playSuccess', { title: selected.metadata.title, name: selected.author.name }); 
-          let resource = voice.createAudioResource(link);
-          connection.subscribe(player);
-          player.play(resource);
-          interaction.followUp({ embeds: [successEmbed] });
-
-          player.on(voice.AudioPlayerStatus.Idle, () => {
-            let timeoutEmbed = embedConstructor('playTimeout');
-            interaction.channel.send({ embeds: [timeoutEmbed] });
-            connection.destroy();
-          });
+          if (debug) log('genWarn', { event: 'Commands > Ban', content: `Interaction owner mismatch`, extra: [`Expected: ${executor.tag}`, `Got: ${i.user.tag}`] })
+          let notForUserEmbed = embedConstructor('notForUser', {})
+          await i.reply({ embeds: [notForUserEmbed], ephemeral: true })
         }
       })
 
-      /*
-        player.play(resource);
-        connection.subscribe(player);
-        player.on(voice.AudioPlayerStatus.Idle, () => {
-          if (debug) { log('genLog', { event: 'Commands > Play', content: `Player idling, destroying connection...` }); };
-          connection.destroy();
-          if (debug) { log('genLog', { event: 'Commands > Play', content: `Connection destroyed.` }); };
-        });
-      */
+      await collector.on('end', collected => {
+        if (selected) {
+          let player = voice.createAudioPlayer()
+          let successEmbed = embedConstructor('playSuccess', { title: selected.metadata.title, name: selected.author.name })
+          let resource = voice.createAudioResource(link)
+          connection.subscribe(player)
+          player.play(resource)
+          interaction.followUp({ embeds: [successEmbed] })
+          log('genLog', { event: 'Commands > Play', content: 'Done.', extra: [`${selected.metadata.title} by ${selected.author.name}`,`${executor.tag}`] })
+
+          player.on(voice.AudioPlayerStatus.Idle, () => {
+            let timeoutEmbed = embedConstructor('playTimeout')
+            interaction.channel.send({ embeds: [timeoutEmbed] })
+            connection.destroy()
+            log('genLog', { event: 'Commands > Play', content: 'Connection destroyed.', extra: [`${executor.tag}`] })
+          })
+        }
+      })
 
       // cooldown management
-    	cooldown.add(executor.id);
-      setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime);
+    	cooldown.add(executor.id)
+      setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime)
 
-      	}
-    },
+    }
+  },
   documentation: {
     name: 'play',
     category: 'Media',

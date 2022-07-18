@@ -45,87 +45,87 @@ try {
 }
 
 // discord.js modules
-const { Client, Intents, Collection, MessageEmbed } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
 // data
 const { botAuth, loggingMessages, debug } = require('./config.json');
 
 const client = new Client({ 
-  intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_PRESENCES ], 
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.MessageContent
+  ],
   presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
 });
 
 // commands import
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-log('genLog', { event: 'Init > Loading', content: `Loading commands` });
+client.commands = new Collection()
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
+log('genLog', { event: 'Init > Loading', content: `Loading commands` })
 for (const files of commandFiles) {
-  const command = require(`./commands/${files}`);
-  client.commands.set(command.data.name, command);
-  if (debug) { log('extra', { event: 'Loading', content: `Loaded \"${command.data.name}\"` }); };
+  const command = require(`./commands/${files}`)
+  client.commands.set(command.data.name, command)
+  if (debug) log('extra', { event: 'Loading', content: `Loaded \"${command.data.name}\"` })
 }
 
 // notify ready
 client.on('ready', () => {
-  log('genLog', { event: 'Init > Ready', content: `Logged in as \x1b[1;37m${client.user.tag}\x1b[0;37m` });
+  log('genLog', { event: 'Init > Ready', content: `Logged in as \x1b[1;37m${client.user.tag}\x1b[0;37m` })
 
   if (loggingMessages) { 
-    log('genLog', { event: 'Init > Logging', content: 'Bot is now logging messages', cause: '\"loggingMessages\" = \x1b[31mtrue\x1b[37m in config.json' }); 
+    log('genLog', { event: 'Init > Logging', content: 'Bot is now logging messages', cause: '\"loggingMessages\" = \x1b[31mtrue\x1b[37m in config.json' })
   } else { 
-    log('genLog', { event: 'Init > Logging', content: 'Bot is not logging messages.', cause: '\"loggingMessages\" = \x1b[31mfalse\x1b[37m in config.json' }); 
-  };
+    log('genLog', { event: 'Init > Logging', content: 'Bot is not logging messages.', cause: '\"loggingMessages\" = \x1b[31mfalse\x1b[37m in config.json' })
+  }
 
   if (debug) { 
-    log('genLog', { event: 'Init > Logging', content: 'Bot is now in Debug mode. Almost all events will be logged.', cause: '\"debug\" = \x1b[31mtrue\x1b[37m in config.json'}); 
+    log('genLog', { event: 'Init > Logging', content: 'Bot is now in Debug mode. Almost all events will be logged.', cause: '\"debug\" = \x1b[31mtrue\x1b[37m in config.json'})
   } else { 
     log('genLog', { event: 'Init > Logging', content: `Bot is in Production mode. Only errors will be logged.`, cause: '\"debug\" = \x1b[31mfalse\x1b[37m in config.json' })
-  };
+  }
 
-});
+})
 
 // slash command handling
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
+  if (!interaction.isChatInputCommand()) return
 
-const command = client.commands.get(interaction.commandName);
+  const command = client.commands.get(interaction.commandName)
 
-  if (!command) return;
+  if (!command) return
 
   try {
-    await command.execute(interaction);
+    await command.execute(interaction)
   } catch (error) {
     let embed
-    if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) };
-    log('runtimeErr', { errName: error.name, event: command.data.name, content: error.message });
-    try {
-      await interaction.reply({ embeds: [embed], ephemeral: true });
-    } catch (e) {
-       if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+    if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) }
+    log('runtimeErr', { errName: error.name, event: command.data.name, content: error.message })
+  console.log(error)
+    if (interaction.isRepliable()) {
+      interaction.reply({ embeds: [embed], ephemeral: true })
+    } else {
       try {
-        await interaction.followUp({ embeds: [embed], ephemeral: true });
+        interaction.followUp({ embeds: [embed] })
       } catch (e) {
-        if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
-        await interaction.channel.send({ embeds: [embed], ephemeral: true });
+        interaction.channel.send({ embeds: [embed] })
       }
     }
   }
-});
-
-
-if (loggingMessages) {
-  client.on('messageCreate', async message => {
-    try {
-      log('genLog', { event: 'Logging > Message', content: `\x1b[1;37m${message.author.tag}\x1b[0m from \x1b[1;37m${message.guild.name} (${message.channel.name})\x1b[0m: ${message.content}` })
-      if (message.attachments.size != 0) { var attachmentList = message.attachments.toJSON(); for (let i in attachmentList) { log('genLog', { event: 'Logging > Message', content: `\x1b[1;37mAttachment\x1b[0m: ${attachmentList[i].attachment}` }) }; };
-    } catch(error) {
-      log('runtimeErr', { errName: error.name, event: 'Logging > Message', content: error.message });
-    }
-  });
-};
+})
 
 // login
 try {
-  client.login(botAuth);
+  client.login(botAuth)
 } catch (e) {
-  log('runtimeErr', { errName: e.name, event: 'Login', content: e.message });
+  log('runtimeErr', { errName: e.name, event: 'Login', content: e.message })
 }

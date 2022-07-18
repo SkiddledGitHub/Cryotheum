@@ -16,7 +16,7 @@
  */
 
 // discord.js modules
-const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
+const { SlashCommandBuilder, codeBlock } = require('discord.js');
 
 // 3rd party modules
 const { embedConstructor } = require('../lib/embeds.js');
@@ -34,103 +34,97 @@ module.exports = {
   async execute(interaction) {
 
       // constants
-      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id };
-      const code = interaction.options.getString('code');
-      const codeHighlighted = codeBlock('js', code);
+      const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id }
+      const code = interaction.options.getString('code')
+      const codeHighlighted = codeBlock('js', code)
 
       // variables
-      var embed;
+      var embed
 
-      if (debug) { log('genLog', { event: 'Commands > Eval', content: `Command initialized by ${executor.tag}` }); };
+      if (debug) log('genLog', { event: 'Commands > Eval', content: `Initialize`, extra: [`${executor.tag}`] })
 
         // if user is not bot owner, pull error
       	if (executor.id != botOwner) {
 
           // set embed & reply & log fail
-          const embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` });
-          try {
-            await interaction.reply({ embeds: [embed] });
-          } catch (e) {
-            if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
+          let embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` })
+          if (interaction.isRepliable()) {
+            interaction.reply({ embeds: [embed] })
+          } else {
             try {
-              await interaction.followUp({ embeds: [embed] });
+              interaction.followUp({ embeds: [embed] })
             } catch (e) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
-              await interaction.channel.send({ embeds: [embed] });
+              interaction.channel.send({ embeds: [embed] })
             }
           }
-          if (debug) { log('genWarn', { event: 'Eval', content: `${executor.tag} tried to execute Eval but failed`, cause: 'User is not bot owner.' }); };
-          return;
+          if (debug) log('genWarn', { event: 'Commands > Eval', content: `Failed.`, extra: [`${executor.tag}`], cause: 'Executor is not bot owner.' })
+          log('genLog', { event: 'Commands > Eval', content: `Done${debug ? '' : ' with suppressed warnings'}.` })
+          return
 
         } else {
 
           // defer
-          await interaction.deferReply();
+          await interaction.deferReply()
 
           // set embed
-          if (debug) { log('genLog', { event: 'Commands > Eval', content: `Embed construction` }); };
           if (code.length > 1020) {
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Code too long, resort to placeholder` }); };
-            embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` });
+            embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` })
           } else {
-            embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` });
-          };
+            embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` })
+          }
 
           // execute
-          let errObj;
+          let errObj
+          if (debug) log('genLog', { event: 'Commands > Eval', content: 'Executing', extra: [`${code}`, `${executor.tag}`] })
           if (interaction.options.getBoolean('async')) {
-            try { await eval(`try { let i = interaction; async function evaluation() { ${code} }; evaluation(); } catch (e) { errObj = e; }`); } catch (e) { errObj = e };
+            try { await eval(`try { let i = interaction; async function evaluation() { ${code} }; evaluation(); } catch (e) { errObj = e; }`); } catch (e) { errObj = e }
           } else {
-            try { await eval(`try { let i = interaction; ${code} } catch (e) { errObj = e; }`); } catch (e) { errObj = e; };
+            try { await eval(`try { let i = interaction; ${code} } catch (e) { errObj = e; }`); } catch (e) { errObj = e; }
           }
 
           if (errObj) {
             // set embed
-            if (debug) { log('cmdErr', { event: 'Eval', content: `Command failed, constructing failed embed` }); };
+            if (debug) log('cmdErr', { event: 'Commands > Eval', content: `Evaluation failed.`, extra: [`${executor.tag}`] })
             if (code.length > 1020) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: `Code too long, resort to placeholder` }); };
-              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `Too long to display\n(${code.length} characters)` });
+              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `Too long to display\n(${code.length} characters)` })
             } else {
-              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `${codeHighlighted}` });
+              embed = embedConstructor('evalFailed', { reason: errObj.message, code: `${codeHighlighted}` })
             };
 
             // reply
-            if (debug) { log('cmdErr', { event: 'Eval', content: `Reply with failed embed` }); };
             try {
-              await interaction.editReply({ embeds: [embed], ephemeral: true });
+              interaction.editReply({ embeds: [embed] })
             } catch (e) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
-              try {
-                await interaction.followUp({ embeds: [embed], ephemeral: true });
-              } catch (e) {
-                if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
-                await interaction.channel.send({ embeds: [embed], ephemeral: true });
+              if (!interaction.isRepliable()) {
+                try {
+                  interaction.followUp({ embeds: [embed] })
+                } catch (e) {
+                  interaction.channel.send({ embeds: [embed] })
+                }
               }
             }
 
             // throw
-            if (debug) { log('runtimeErr', { event: 'Eval', errName: errObj.name, content: errObj.message, extra: [`Code: ${code}`] }) };
-            return;
+            if (debug) log('runtimeErr', { event: 'Commands > Eval', errName: errObj.name, content: errObj.message, extra: [`${code}`,`${executor.tag}`] })
+            return
 
           } else {
 
             // reply
-            if (debug) { log('genLog', { event: 'Commands > Eval', content: `Reply with success embed` }); };
-
             try {
-              await interaction.editReply({ embeds: [embed] });
+              interaction.editReply({ embeds: [embed] })
             } catch (e) {
-              if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 1' }); };
-              try {
-                await interaction.followUp({ embeds: [embed] });
-              } catch (e) {
-                if (debug) { log('cmdErr', { event: 'Eval', content: 'Interaction reply failed! Trying fallback reply method 2' }); };
-                await interaction.channel.send({ embeds: [embed] });
+              if (!interaction.isRepliable()) {
+                try {
+                  interaction.followUp({ embeds: [embed] })
+                } catch (e) {
+                  interaction.channel.send({ embeds: [embed] })
+                }
               }
             }
 
             // log success
-            log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: [`Code: ${code}`] });
+            log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: [`${code}`,`${executor.tag}`] });
 
           }
           

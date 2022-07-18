@@ -30,7 +30,7 @@ const { Routes } = require('discord-api-types/v9');
 const { botAuth, botID } = require('./config.json');
 
 // rest module
-const rest = new REST({ version: '9' }).setToken(botAuth);
+const rest = new REST({ version: '10' }).setToken(botAuth);
 
 // custom modules
 const { createLogString, log } = require('./lib/logging.js');
