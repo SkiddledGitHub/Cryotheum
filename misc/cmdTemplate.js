@@ -1,6 +1,6 @@
 /**
  * @license
- * @copyright Copyright 2022 SkiddledGitHub
+ * @copyright Copyright 2022 ZenialDev
  *
  * This file is part of Cryotheum.
  * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
  */
 
 // modules
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 const { embedConstructor } = require('../lib/embeds.js');
 const { log }= require('../lib/logging.js');
 const { debug } = require('../config.json');
