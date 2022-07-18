@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SkiddledGitHub/Cryotheum.git"
+    "url": "git+https://github.com/ZenialDev/Cryotheum.git"
   },
   "author": "Skiddled#0802 (285329659023851520)",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/SkiddledGitHub/Cryotheum/issues"
+    "url": "https://github.com/ZenialDev/Cryotheum/issues"
   },
-  "homepage": "https://github.com/SkiddledGitHub/Cryotheum#readme",
+  "homepage": "https://github.com/ZenialDev/Cryotheum#readme",
   "dependencies": {
     "@discord-player/downloader": "^3.0.1",
     "@discordjs/opus": "^0.8.0",

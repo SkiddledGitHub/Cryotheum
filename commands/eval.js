@@ -1,6 +1,6 @@
 /**
- *
- * Copyright 2022 SkiddledGitHub
+ * @license
+ * @copyright Copyright 2022 ZenialDev
  *
  * This file is part of Cryotheum.
  * Cryotheum is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
