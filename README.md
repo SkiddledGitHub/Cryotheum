@@ -7,14 +7,17 @@ A portable, easy-to-modify [Discord](https://discord.com) bot
 <sub>it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow</sub>
 
 ## Setup
-1. First, execute these commands listed in order:
+1. Create a bot user at the Discord Developer Portal  
+Make sure to also enable these intents! They are necessary for the bot to function.  
+![Intents](https://i.imgur.com/vm37TUA.png)
+2. Then, execute these commands listed in order:
 ```bash
 git clone https://github.com/SkiddledGitHub/Cryotheum
 cd Cryotheum
 npm install
 node setup.js
 ```
-2. Return to terminal and execute:
+3. Return to terminal and execute:
 ```bash
 node cmdManager.js
 ```
