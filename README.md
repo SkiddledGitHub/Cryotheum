@@ -1,7 +1,7 @@
 # Cryotheum
-[![GitHub Issues Tracker](https://img.shields.io/github/issues/SkiddledGitHub/Cryotheum?logo=github&style=flat)](https://github.com/SkiddledGitHub/Cryotheum/issues)
-[![GitHub Project Page](https://img.shields.io/badge/Project%20Page-Cryotheum-blue?logo=github&style=flat)](https://github.com/users/SkiddledGitHub/projects/1)
-[![License](https://img.shields.io/github/license/SkiddledGitHub/Cryotheum&logoColor=ffffff&style=flat)](http://www.wtfpl.net/txt/copying/)
+[![GitHub Issues Tracker](https://img.shields.io/github/issues/ZenialDev/Cryotheum?logo=github&style=flat)](https://github.com/ZenialDev/Cryotheum/issues)
+[![GitHub Project Page](https://img.shields.io/badge/Project%20Page-Cryotheum-blue?logo=github&style=flat)](https://github.com/users/ZenialDev/projects/1)
+[![License](https://img.shields.io/github/license/ZenialDev/Cryotheum&logoColor=ffffff&style=flat)](http://www.wtfpl.net/txt/copying/)
 [![Language](https://img.shields.io/badge/Language-NodeJS-%23339933?logo=node.js&logoColor=ffffff&style=flat)](https://nodejs.org)  
 A portable, easy-to-modify [Discord](https://discord.com) bot  
 <sub>it's honestly just inefficient code and spaghetti smashed together to create this mess that works somehow</sub>
@@ -12,7 +12,7 @@ Make sure to also enable these intents! They are necessary for the bot to functi
 ![Intents](https://i.imgur.com/vm37TUA.png)
 2. Then, execute these commands listed in order:
 ```bash
-git clone https://github.com/SkiddledGitHub/Cryotheum
+git clone https://github.com/ZenialDev/Cryotheum
 cd Cryotheum
 npm install
 node setup.js
