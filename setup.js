@@ -1,14 +1,13 @@
-// node modules
 const fs = require('node:fs');
 
-// 3rd party modules
 const prompt = require('prompt-sync')({sigint: true});
 
-// custom modules
 const { log, createLogString } = require('./lib/logging.js');
 const { gitRevision, askAsync, askAsyncFilter } = require('./lib/miscellaneous.js');
 const configUtils = require('./lib/config.js');
 
+// NOTE: I don't know if this is bulletproof
+//       or not. We will have to see.
 var self = module.exports = {
     mainSetupFunction: async function() {
         log('genLog', { event: 'Setup', content: `Cryotheum Setup, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` });

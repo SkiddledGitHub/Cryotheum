@@ -1,18 +1,19 @@
-// node modules
 const process = require('process');
 const fs = require('node:fs');
 
-// custom modules
 const { log } = require('./lib/logging.js');
 const { embedConstructor } = require('./lib/embeds.js');
 const { gitRevision } = require('./lib/miscellaneous.js');
 const configUtils = require('./lib/config.js');
 
-// clear console
 console.clear();
 
 log('genLog', { event: 'Init', content: `Running Cryotheum, revision \x1b[1;37m${gitRevision(true)}\x1b[0;37m` })
 
+
+// TODO: Make the validate function more efficient?
+//       Right now it sometimes slows down startup
+//       by quite a bit of time.
 try {
   configUtils.validate();
 } catch (e) {
@@ -27,12 +28,12 @@ try {
   mainSetupFunction();
 }
 
-// discord.js modules
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
-// data
 const { botAuth, loggingMessages, debug } = require('./config.json');
 
+// TODO: Maybe we don't need this much intents,
+//       but oh well.
 const client = new Client({ 
   intents: [
     GatewayIntentBits.Guilds,
@@ -51,7 +52,8 @@ const client = new Client({
   presence: { status: 'idle', activities: [{ name: `over you`, type: 'WATCHING' }] }
 });
 
-// commands import
+// TODO: Maybe optimize command loading?
+//       It's quite slow as well.
 client.commands = new Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
 log('genLog', { event: 'Init > Loading', content: `Loading commands` })
@@ -61,7 +63,6 @@ for (const files of commandFiles) {
   if (debug) log('extra', { event: 'Loading', content: `Loaded \"${command.data.name}\"` })
 }
 
-// notify ready
 client.on('ready', () => {
   log('genLog', { event: 'Init > Ready', content: `Logged in as \x1b[1;37m${client.user.tag}\x1b[0;37m` })
 
@@ -79,7 +80,6 @@ client.on('ready', () => {
 
 })
 
-// slash command handling
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return
 
@@ -106,7 +106,6 @@ client.on('interactionCreate', async interaction => {
   }
 })
 
-// login
 try {
   client.login(botAuth)
 } catch (e) {
