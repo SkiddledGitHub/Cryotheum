@@ -13,8 +13,8 @@
     "type": "git",
     "url": "git+https://github.com/ZenialDev/Cryotheum.git"
   },
-  "author": "Skiddled#0802 (285329659023851520)",
-  "license": "GPL-3.0-or-later",
+  "author": "ZenialDev",
+  "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/ZenialDev/Cryotheum/issues"
   },
