@@ -87,9 +87,9 @@ var self = module.exports = {
         log('genLog', { event: 'Setup > Guided', content: 'Enter your Bot Token.' });
         ans.token = askAsync(createLogString('extra', { event: 'Input', content: '\x1b[0;90m(Bot Token) \x1b[0;37m' }));
         log('genLog', { event: 'Setup > Guided', content: 'Enter your Bot\'s Discord ID.' });
-        ans.id = askAsyncFilter(createLogString('extra', { event: 'Input', content: '\x1b[0;90m(Bot Discord ID) \x1b[0;37m' }), /[a-zA-Z]/);
+        ans.id = askAsyncFilter(createLogString('extra', { event: 'Input', content: '\x1b[0;90m(Bot Discord ID) \x1b[0;37m' }), /[0-9]/);
         log('genLog', { event: 'Setup > Guided', content: 'Enter your Discord ID.' });
-        ans.owner = askAsyncFilter(createLogString('extra', { event: 'Input', content: '\x1b[0;90m(Your Discord ID) \x1b[0;37m' }), /[a-zA-Z]/);
+        ans.owner = askAsyncFilter(createLogString('extra', { event: 'Input', content: '\x1b[0;90m(Your Discord ID) \x1b[0;37m' }), /[0-9]/);
         
         log('genLog', { event: 'Setup > Guided', content: 'Do you want to enable Debug mode? (Extra log messages)',  extra: ['\x1b[1;37m1\x1b[0;37m. Yes', '\x1b[1;37m2\x1b[0;37m. No'] });
         ans.debug = askAsync(createLogString('extra', { event: 'Selection', content: '\x1b[0;90m(1 or 2) \x1b[0;37m' }), ['1', '2']);
