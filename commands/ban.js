@@ -1,4 +1,6 @@
-// discord.js modules
+// NOTE: Some Discord.JS classes below might not be needed.
+//       I just don't know which.
+
 const {
   SlashCommandBuilder,
   PermissionsBitField,
@@ -12,7 +14,6 @@ const {
   ButtonStyle
 } = require('discord.js');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 

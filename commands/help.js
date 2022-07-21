@@ -1,14 +1,10 @@
-// discord.js modules
 const { SlashCommandBuilder } = require('discord.js');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 
-// data
 const { debug } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 2000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '2 seconds' });
@@ -19,7 +15,6 @@ module.exports = {
   .setDescription('Basic bot documentation command.')
   .addStringOption((option) => option.setName('command').setDescription('Command to show documentation for').setRequired(false)),
   async execute(interaction) {
-    // cooldown management
     if (cooldown.has(interaction.user.id)) {
     await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
@@ -88,7 +83,6 @@ module.exports = {
           }
         }
 
-        // cooldown management
       	cooldown.add(interaction.user.id)
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 

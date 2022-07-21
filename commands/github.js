@@ -1,18 +1,13 @@
-// discord.js modules
 const { SlashCommandBuilder, time, AttachmentBuilder } = require('discord.js');
 
-// 3rd party modules
 const axios = require('axios');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 const github = require('../lib/github.js');
 
-// data
 const { debug, githubAuth } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 1000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '1 seconds' });
@@ -28,7 +23,6 @@ module.exports = {
     ))
   .addStringOption((option) => option.setName('target').setDescription('Search query').setRequired(true)),
   async execute(interaction) {
-    // cooldown management
     if (cooldown.has(interaction.user.id)) {
     await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
@@ -266,7 +260,6 @@ module.exports = {
 
         }
 
-        // cooldown management
       	cooldown.add(interaction.user.id)
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 

@@ -1,16 +1,12 @@
-// discord.js modules
 const { SlashCommandBuilder } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 
-// data
 const { debug } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
@@ -20,7 +16,6 @@ module.exports = {
   .setName('stop')
   .setDescription('Make the bot leave the VC'),
   async execute(interaction) {
-      // cooldown management
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ embeds: [cooldownEmbed] });
       } else {

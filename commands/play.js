@@ -1,19 +1,15 @@
-// discord.js modules
-const {SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection, VoiceConnectionStatus, AudioPlayer, AudioResource } = require('@discordjs/voice');
 const voice = require('@discordjs/voice');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 // const invidious = require('../lib/invidious.js'); # The Invidious library has been deprecated due to poor performance.
 const yt = require('../lib/yt.js');
 const ytdl = require('ytdl-core');
 
-// data
 const { debug } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
@@ -24,12 +20,10 @@ module.exports = {
   .setDescription('Play audio to VC from specified search query')
   .addStringOption((option) => option.setName('query').setDescription('Query (this can be a YouTube URL or a search query)').setRequired(true)),
   async execute(interaction) {
-      // cooldown management
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-      // constants
       const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id }
       const query = interaction.options.getString('query')
       const channel = executor.obj.voice.channel
@@ -175,7 +169,6 @@ module.exports = {
         }
       }
 
-      // cooldown management
     	cooldown.add(executor.id)
       setTimeout(() => { cooldown.delete(executor.id); }, cooldownTime)
 

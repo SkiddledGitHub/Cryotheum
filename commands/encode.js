@@ -1,20 +1,15 @@
-// discord.js modules
 const { SlashCommandBuilder, codeBlock } = require('discord.js');
 
-// 3rd party modules
 const encd = require('@root/encoding');
 const b32cd = require('base32-encoding');
 const binf = require('bin-converter');
 const bincd = new binf();
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 
-// data
 const { debug } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 4000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '4 seconds' });
@@ -32,12 +27,13 @@ module.exports = {
       { name: 'Base64', value: 'base64' }
     )),
   async execute(interaction) {
-      // cooldown management
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-        // constants
+        // NOTE: Same as the decode command, this command also needs
+        //       an improvement.
+        
         const executor = { obj: interaction.member, tag: interaction.user.tag }
 
         if (debug) log('genLog', { event: 'Commands > Encode', content: `Initialize`, extra: [`${executor.tag}`] })

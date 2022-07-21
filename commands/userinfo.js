@@ -1,18 +1,13 @@
-// discord.js modules
 const { SlashCommandBuilder, PermissionsBitField, codeBlock, time } = require('discord.js');
 
-// 3rd party modules
 const decache = require('decache');
 const emojis = require('node-emoji');
 
-// custom modules
 const { embedConstructor } = require('../lib/embeds.js');
 const { log } = require('../lib/logging.js');
 
-// data
 const { debug } = require('../config.json');
 
-// set cooldown
 const cooldown = new Set();
 const cooldownTime = 6000;
 const cooldownEmbed = embedConstructor("cooldown", { cooldown: '6 seconds' });
@@ -23,38 +18,31 @@ module.exports = {
   .setDescription('Get user profile from a Discord user')
   .addUserOption((option) => option.setName('target').setDescription('User to get user information from')),
   async execute(interaction) {
-      // cooldown management
       if (cooldown.has(interaction.user.id)) {
       await interaction.reply({ embeds: [cooldownEmbed] });
       } else {
 
-      	// constants
       	const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id }
 
-      	// define target
       	var target = {}
 
-      	// define date variables
       	var joinedAt
       	var createdAt
 
-      	// define other variables
         var embed
         var sBadges = ""
         var iBadges = ""
 
         if (debug) log('genLog', { event: 'Commands > User Info', content: `Initialize`, extra: [`${executor.tag}`] })
 
-      	// if option is blank, get executor's data instead
       	if (!interaction.options.getMember('target') && !interaction.options.getUser('target')) {
-      	  
-      		// assign target as executor
+
       		target = { obj: executor.obj, tag: executor.tag, id: codeBlock('yaml', `ID: ${executor.id}`), member: true }
 
-          // force fetch
           target.obj.fetch()
 
-          // avatar determination
+          // NOTE: Unnecessary check?
+
           if (target.obj.avatar) {
             if (target.obj.avatar.slice(0,2) == 'a_') {
               target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 })
@@ -69,27 +57,23 @@ module.exports = {
             }
           }
 
-      		// get target's roles
       		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ')
 
-      		// get target's guild join and account creation date
           	joinedAt = { full: `${time(target.obj.joinedAt, 'f')}`, mini: `${time(target.obj.joinedAt, 'R')}` }
             createdAt = { full: `${time(target.obj.user.createdAt, 'f')}`, mini: `${time(target.obj.user.createdAt, 'R')}` }
       	
       	}
 
-      	// if target is guild member
       	if (interaction.options.getMember('target')) {
 
           let userCache = interaction.options.getMember('target')
 
-      		// assigning target
       		target = { obj: userCache, tag: userCache.user.tag, id: codeBlock('yaml', `ID: ${userCache.user.id}`), member: true }
 
-          // force fetch
           target.obj.fetch()
 
-          // avatar determination
+          // NOTE: Unnecessary check?
+
           if (target.obj.avatar) {
             if (target.obj.avatar.slice(0,2) == 'a_') {
               target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 })
@@ -104,27 +88,23 @@ module.exports = {
             }
           }
 
-      		// get target's roles
       		target.roles = target.obj.roles.cache.map(r => r).toString().replace(/,/g, ' ')
 
-      		// get target's guild join and account creation date
           	joinedAt = { full: `${time(target.obj.joinedAt, 'f')}`, mini: `${time(target.obj.joinedAt, 'R')}` }
             createdAt = { full: `${time(target.obj.user.createdAt, 'f')}`, mini: `${time(target.obj.user.createdAt, 'R')}` }
 
       	}
 
-      	// if member is not guild member
       	if (!interaction.options.getMember('target') && interaction.options.getUser('target')) {
       	
           let userCache = interaction.options.getUser('target')
 
-      		// assigning target
           target = { obj: userCache, tag: userCache.tag, id: codeBlock('yaml', `ID: ${userCache.id}`), member: false }
 
-          // force fetch
           target.obj.fetch()
 
-          // avatar determination
+          // NOTE: Unnecessary check?
+
           if (target.obj.avatar.slice(0,2) == 'a_') {
             target.avatar = target.obj.displayAvatarURL({ format: 'gif', dynamic: true, size: 1024 })
           } else {
@@ -135,14 +115,12 @@ module.exports = {
             target.banner = target.obj.bannerURL({ extension: 'png', size: 1024 })
           }
 
-      		// get target's account creation date
             createdAt = { full: `${time(target.obj.createdAt, 'f')}`, mini: `${time(target.obj.createdAt, 'R')}` }
 
       	}
 
         if (debug) log('genLog', { event: 'Commands > User Info', content: `Target set`, extra: [`${target.tag}`,`${executor.tag}`] })
 
-      	// assign special emojis to certain users
         function parseSpecialBadges() {
           let { specialBadges } = require('../config.json')
           sBadges = specialBadges[target.obj.id]
@@ -213,7 +191,6 @@ module.exports = {
       	interaction.reply({ embeds: [embed] })
         log('genLog', { event: 'Commands > User Info', content: 'Done.', extra: [`${target.tag}`,`${executor.tag}`] })
 
-      	// cooldown management
         cooldown.add(interaction.user.id)
         setTimeout(() => { cooldown.delete(interaction.user.id); }, cooldownTime)
 

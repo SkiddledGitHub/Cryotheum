@@ -16,20 +16,20 @@ module.exports = {
     .addBooleanOption((option) => option.setName('async').setDescription('Make the code run in an async function').setRequired(false)),
   async execute(interaction) {
 
-      // constants
       const executor = { obj: interaction.member, tag: interaction.user.tag, id: interaction.user.id }
       const code = interaction.options.getString('code')
       const codeHighlighted = codeBlock('js', code)
 
-      // variables
       var embed
 
       if (debug) log('genLog', { event: 'Commands > Eval', content: `Initialize`, extra: [`${executor.tag}`] })
 
-        // if user is not bot owner, pull error
+        // NOTE: Eval is evil!
+        //       Do not modify the check below.
+        //       It can cause serious security risks to your bot!
+
       	if (executor.id != botOwner) {
 
-          // set embed & reply & log fail
           let embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` })
           if (interaction.isRepliable()) {
             interaction.reply({ embeds: [embed] })
@@ -46,17 +46,38 @@ module.exports = {
 
         } else {
 
-          // defer
           await interaction.deferReply()
 
-          // set embed
           if (code.length > 1020) {
             embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` })
           } else {
             embed = embedConstructor('evalSuccess', { code: `${codeHighlighted}` })
           }
 
-          // execute
+          // NOTE: Eval is evil! Do not replicate what I am doing here.
+          //       DO NOT MODIFY THE OWNER CHECK.
+          //       It can cause serious security risks to your bot!
+          //
+          //       With Eval, you can execute NodeJS code directly without modifying
+          //       the bot itself.
+          //
+          //       Accessible items:
+          //          - interaction (as "i") (Please do not use Interaction#reply or any
+          //            other variant of it in the eval code.)
+          //          - All current variables defined in this command file
+          //          - All NodeJS functions
+          //
+          //       Bad practices in eval code:
+          //          - Infinite loops
+          //          - Any operation that takes longer than 15 minutes to finish execution
+          //
+          //       If your operations take longer than 15 minutes to finish executing, your bot **might** crash!
+
+          // NOTE: Yes, I know safer alternatives for Eval exists on npm to install
+          //       But what I want is to debug the bot using the Eval command.
+          //       Other alternatives either removes NodeJS functionality or removes access
+          //       to the interaction object.
+
           let errObj
           if (debug) log('genLog', { event: 'Commands > Eval', content: 'Executing', extra: [`${code}`, `${executor.tag}`] })
           if (interaction.options.getBoolean('async')) {
@@ -66,7 +87,6 @@ module.exports = {
           }
 
           if (errObj) {
-            // set embed
             if (debug) log('cmdErr', { event: 'Commands > Eval', content: `Evaluation failed.`, extra: [`${executor.tag}`] })
             if (code.length > 1020) {
               embed = embedConstructor('evalFailed', { reason: errObj.message, code: `Too long to display\n(${code.length} characters)` })
@@ -74,7 +94,6 @@ module.exports = {
               embed = embedConstructor('evalFailed', { reason: errObj.message, code: `${codeHighlighted}` })
             };
 
-            // reply
             try {
               interaction.editReply({ embeds: [embed] })
             } catch (e) {
@@ -87,13 +106,11 @@ module.exports = {
               }
             }
 
-            // throw
             if (debug) log('runtimeErr', { event: 'Commands > Eval', errName: errObj.name, content: errObj.message, extra: [`${code}`,`${executor.tag}`] })
             return
 
           } else {
 
-            // reply
             try {
               interaction.editReply({ embeds: [embed] })
             } catch (e) {
@@ -106,7 +123,6 @@ module.exports = {
               }
             }
 
-            // log success
             log('genLog', { event: 'Commands > Eval', content: `Evaluated code.`, extra: [`${code}`,`${executor.tag}`] });
 
           }
