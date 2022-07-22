@@ -89,20 +89,8 @@ client.on('interactionCreate', async interaction => {
 
   try {
     await command.execute(interaction)
-  } catch (error) {
-    let embed
-    if (debug) { embed = embedConstructor("error", { error: `${error}` }) } else { embed = embedConstructor("errorNoDebug", {}) }
-    log('runtimeErr', { errName: error.name, event: command.data.name, content: error.message })
-  console.log(error)
-    if (interaction.isRepliable()) {
-      interaction.reply({ embeds: [embed], ephemeral: true })
-    } else {
-      try {
-        interaction.followUp({ embeds: [embed] })
-      } catch (e) {
-        interaction.channel.send({ embeds: [embed] })
-      }
-    }
+  } catch (e) {
+    log('runtimeErr', { errName: e.name, event: command.data.name, content: e.message })
   }
 })
 
