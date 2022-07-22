@@ -22,6 +22,8 @@ module.exports = {
 
       var embed
 
+      await interaction.deferReply()
+
       if (debug) log('genLog', { event: 'Commands > Eval', content: `Initialize`, extra: [`${executor.tag}`] })
 
         // NOTE: Eval is evil!
@@ -31,22 +33,22 @@ module.exports = {
       	if (executor.id != botOwner) {
 
           let embed = embedConstructor('evalFailed', { reason: 'You are not the bot owner!', code: `${codeHighlighted}` })
-          if (interaction.isRepliable()) {
-            interaction.reply({ embeds: [embed] })
-          } else {
             try {
-              interaction.followUp({ embeds: [embed] })
+              interaction.editReply({ embeds: [embed] })
             } catch (e) {
-              interaction.channel.send({ embeds: [embed] })
+              if (!interaction.isRepliable()) {
+                try {
+                  interaction.followUp({ embeds: [embed] })
+                } catch (e) {
+                  interaction.channel.send({ embeds: [embed] })
+                }
+              }
             }
-          }
           if (debug) log('genWarn', { event: 'Commands > Eval', content: `Failed.`, extra: [`${executor.tag}`], cause: 'Executor is not bot owner.' })
           log('genLog', { event: 'Commands > Eval', content: `Done${debug ? '' : ' with suppressed warnings'}.` })
           return
 
         } else {
-
-          await interaction.deferReply()
 
           if (code.length > 1020) {
             embed = embedConstructor('evalSuccess', { code: `Too long to display\n(${code.length} characters)` })
@@ -69,9 +71,10 @@ module.exports = {
           //
           //       Bad practices in eval code:
           //          - Infinite loops
-          //          - Any operation that takes longer than 15 minutes to finish execution
+          //          - Any operation that takes longer than 15 minutes to finish executing
           //
           //       If your operations take longer than 15 minutes to finish executing, your bot **might** crash!
+          //       This is a known issue. (Interaction reply failures)
 
           // NOTE: Yes, I know safer alternatives for Eval exists on npm to install
           //       But what I want is to debug the bot using the Eval command.
